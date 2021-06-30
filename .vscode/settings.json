@@ -1,0 +1,30 @@
+{
+  "cSpell.words": [
+    "ARGB",
+    "Keybinder",
+    "RGBO",
+    "appbar",
+    "desaturate",
+    "greyscale",
+    "mockito",
+    "nunito",
+    "pubspec",
+    "pubspecs",
+    "recents",
+    "sanihaq",
+    "sgit"
+  ],
+  "cSpell.ignorePaths": [
+    "**/package-lock.json",
+    "**/node_modules/**",
+    "**/vscode-extension/**",
+    "**/.git/objects/**",
+    ".vscode",
+    ".vscode-insiders",
+    "**/generated/**",
+    "**/l10n/**"
+  ],
+  "licenser.license": "GPLv3",
+  "licenser.author": "Sani Haq <work.sanihaq@gmail.com>",
+  "licenser.projectName": "Flutter Blossom",
+}

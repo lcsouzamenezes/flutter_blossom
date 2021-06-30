@@ -1,0 +1,21 @@
+[submodule "packages/blossom_cli"] 
+  path = packages/blossom_cli
+  url = git:github.com/flutter-blossom/blossom_cli.git
+[submodule "packages/blossom_canvas"] 
+  path = packages/blossom_canvas
+  url = git:github.com/flutter-blossom/blossom_canvas.git
+[submodule "packages/code_blocks"] 
+  path = packages/code_blocks
+  url = git:github.com/flutter-blossom/code_blocks.git
+[submodule "packages/flex_color_picker"] 
+  path = packages/flex_color_picker
+  url = git://github.com/sanihaq/flex_color_picker.git
+[submodule "packages/flutter_widget_model"] 
+  path = packages/flutter_widget_model
+  url = git://github.com/flutter-blossom/flutter_widget_model.git
+[submodule "packages/packages/keyboard_shortcuts"] 
+  path = packages/keyboard_shortcuts
+  url = git://github.com/flutter-blossom/keyboard_shortcuts.git
+[submodule "packages/tree_view"] 
+  path = packages/tree_view
+  url = git://github.com/flutter-blossom/tree_view.git

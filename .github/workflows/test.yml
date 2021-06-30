@@ -1,0 +1,28 @@
+# Copyright (C) 2021 Sani Haq
+# 
+# This file is part of Flutter Blossom.
+
+name: Test
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  run-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.SSH_PKEY }}
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+      - run: dart pub global activate --source path -sgit https://github.com/flutter-blossom/blossom_cli.git
+      - run: blossom switch-to private_remote
+      - run: flutter packages upgrade
+      - run: flutter test
+      - name: Report Status to Slack
+        if: always()
+        uses: endcrawl/github-action-slack-notify-curl@master
+        with:
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}

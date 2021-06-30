@@ -1,0 +1,249 @@
+# Copyright (C) 2021 Sani Haq
+# 
+# This file is part of Flutter Blossom.
+
+name: Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      updateLevel:
+        description: 'Update level (major, minor, patch)'     
+        required: true
+        default: 'patch'
+      message:
+        description: 'Release message'
+
+jobs:
+  get-version:
+    name: Create version number
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - run: |
+          echo "arg: ${{ github.event.inputs.updateLevel }}"
+      - name: set dummy git user
+        run: git config --global user.email "you@example.com"; git config --global user.name "Your Name";
+      - if: ${{ github.event.inputs.updateLevel == 'major' }}
+        run: git commit --allow-empty -m "breaking:"
+      - if: ${{ github.event.inputs.updateLevel == 'minor' }}
+        run: git commit --allow-empty -m "feature:"  
+      - name: Git Version
+        id: gitversion
+        uses: codacy/git-version@2.2.0
+    outputs:
+      version: ${{ steps.gitversion.outputs.version  }}
+      release-name: ${{ github.event.repository.name }}_${{ steps.gitversion.outputs.version }}+${{ github.run_number }}
+
+  build-linux:
+    needs: [ get-version ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.SSH_PKEY }}
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+      - run: flutter config --enable-linux-desktop
+      - run: dart pub global activate --source path -sgit https://github.com/flutter-blossom/blossom_cli.git
+      - run: blossom switch-to private_remote
+      - run: flutter packages upgrade
+      - name: Update version in YAML
+        run: sed -i 's/0.0.0+0/${{ needs.get-version.outputs.version }}+${{ github.run_number }}/g' pubspec.yaml
+      - run: sed -i 's/buildNo = 0/buildNo = ${{ github.run_number }}/g' lib/states/app_state.dart
+      - name: Patch for linux build
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev
+      - run: flutter build linux
+      - name: 'Create version.txt'
+        run: echo '${{ needs.get-version.outputs.version }}+${{ github.run_number }}' >> build/linux/x64/release/bundle/version.txt
+      - name: 'Tar files'
+        run: cd build/linux/x64/release/bundle;tar -cvzf ${{ needs.get-version.outputs.release-name }}-linux.tar.gz *;
+      - uses: actions/upload-artifact@v2
+        with:
+          name: linux
+          path: |
+            build/linux/x64/release/bundle/${{ needs.get-version.outputs.release-name }}-linux.tar.gz
+          retention-days: 1
+      - name: Report Status to Slack
+        if: always()
+        uses: endcrawl/github-action-slack-notify-curl@master
+        with:
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+
+  build-windows:
+    needs: [ get-version ]
+    runs-on: windows-latest
+
+    steps:
+      - uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.SSH_PKEY }}
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+      - run: flutter config --enable-windows-desktop
+      - run: dart pub global activate --source path -sgit https://github.com/flutter-blossom/blossom_cli.git
+      - run: blossom switch-to private_remote
+      - run: flutter packages upgrade
+      - name: Update version in YAML
+        run: sed -i 's/0.0.0+0/${{ needs.get-version.outputs.version }}+${{ github.run_number }}/g' pubspec.yaml
+      - run: sed -i 's/buildNo = 0/buildNo = ${{ github.run_number }}/g' lib/states/app_state.dart
+      - run: flutter build windows
+      # - run: flutter pub run msix:create
+      - name: 'Create version.txt'
+        run: echo '${{ needs.get-version.outputs.version }}+${{ github.run_number }}' >> build/windows/runner/release/version.txt
+      - name: 'Tar files'
+        run: cd build/windows/runner/release;tar -cvzf ../../../../${{ needs.get-version.outputs.release-name }}-windows.tar.gz *;
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows
+          path: |
+            ${{ needs.get-version.outputs.release-name }}-windows.tar.gz
+          retention-days: 1
+      - name: Report Status to Slack
+        if: always()
+        uses: endcrawl/github-action-slack-notify-curl@master
+        with:
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+
+  build-macos:
+    needs: [ get-version ]
+    runs-on: macos-latest
+
+    steps:
+      - uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.SSH_PKEY }}
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+      - run: flutter config --enable-macos-desktop
+      - run: dart pub global activate --source path -sgit https://github.com/flutter-blossom/blossom_cli.git
+      - run: blossom switch-to private_remote
+      - run: flutter packages upgrade
+      - name: Update version in YAML
+        run: sed -i '' 's/0.0.0+0/${{ needs.get-version.outputs.version }}+${{ github.run_number }}/g' pubspec.yaml
+      - run: sed -i '' 's/buildNo = 0/buildNo = ${{ github.run_number }}/g' lib/states/app_state.dart
+      - run: flutter build macos
+      - name: 'Create version.txt'
+        run: echo '${{ needs.get-version.outputs.version }}+${{ github.run_number }}' >> build/macos/Build/Products/Release/Flutter\ Blossom.app/version.txt
+      - name: 'Tar files'
+        run: cd build/macos/Build/Products/Release; tar -czvf ${{ needs.get-version.outputs.release-name }}-macos.tar.gz Flutter\ Blossom.app/*;
+      - uses: actions/upload-artifact@v2
+        with:
+          name: macos
+          path: |
+            build/macos/Build/Products/Release/${{ needs.get-version.outputs.release-name }}-macos.tar.gz
+      - name: Report Status to Slack
+        if: always()
+        uses: endcrawl/github-action-slack-notify-curl@master
+        with:
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+
+  build-web:
+    needs: [ get-version ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.SSH_PKEY }}
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+      - run: dart pub global activate --source path -sgit https://github.com/flutter-blossom/blossom_cli.git
+      - run: blossom switch-to private_remote
+      - run: flutter packages upgrade
+      - name: Update version in YAML
+        run: sed -i 's/0.0.0+0/${{ needs.get-version.outputs.version }}+${{ github.run_number }}/g' pubspec.yaml
+      - run: sed -i 's/buildNo = 0/buildNo = ${{ github.run_number }}/g' lib/states/app_state.dart
+      - name: build web
+        uses: erickzanardo/flutter-gh-pages@v3
+      - name: Report Status to Slack
+        if: always()
+        uses: endcrawl/github-action-slack-notify-curl@master
+        with:
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+  
+  release-web:
+    needs: [ build-web ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.SSH_PKEY2 }}
+      - uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+      - run: git config --global user.email "work.sanihaq@gmail.com"
+      - run: git config --global user.name "sanihaq"
+      - run: sed -i 's/href="\/flutter_blossom\/"/href="\/"/g' index.html
+      - run: git add .
+      - run: git commit -m "changed baseurl to /"
+      - run: git remote add web git@github.com:flutter-blossom/flutter-blossom.github.io.git
+      - run: git push -f web gh-pages:main
+
+  release:
+    needs: [ get-version, build-linux, build-windows, build-macos ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Show version
+        run: echo "Releasing ${{ needs.get-version.outputs.version }}+${{ github.run_number }}"
+      
+      - name: Update versions in YAML
+        run: >
+          sed -i 's/^version: .*$/version: ${{ needs.get-version.outputs.version }}+${{ github.run_number }}/g' pubspec.yaml;
+          sed -i 's/^version: .*$/version: ${{ needs.get-version.outputs.version }}+${{ github.run_number }}/g' switch/pubspec.local.yaml;
+          sed -i 's/^version: .*$/version: ${{ needs.get-version.outputs.version }}+${{ github.run_number }}/g' switch/pubspec.private_local.yaml;
+          sed -i 's/^version: .*$/version: ${{ needs.get-version.outputs.version }}+${{ github.run_number }}/g' switch/pubspec.private_remote.yaml;
+          sed -i 's/^version: .*$/version: ${{ needs.get-version.outputs.version }}+${{ github.run_number }}/g' switch/pubspec.remote.yaml;
+      - uses: actions/download-artifact@v2
+        with:
+          path: artifacts
+
+      - name: Generate Changelog
+        uses: ardalanamini/auto-changelog@v1.1.0
+        id: change
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create or update changelog.md
+        uses: DamianReeves/write-file-action@v1.0
+        with:
+          path: changelog.md
+          contents: |
+            <br/>
+            ## ${{ needs.get-version.outputs.version }}+${{ github.run_number }}
+            <br/>
+            ${{ steps.change.outputs.changelog }}
+          write-mode: append
+      
+      - name: Release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ needs.get-version.outputs.version }}+${{ github.run_number }}
+          commit: ${{ github.sha }}
+          body: |
+            ${{ github.event.inputs.message }}
+            ${{ steps.change.outputs.changelog }}
+          prerelease: true
+          artifacts: artifacts/linux/${{ needs.get-version.outputs.release-name }}-linux.tar.gz,artifacts/windows/${{ needs.get-version.outputs.release-name }}-windows.tar.gz,artifacts/macos/${{ needs.get-version.outputs.release-name }}-macos.tar.gz
+
+      - uses: stefanzweifel/git-auto-commit-action@v4.11.0
+        with:
+          commit_message: Auto Released ${{ needs.get-version.outputs.version }}+${{ github.run_number }}
+      - name: Report Status to Slack
+        if: always()
+        uses: endcrawl/github-action-slack-notify-curl@master
+        with:
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}

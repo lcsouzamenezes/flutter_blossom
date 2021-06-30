@@ -1,0 +1,30 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "windows",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "Windows",
+      "program": "lib/main.dart",
+    },
+    {
+      "name": "Edge",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "Edge",
+      "program": "lib/main.dart",
+    },
+    {
+      "name": "Chrome",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "chrome",
+      "program": "lib/main.dart",
+      "args": ["--no-sound-null-safety"]
+    },
+  ]
+}
