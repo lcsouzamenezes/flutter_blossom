@@ -75,7 +75,7 @@ class AppStateViewNotifier extends ChangeNotifier {
 
   Future<http.Response> _fetchReleases() {
     return http.get(Uri.parse(
-        'https://api.github.com/repos/flutter-blossom/flutter-blossom/releases'));
+        'https://api.github.com/repos/flutter-blossom/flutter_blossom/releases'));
   }
 
   Future<bool> checkForUpdate() async {

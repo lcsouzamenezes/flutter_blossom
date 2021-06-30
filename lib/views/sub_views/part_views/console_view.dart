@@ -88,7 +88,7 @@ class EditorConsole extends HookWidget {
                                   ),
                                   TextButton(
                                     onPressed: () async => await launch(
-                                        'https://github.com/flutter-blossom/flutter-blossom/releases'),
+                                        'https://github.com/flutter-blossom/flutter_blossom/releases'),
                                     child: Text('Release Page'),
                                   )
                                 ],

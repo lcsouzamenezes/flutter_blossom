@@ -2,7 +2,7 @@
 
 [![Donate](https://img.shields.io/liberapay/receives/sanihaq.svg?logo=liberapay)](https://liberapay.com/sanihaq/donate)
 [![Donate](https://img.shields.io/badge/creator-sanihaq-F16061)](https://github.com/sanihaq)
-[![Latest Release](https://badgen.net/github/release/flutter-blossom/flutter-blossom)](https://github.com/flutter-blossom/flutter-blossom/releases)
+[![Latest Release](https://badgen.net/github/release/flutter-blossom/flutter_blossom)](https://github.com/flutter-blossom/flutter_blossom/releases)
 
 > A low code editor with the full power of flutter. 
 
@@ -10,11 +10,11 @@
 
 Think in flutter, watch your ideas come to life, plan ahead and let your creativity run loose. Flutter Blossom 🌸 is here to give all the developers free access to the Pandora's box.
 
-Checkout pre-release on [web](https://sanihaq.github.io/flutter_blossom/) or [download](https://github.com/flutter-blossom/flutter-blossom/releases) desktop version to test all of its features.
+Checkout pre-release on [web](https://sanihaq.github.io/flutter_blossom/) or [download](https://github.com/flutter-blossom/flutter_blossom/releases) desktop version to test all of its features.
 
 ### How to install
 
-1. Download the latest platform specific `archive` file from [Releases](https://github.com/flutter-blossom/flutter-blossom/releases).
+1. Download the latest platform specific `archive` file from [Releases](https://github.com/flutter-blossom/flutter_blossom/releases).
 2. Extract or Open with any archive extractor. (e.g. [7zip](https://www.7-zip.org/))
 3. Move everything to a suitable location.
 4. Make a shortcut of the launcher `flutter_blossom` for easy access.
@@ -69,8 +69,8 @@ To reach these goals, I'll need your support.
 
   - `flutter run <device>`
 
-<a href = "https://github.com/flutter-blossom/flutter-blossom/graphs/contributors">
-<img src = "https://contrib.rocks/image?repo=flutter-blossom/flutter-blossom"/>
+<a href = "https://github.com/flutter-blossom/flutter_blossom/graphs/contributors">
+<img src = "https://contrib.rocks/image?repo=flutter-blossom/flutter_blossom"/>
 </a>
 
 #
