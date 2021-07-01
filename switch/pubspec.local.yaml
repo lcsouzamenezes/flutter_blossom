@@ -18,7 +18,7 @@
 name: flutter_blossom
 description: A low code editor with the full power of flutter. 
 
-version: 0.1.4+9
+version: 0.0.1+1
 
 publish_to: 'none'
 
