@@ -186,7 +186,7 @@ jobs:
       - run: sed -i 's/href="\/flutter_blossom\/"/href="\/"/g' index.html
       - run: git add .
       - run: git commit -m "changed baseurl to /"
-      - run: git remote add web git@github.com:flutter-blossom/flutter_blossom.github.io.git
+      - run: git remote add web git@github.com:flutter-blossom/flutter-blossom.github.io.git
       - run: git push -f web gh-pages:main
 
   release:
@@ -221,9 +221,9 @@ jobs:
         with:
           path: changelog.md
           contents: |
-            <br/>
+            
             ## ${{ needs.get-version.outputs.version }}+${{ github.run_number }}
-            <br/>
+            
             ${{ steps.change.outputs.changelog }}
           write-mode: append
       

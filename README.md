@@ -10,7 +10,7 @@
 
 Think in flutter, watch your ideas come to life, plan ahead and let your creativity run loose. Flutter Blossom 🌸 is here to give all the developers free access to the Pandora's box.
 
-Checkout pre-release on [web](https://sanihaq.github.io/flutter_blossom/) or [download](https://github.com/flutter-blossom/flutter_blossom/releases) desktop version to test all of its features.
+Checkout pre-release on [web](https://sanihaq.github.io/flutter_blossom/) or [download](https://github.com/flutter-blossom/flutter_blossom/releases) desktop version.
 
 ### How to install
 
@@ -62,11 +62,18 @@ To reach these goals, I'll need your support.
 
 ## Code Contribution
 ### setup locally
+  ```sh
+  git clone https://github.com/flutter-blossom  flutter_blossom.git
+  git submodule init
+  git submodule update
+  ```
 
-  - `dart pub global activate -sgit https://github.com/flutter-blossom/blossom_cli.git`
-
-  - `blossom switch-to local`
-
+  then
+  ```sh
+  dart pub global activate -sgit https://github.com flutter-blossom/blossom_cli.git
+  blossom switch-to local
+  ```
+  finally
   - `flutter run <device>`
 
 <a href = "https://github.com/flutter-blossom/flutter_blossom/graphs/contributors">

@@ -26,6 +26,7 @@ import 'package:flutter_blossom/components/profile_action.dart';
 import 'package:flutter_blossom/constants/colors.dart';
 import 'package:flutter_blossom/constants/langs.dart';
 import 'package:flutter_blossom/constants/templates.dart';
+import 'package:flutter_blossom/dialogs/support_dialog.dart';
 import 'package:flutter_blossom/generated/l10n.dart';
 import 'package:flutter_blossom/states/app_state.dart';
 import 'package:flutter_blossom/states/context_menu_state.dart';
@@ -56,12 +57,19 @@ class StartScreen extends HookWidget {
     final _contextMenu = useProvider(contextMenuState);
     final _treeState = useProvider(treeState);
 
+    _showSupportDialog() => showDialog(
+          context: context,
+          barrierColor: Colors.black38,
+          builder: (context) => getSupportDialog(context),
+        );
+
     useEffect(() {
       if (!kIsWeb) context.read(treeState).loadRecents();
       Future.delayed(Duration(milliseconds: 0)).then((value) {
         // if (!kReleaseMode)
         //   Navigator.pushNamed(context, EditorScreen.routeName,
         //       arguments: {StartScreenRouteArgType.Null: null});
+        _showSupportDialog();
       });
       return;
     }, const []);
@@ -89,6 +97,16 @@ class StartScreen extends HookWidget {
                       style: Theme.of(context).appBarTheme.titleTextStyle,
                     ),
                     actions: [
+                      TextButton(
+                          onPressed: () => _showSupportDialog(),
+                          child: Text(
+                            'Support!!',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontStyle: FontStyle.italic,
+                              color: Colors.amber.withOpacity(0.8),
+                            ),
+                          )),
                       ProfileAction(),
                     ],
                   ),

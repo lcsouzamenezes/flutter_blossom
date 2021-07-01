@@ -26,6 +26,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blossom/constants/langs.dart';
+import 'package:flutter_blossom/helpers/pre_cache.dart';
 import 'package:flutter_blossom/states/canvas_state.dart';
 import 'package:flutter_blossom/states/context_menu_state.dart';
 import 'package:flutter_blossom/themes/dark_theme.dart';
@@ -112,6 +113,7 @@ class App extends HookWidget {
   Widget build(BuildContext context) {
     // handle unforeseen error may cause app to not start
     useEffect(() {
+      precacheImageFromAll(context);
       SharedPreferences.getInstance().then((prefs) {
         PackageInfo.fromPlatform().then((info) {
           context.read(appState).start(info, context);
