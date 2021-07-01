@@ -113,7 +113,9 @@ class App extends HookWidget {
   Widget build(BuildContext context) {
     // handle unforeseen error may cause app to not start
     useEffect(() {
-      precacheImageFromAll(context);
+      Future.delayed(Duration(milliseconds: 0)).then((value) {
+        precacheImageFromAll(context);
+      });
       SharedPreferences.getInstance().then((prefs) {
         PackageInfo.fromPlatform().then((info) {
           context.read(appState).start(info, context);
