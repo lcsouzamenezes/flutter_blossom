@@ -8,6 +8,7 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_blossom/states/app_state.dart';
 import 'package:flutter_blossom/views/editor_view.dart';
 import 'package:flutter_blossom/views/start_view.dart';
@@ -19,16 +20,22 @@ import 'package:flutter_blossom/main.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:mockito/mockito.dart';
+import 'package:network_image_mock/network_image_mock.dart';
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
+class MockClient extends Mock implements http.Client {}
+
 void main() {
+  final MockClient client = MockClient();
+  // make your mocks here
   setUpAll(() {
     TestWidgetsFlutterBinding.ensureInitialized();
   });
 
   testWidgets('Do startup check 1', (WidgetTester tester) async {
-    await tester.pumpWidget(ProviderScope(child: AppWrapper()));
+    await mockNetworkImagesFor(
+        () => tester.pumpWidget(ProviderScope(child: AppWrapper())));
 
     find.byType(AppWrapper);
 
