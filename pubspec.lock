@@ -53,11 +53,9 @@ packages:
   blossom_canvas:
     dependency: "direct main"
     description:
-      path: "."
-      ref: main
-      resolved-ref: "024e263997e44bf17c40f906c1d20c0d8c03d565"
-      url: "git://github.com/flutter-blossom/blossom_canvas.git"
-    source: git
+      path: "packages/blossom_canvas"
+      relative: true
+    source: path
     version: "0.0.1"
   boolean_selector:
     dependency: transitive
@@ -118,11 +116,9 @@ packages:
   code_blocks:
     dependency: "direct main"
     description:
-      path: "."
-      ref: release
-      resolved-ref: a052ac0016a4a9de8e4496cf60193f2d47b19ca0
-      url: "git://github.com/flutter-blossom/code_blocks.git"
-    source: git
+      path: "packages/code_blocks"
+      relative: true
+    source: path
     version: "0.0.1"
   code_builder:
     dependency: transitive
@@ -323,11 +319,9 @@ packages:
   flex_color_picker:
     dependency: "direct main"
     description:
-      path: "."
-      ref: master
-      resolved-ref: "17512a1ac0dd4150df92d73756facbe98a8bc17e"
-      url: "git://github.com/sanihaq/flex_color_picker.git"
-    source: git
+      path: "packages/flex_color_picker"
+      relative: true
+    source: path
     version: "2.0.2"
   flutter:
     dependency: "direct main"
@@ -380,11 +374,9 @@ packages:
   flutter_widget_model:
     dependency: "direct main"
     description:
-      path: "."
-      ref: master
-      resolved-ref: b40e974a385602aa86e32ea89828798dc75f577d
-      url: "git@github.com:sanihaq/widget_models.git"
-    source: git
+      path: "packages/widget_models"
+      relative: true
+    source: path
     version: "0.0.2"
   font_awesome_flutter:
     dependency: "direct main"
@@ -480,11 +472,9 @@ packages:
   keyboard_shortcuts:
     dependency: "direct main"
     description:
-      path: "."
-      ref: main
-      resolved-ref: f2f15c927bdd74f6dfee85a589fb524f75da2f3c
-      url: "git://github.com/flutter-blossom/keyboard_shortcuts.git"
-    source: git
+      path: "packages/keyboard_shortcuts"
+      relative: true
+    source: path
     version: "0.1.4"
   line_icons:
     dependency: "direct main"
@@ -809,11 +799,9 @@ packages:
   tree_view:
     dependency: "direct main"
     description:
-      path: "."
-      ref: main
-      resolved-ref: e62f7a329560cda3a5b16eaaa2edb3681099ca44
-      url: "git://github.com/flutter-blossom/tree_view.git"
-    source: git
+      path: "packages/tree_view"
+      relative: true
+    source: path
     version: "1.0.0"
   typed_data:
     dependency: transitive

@@ -75,6 +75,15 @@ To reach these goals, I'll need your support.
   ```
   finally
   - `flutter run <device>`
+### update dependencies
+  to add
+  ```sh
+  blossom add better_print: ^1.3.1
+  ```
+  to remove
+  ```sh
+  blossom remove better_print
+  ```
 
 <a href = "https://github.com/flutter-blossom/flutter_blossom/graphs/contributors">
 <img src = "https://contrib.rocks/image?repo=flutter-blossom/flutter_blossom"/>

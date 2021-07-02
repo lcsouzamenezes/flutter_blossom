@@ -56,29 +56,17 @@ dependencies:
   keybinder: ^1.0.0
   dotted_border: ^2.0.0
   flex_color_picker:
-    git:
-      url: git://github.com/sanihaq/flex_color_picker.git
-      ref: master
+    path: packages/flex_color_picker/
   blossom_canvas:
-    git:
-      url: git://github.com/flutter-blossom/blossom_canvas.git
-      ref: main
+    path: packages/blossom_canvas/
   keyboard_shortcuts:
-    git:
-      url: git://github.com/flutter-blossom/keyboard_shortcuts.git
-      ref: main
+    path: packages/keyboard_shortcuts/
   tree_view:
-    git:
-      url: git://github.com/flutter-blossom/tree_view.git
-      ref: main
+    path: packages/tree_view/
   code_blocks:
-    git:
-      url: git://github.com/flutter-blossom/code_blocks.git
-      ref: release
+    path: packages/code_blocks/
   flutter_widget_model:
-    git:
-      url: git@github.com:sanihaq/widget_models.git
-      ref: master
+    path: packages/widget_models/
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -88,8 +76,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   mockito: ^5.0.9
-  flutter_launcher_icons: ^0.9.0
   network_image_mock: ^2.0.1
+  flutter_launcher_icons: ^0.9.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
