@@ -40,6 +40,7 @@ class AppStateViewNotifier extends ChangeNotifier {
   AppStateViewNotifier(this._ref);
   bool _isAppStartupCompleted = false;
   String? _updateUrl;
+  String? _latestUrl;
   late PackageInfo _info;
   late BuildContext _context;
   late Size _windowSize;
@@ -53,6 +54,7 @@ class AppStateViewNotifier extends ChangeNotifier {
   PackageInfo get info => _info;
   BuildContext get context => _context;
   Size get windowSize => _windowSize;
+  String? get latestUrl => _latestUrl;
   String? get updateUrl => _updateUrl;
   String? get updateName => _updateName;
   bool get isAppUpToDate => _isAppUpToDate;
@@ -89,12 +91,12 @@ class AppStateViewNotifier extends ChangeNotifier {
         if (no > latest) {
           latest = no;
           latestData = el;
+          _latestUrl = latestData['html_url'];
         }
       });
       if (latest > buildNo) {
         latest = buildNo;
-        _updateUrl = latestData['html_url'];
-        _updateName = latestData['name'];
+        _updateUrl = _updateName = latestData['name'];
         _isAppUpToDate = false;
       } else
         _isAppUpToDate = true;

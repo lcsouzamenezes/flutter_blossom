@@ -214,7 +214,6 @@ class ProfileAction extends HookWidget {
                                   ),
                                 );
                         }
-                        betterPrint(status);
                       },
                       info: _appState.updateUrl != null
                           ? Padding(

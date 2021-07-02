@@ -120,7 +120,7 @@ class App extends HookWidget {
         PackageInfo.fromPlatform().then((info) {
           context.read(appState).start(info, context);
           context.read(appState).setSize(MediaQuery.of(context).size);
-          if (!kIsWeb) context.read(appState).checkForUpdate();
+          context.read(appState).checkForUpdate();
           context.read(storageState).setPreferences(prefs);
           Future.delayed(Duration(seconds: 1, milliseconds: 500)).then((value) {
             if (!context.read(isAppStarted).state)

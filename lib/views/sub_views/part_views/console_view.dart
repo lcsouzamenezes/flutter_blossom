@@ -20,6 +20,7 @@ import 'package:flutter_blossom/components/blossom_icon_button.dart';
 import 'package:flutter_blossom/constants/shapes.dart';
 import 'package:flutter_blossom/helpers/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_blossom/states/app_state.dart';
 import 'package:flutter_blossom/states/console_state.dart';
 import 'package:flutter_blossom/states/editor_state.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -87,7 +88,9 @@ class EditorConsole extends HookWidget {
                                         'Use desktop version for better experience.'),
                                   ),
                                   TextButton(
-                                    onPressed: () async => await launch(
+                                    onPressed: () async => await launch(context
+                                            .read(appState)
+                                            .latestUrl ??
                                         'https://github.com/flutter-blossom/flutter_blossom/releases'),
                                     child: Text('Release Page'),
                                   )
