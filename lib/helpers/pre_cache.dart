@@ -10,7 +10,9 @@ precacheImageFromAll(BuildContext context) {
       'https://cdn.ko-fi.com/cdn/kofi3.png?v=2',
     ),
   ];
-  list.forEach((e) {
-    precacheImage(e, context);
-  });
+  try {
+    list.forEach((e) {
+      precacheImage(e, context);
+    });
+  } catch (e) {}
 }

@@ -202,7 +202,7 @@ class PropertyViewArea extends HookWidget {
                                                 ),
                                           ),
                                         if (_propertyState.model?.type ==
-                                            NodeType.Root)
+                                            ModelType.Root)
                                           TreeIconButton(
                                             key: newBtnKey,
                                             icon: LineIcons.plus,

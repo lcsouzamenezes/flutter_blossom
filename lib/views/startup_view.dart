@@ -50,7 +50,7 @@ class StartupScreen extends HookWidget {
       isAnimReversing = true;
       logoAnimation.reverse();
       animation.forward();
-      Future.delayed(Duration(milliseconds: 400)).then((value) {
+      Future.delayed(Duration(milliseconds: 500)).then((value) {
         if (!context.read(appState).isAppStartupCompleted) {
           Navigator.popAndPushNamed(context, StartScreen.routeName);
           context.read(appState).completeStart();

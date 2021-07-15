@@ -264,60 +264,60 @@ class TreeViewNotifier extends ChangeNotifier {
 
   /// turn text into json >> json into map >> map into [TreeViewController] >> attach to [_controller]
   void _setStringToController(String jsonText, [String? tree]) {
-    try {
-      final jsonMap = jsonDecode(jsonText);
-      if (isMapValid(jsonMap)) {
-        final trees = Map<String, dynamic>.from(jsonMap['trees']);
+    // try {
+    final jsonMap = jsonDecode(jsonText);
+    if (isMapValid(jsonMap)) {
+      final trees = Map<String, dynamic>.from(jsonMap['trees']);
+      if (tree == null)
+        (jsonMap['treeInfo']).forEach((key, value) {
+          _treeInfo[key] = TreeInfo.fromMap(value);
+        });
+      if (trees.isNotEmpty) {
         if (tree == null)
-          (jsonMap['treeInfo']).forEach((key, value) {
-            _treeInfo[key] = TreeInfo.fromMap(value);
-          });
-        if (trees.isNotEmpty) {
-          if (tree == null)
-            _activeTree = trees.keys.contains(jsonMap['activeTree'])
-                ? jsonMap['activeTree']
-                : trees.keys.first;
-          trees.forEach((key, value) {
-            if (tree == null || tree == key)
-              _trees[key] = TreeViewController().loadMap(
-                map: List<Map<String, dynamic>>.from(trees[key]),
-                selectKey: _treeInfo[_activeTree]?.selectId,
-              );
-          });
-          if (_trees.containsKey(_activeTree)) {
-            _controller = _trees[_activeTree]!;
-            Future.delayed(Duration(milliseconds: 0)).then((value) => _ref
-                .read(propertyState)
-                .setPropertyView(_controller.selectedKey));
-          }
-          if (jsonMap['canvasInfo'] != null) {
-            (jsonMap['canvasInfo'] as List).forEach((el) {
-              if (_trees.values.any((element) =>
-                  element.children.any((e) => e.key == el['root'])))
-                _ref.read(canvasState).setView(
-                      CanvasItem(
-                        el['key'],
-                        el['root'],
-                        el['label'],
-                        null,
-                        Size(el['size']['width'], el['size']['height']),
-                        el['sizeProfile'],
-                        el['rotate'] ?? false,
-                        Offset(el['offset']['x'], el['offset']['y']),
-                      ),
-                    );
-              else
-                betterPrint('not found: ${el['root']}');
-            });
-          }
+          _activeTree = trees.keys.contains(jsonMap['activeTree'])
+              ? jsonMap['activeTree']
+              : trees.keys.first;
+        trees.forEach((key, value) {
+          if (tree == null || tree == key)
+            _trees[key] = TreeViewController().loadMap(
+              map: List<Map<String, dynamic>>.from(trees[key]),
+              selectKey: _treeInfo[_activeTree]?.selectId,
+            );
+        });
+        if (_trees.containsKey(_activeTree)) {
+          _controller = _trees[_activeTree]!;
+          Future.delayed(Duration(milliseconds: 0)).then((value) => _ref
+              .read(propertyState)
+              .setPropertyView(_controller.selectedKey));
         }
-      } else {
-        betterPrint('File is not correctly formatted.');
+        if (jsonMap['canvasInfo'] != null) {
+          (jsonMap['canvasInfo'] as List).forEach((el) {
+            if (_trees.values.any(
+                (element) => element.children.any((e) => e.key == el['root'])))
+              _ref.read(canvasState).setView(
+                    CanvasItem(
+                      el['key'],
+                      el['root'],
+                      el['label'],
+                      null,
+                      Size(el['size']['width'], el['size']['height']),
+                      el['sizeProfile'],
+                      el['rotate'] ?? false,
+                      Offset(el['offset']['x'], el['offset']['y']),
+                    ),
+                  );
+            else
+              betterPrint('not found: ${el['root']}');
+          });
+        }
       }
-      _addToHistory(tree == null);
-    } catch (e) {
-      betterPrint('Not a valid JSON text.');
+    } else {
+      betterPrint('File is not correctly formatted.');
     }
+    _addToHistory(tree == null);
+    // } catch (e) {
+    //   betterPrint('Not a valid JSON text.');
+    // }
   }
 
   /// check the map contains all the necessary data
@@ -633,7 +633,7 @@ class TreeViewNotifier extends ChangeNotifier {
   }
 
   void removeNode(Node node, [deleteAll = false]) {
-    if (node.type == EnumToString.convertToString(NodeType.Root) &&
+    if (node.type == EnumToString.convertToString(ModelType.Root) &&
         !deleteAll &&
         node.children.isNotEmpty) {
       _ref.read(consoleState).addMessage(

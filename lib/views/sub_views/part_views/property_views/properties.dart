@@ -181,7 +181,7 @@ class PropertyEditWidget extends HookWidget {
                         ),
                       ),
                     if (property.isInitialized || editValue.value)
-                      if (_propertyState.model!.type == NodeType.Root)
+                      if (_propertyState.model!.type == ModelType.Root)
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -378,7 +378,7 @@ class PropertyEditWidget extends HookWidget {
                     ),
                   );
                   break;
-                case PropertyType.double:
+                case PropertyType.Double:
                   main = key == 'opacity'
                       ? OpacitySliderProperty(
                           color: p.parent != null &&
@@ -409,7 +409,7 @@ class PropertyEditWidget extends HookWidget {
                                   forceValue: true)),
                         );
                   break;
-                case PropertyType.int:
+                case PropertyType.Int:
                   main = StringField(
                     valueKey: key,
                     property: p,
@@ -529,14 +529,14 @@ class PropertyEditWidget extends HookWidget {
                     },
                   );
                   break;
-                case PropertyType.bool:
+                case PropertyType.Bool:
                   main = Row(
                     children: [
                       Flexible(
                         flex: 3,
                         child: Opacity(
                           opacity: p.isInitialized ||
-                                  _propertyState.model!.type == NodeType.Root
+                                  _propertyState.model!.type == ModelType.Root
                               ? 1
                               : 0.4,
                           child: Container(

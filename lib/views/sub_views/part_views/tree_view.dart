@@ -57,9 +57,9 @@ import 'package:uuid/uuid.dart';
 bool _isTreeSelectAreaActive = false;
 
 _getFilterValues(Node node, [bool returnAll = false]) {
-  List<NodeType> filterValues = [];
+  List<ModelType> filterValues = [];
   if (node.children.isNotEmpty || returnAll) {
-    filterValues = List<NodeType>.from(NodeType.values)
+    filterValues = List<ModelType>.from(ModelType.values)
         .where((el) => endTypeList.contains(el))
         .toList();
   }
@@ -124,7 +124,7 @@ class TreeViewArea extends HookWidget {
 
     _newRootNode() {
       final key = uuid.v4();
-      final model = getWidgetModel(key, null, NodeType.Root)!; // ? make sure
+      final model = ModelType.Root.getModel(key, null);
       final node = Node.fromMap(model.asMap);
       _treeState.addNodeToRoot(node);
       treeNameEdit.state = null;
@@ -141,28 +141,30 @@ class TreeViewArea extends HookWidget {
     _changeGroup(Node node, [Offset? offset]) {
       final parent = _treeState.controller.getParent(node.key);
       if (parent != null) {
-        final _model = getWidgetModel(uuid.v4(), parent.group,
-            EnumToString.fromString(NodeType.values, parent.type)!);
-        if (_model != null)
-          Future.delayed(Duration(milliseconds: 0)).then(
-            (value) => _contextMenu.show(
-              id: 'tree-node-model-group-list',
-              offset: offset,
-              menu: ContextMenuContainer(
-                applyRadius: true,
-                child: NodeGroupList(
-                  _model,
-                  node,
-                  (n, g) {
-                    _treeState.changeNode(
-                      node.key,
-                      node.copyWith(group: g),
-                    );
-                  },
-                ),
+        final _model =
+            EnumToString.fromString(ModelType.values, parent.type)!.getModel(
+          uuid.v4(),
+          parent.group,
+        );
+        Future.delayed(Duration(milliseconds: 0)).then(
+          (value) => _contextMenu.show(
+            id: 'tree-node-model-group-list',
+            offset: offset,
+            menu: ContextMenuContainer(
+              applyRadius: true,
+              child: NodeGroupList(
+                _model,
+                node,
+                (n, g) {
+                  _treeState.changeNode(
+                    node.key,
+                    node.copyWith(group: g),
+                  );
+                },
               ),
             ),
-          );
+          ),
+        );
       }
     }
 
@@ -253,9 +255,9 @@ class TreeViewArea extends HookWidget {
           context.read(appClipboardState).state.data != null) return;
       final copyNode = context.read(appClipboardState).state.data;
       if (copyNode != null && node.group != null && copyNode.maxChildren != 0) {
-        final _model = getWidgetModel(uuid.v4(), node.group,
-            EnumToString.fromString(NodeType.values, copyNode.type)!);
-        if (_model != null) if (copyNode.maxChildren <= 0) {
+        final _model = EnumToString.fromString(ModelType.values, copyNode.type)!
+            .getModel(uuid.v4(), node.group);
+        if (copyNode.maxChildren <= 0) {
           _treeState.changeParent(
             node.key,
             _model.asMap,
@@ -295,7 +297,7 @@ class TreeViewArea extends HookWidget {
     _addParent(Node node, [Offset? pos]) {
       if (node.group == null) return;
       _shadowKey.state = node.key;
-      final List<NodeType> filterValues = _getFilterValues(node, true);
+      final List<ModelType> filterValues = _getFilterValues(node, true);
       pos = pos ?? getCenterOffsetFromKey(parentBtnKey);
       double hSize = MediaQuery.of(context).size.height - pos.dy;
       hSize = hSize > 300 ? hSize : MediaQuery.of(context).size.height;

@@ -52,7 +52,7 @@ class PropertyChangeButtons extends HookWidget {
               color: Colors.grey.withOpacity(0.6),
             ),
           ),
-        if (_propertyState.model!.type == NodeType.Root)
+        if (_propertyState.model!.type == ModelType.Root)
           InkWell(
             onTap: () {
               _propertyState.updateProperty(

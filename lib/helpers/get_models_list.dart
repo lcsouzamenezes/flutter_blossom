@@ -16,11 +16,11 @@
 // along with Flutter Blossom.  If not, see <http://www.gnu.org/licenses/>.
 
 import 'package:enum_to_string/enum_to_string.dart';
-import 'package:flutter_widget_model/flutter_widget_model.dart';
+import 'package:flutter_widget_model/types.dart';
 
-List<NodeType> getNodeModelList(List<NodeType> filter) {
-  final list = List<NodeType>.from(NodeType.values);
-  final _filter = [NodeType.Root, ...filter];
+List<ModelType> getNodeModelList(List<ModelType> filter) {
+  final list = List<ModelType>.from(ModelType.values);
+  final _filter = [ModelType.Root, ...filter];
   list.removeWhere((e) => _filter.contains(e));
   list.sort((a, b) => EnumToString.convertToString(a)
       .compareTo(EnumToString.convertToString(b)));

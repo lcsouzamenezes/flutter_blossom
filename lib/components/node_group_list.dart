@@ -50,7 +50,7 @@ class NodeGroupList extends HookWidget {
     useEffect(() {
       Future.delayed(Duration(milliseconds: 0)).then((value) {
         _list.state = model.childGroups.map((e) => e.name).toList();
-        if (model.type == NodeType.Inherit)
+        if (model.type == ModelType.Inherit)
           _list.state.removeAt(_list.state.length - 1);
         _selectIndex.state = -1;
       });

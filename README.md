@@ -39,7 +39,7 @@ To reach these goals, I'll need your support.
  - [ ] light theme
  - [x] Canvas - support different devices
  - [x] Multi language ready (l10n)
- - [x] Support All Widget Type (currently supports: 400+(ongoing))
+ - [x] Support All Widget Type (currently ongoing)
  - [x] Conditional tree (currently supports: if..else)
  - [ ] Break Nodes into different segments and reuse in different part of tree.
  - [ ] App view to see full app on action

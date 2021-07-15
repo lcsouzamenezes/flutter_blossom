@@ -61,7 +61,7 @@ class SelectProperty extends HookWidget {
           flex: 2,
           child: Opacity(
             opacity: property.isInitialized ||
-                    _propertyState.model!.type == NodeType.Root
+                    _propertyState.model!.type == ModelType.Root
                 ? 1
                 : 0.4,
             child: Container(

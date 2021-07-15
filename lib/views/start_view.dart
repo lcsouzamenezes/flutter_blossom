@@ -69,7 +69,7 @@ class StartScreen extends HookWidget {
         // if (!kReleaseMode)
         //   Navigator.pushNamed(context, EditorScreen.routeName,
         //       arguments: {StartScreenRouteArgType.Null: null});
-        _showSupportDialog();
+        // _showSupportDialog();
       });
       return;
     }, const []);

@@ -37,7 +37,7 @@ import 'package:uuid/uuid.dart';
 import 'package:flutter_widget_model/flutter_widget_model.dart';
 
 final modelListSelectIndex = StateProvider((_) => -1);
-final modelTypeList = StateProvider<List<NodeType>>((_) => []);
+final modelTypeList = StateProvider<List<ModelType>>((_) => []);
 
 class NodeModelList extends HookWidget {
   static const id = 'tree-node-model-list';
@@ -51,7 +51,7 @@ class NodeModelList extends HookWidget {
   });
   final String group;
   final Node node;
-  final List<NodeType> filter;
+  final List<ModelType> filter;
   final uuid = Uuid();
   final void Function(Node node, WidgetModel model) onTap;
   final bool isInherit;
@@ -97,11 +97,11 @@ class NodeModelList extends HookWidget {
 
     _onTap(
       String key,
-      NodeType type, [
+      ModelType type, [
       String? label,
       String? inheritKey,
     ]) {
-      if (type == NodeType.Inherit && !isInherit)
+      if (type == ModelType.Inherit && !isInherit)
         _contextMenu.show(
           id: 'tree-node-inherit-list',
           menu: ContextMenuContainer(
@@ -117,8 +117,8 @@ class NodeModelList extends HookWidget {
           offset: null,
         );
       else {
-        final model = getWidgetModel(key, group, type, label, inheritKey);
-        if (model != null) onTap(node, model);
+        final model = type.getModel(key, group, label, inheritKey);
+        onTap(node, model);
         context.read(editNodeName).state = null;
         _contextMenu.clear();
       }
@@ -127,7 +127,7 @@ class NodeModelList extends HookWidget {
     Widget getRow(
       int i,
       String key,
-      NodeType type, [
+      ModelType type, [
       String? label,
       String? inheritKey,
     ]) {
@@ -193,7 +193,7 @@ class NodeModelList extends HookWidget {
                           if (context.read(treeState).getRoot(node)?.key ==
                               n.key) return SizedBox();
                           return getRow(
-                              -1, uuid.v4(), NodeType.Inherit, n.name, n.key);
+                              -1, uuid.v4(), ModelType.Inherit, n.name, n.key);
                         }).toList()
                     ],
                   );
