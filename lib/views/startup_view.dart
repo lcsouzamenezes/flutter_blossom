@@ -32,7 +32,7 @@ class StartupScreen extends HookWidget {
   static final routeName = '/';
   @override
   Widget build(BuildContext context) {
-    bool isAnimReversing = false;
+    final isAnimReversing = useState(false);
     final _isAppStarted = useProvider(isAppStarted);
     final animation = useAnimationController(
       duration: kThemeAnimationDuration * 2,
@@ -41,22 +41,26 @@ class StartupScreen extends HookWidget {
     );
     final logoAnimation = useAnimationController(
         duration: kThemeAnimationDuration, initialValue: 0);
-    if (!_isAppStarted.state)
-      animation.reverse().then((value) => {
-            Future.delayed(Duration(milliseconds: 100))
-                .then((value) => logoAnimation.forward())
-          });
-    if (_isAppStarted.state) {
-      isAnimReversing = true;
-      logoAnimation.reverse();
-      animation.forward();
-      Future.delayed(Duration(milliseconds: 500)).then((value) {
-        if (!context.read(appState).isAppStartupCompleted) {
-          Navigator.popAndPushNamed(context, StartScreen.routeName);
-          context.read(appState).completeStart();
-        }
-      });
-    }
+    useEffect(() {
+      if (!_isAppStarted.state)
+        animation.reverse().then(
+              (value) => {
+                Future.delayed(Duration(milliseconds: 100)).then(
+                  (value) => logoAnimation.forward().then((value) {
+                    Future.delayed(Duration(milliseconds: 500)).then((value) {
+                      isAnimReversing.value = true;
+                      logoAnimation.reverse();
+                      animation.forward().then((value) {
+                        context.read(appState).completeStart();
+                        Navigator.popAndPushNamed(
+                            context, StartScreen.routeName);
+                      });
+                    });
+                  }),
+                )
+              },
+            );
+    }, const []);
     return Title(
       title: 'Flutter Blossom',
       color: appColor,
@@ -69,7 +73,7 @@ class StartupScreen extends HookWidget {
             scale: animation,
             child: Container(
               decoration: BoxDecoration(
-                color: isAnimReversing
+                color: isAnimReversing.value
                     ? Colors.grey[850]
                     : Colors.white.withOpacity(0.9),
                 shape: BoxShape.circle,

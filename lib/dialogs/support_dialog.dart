@@ -38,6 +38,13 @@ Widget getSupportDialog(BuildContext context) {
               width: 150,
               child: Image.network(
                 'https://liberapay.com/assets/liberapay/logo-v2_black-on-yellow.1024.png?save_as=liberapay_logo_black-on-yellow_1024px.png',
+                errorBuilder: (BuildContext context, Object exception,
+                    StackTrace? stackTrace) {
+                  return const Text(
+                    '😢',
+                    textAlign: TextAlign.center,
+                  );
+                },
               ),
             ),
           ),
@@ -49,6 +56,13 @@ Widget getSupportDialog(BuildContext context) {
                 width: 150,
                 child: Image.network(
                   'https://cdn.ko-fi.com/cdn/kofi3.png?v=2',
+                  errorBuilder: (BuildContext context, Object exception,
+                      StackTrace? stackTrace) {
+                    return const Text(
+                      '😢',
+                      textAlign: TextAlign.center,
+                    );
+                  },
                 ),
               ),
             ),

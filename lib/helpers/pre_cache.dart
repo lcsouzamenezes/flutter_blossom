@@ -1,3 +1,4 @@
+import 'package:better_print/better_print.dart';
 import 'package:flutter/widgets.dart';
 
 precacheImageFromAll(BuildContext context) {
@@ -12,7 +13,9 @@ precacheImageFromAll(BuildContext context) {
   ];
   try {
     list.forEach((e) {
-      precacheImage(e, context);
+      precacheImage(e, context, onError: (obj, stack) {
+        betterPrint('error pre-loading images');
+      });
     });
   } catch (e) {}
 }

@@ -41,6 +41,8 @@ import 'package:flutter_blossom/helpers/extensions.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:tree_view/node_model.dart';
 
+final isEditorLoading = StateProvider((_) => false);
+
 class StartScreenArgument {
   StartScreenArgument(
       {this.file, this.data, this.isNew = false, this.suggestedName});
@@ -56,6 +58,7 @@ class StartScreen extends HookWidget {
   Widget build(BuildContext context) {
     final _contextMenu = useProvider(contextMenuState);
     final _treeState = useProvider(treeState);
+    final _isLoading = useProvider(isEditorLoading);
 
     _showSupportDialog() => showDialog(
           context: context,
@@ -66,6 +69,7 @@ class StartScreen extends HookWidget {
     useEffect(() {
       if (!kIsWeb) context.read(treeState).loadRecents();
       Future.delayed(Duration(milliseconds: 0)).then((value) {
+        _isLoading.state = false;
         // if (!kReleaseMode)
         //   Navigator.pushNamed(context, EditorScreen.routeName,
         //       arguments: {StartScreenRouteArgType.Null: null});
@@ -144,6 +148,9 @@ class StartScreen extends HookWidget {
                                 ],
                               ),
                             ),
+                            SizedBox(
+                              height: 2,
+                            ),
                             Container(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8.0),
@@ -159,6 +166,19 @@ class StartScreen extends HookWidget {
                                             child:
                                                 StartFromRecentsProjectButton(
                                               file: e,
+                                              onTap: () {
+                                                context
+                                                    .read(isEditorLoading)
+                                                    .state = true;
+                                                Navigator.pushNamed(context,
+                                                        EditorScreen.routeName,
+                                                        arguments:
+                                                            StartScreenArgument(
+                                                                file: e))
+                                                    .then((value) => context
+                                                        .read(isEditorLoading)
+                                                        .state = false);
+                                              },
                                               key: ValueKey(e.path),
                                             ),
                                           ),
@@ -200,16 +220,24 @@ class StartScreen extends HookWidget {
                         ),
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                        child: Container(
-                          height: 80,
-                          color: Theme.of(context).canvasColor.darken(2),
-                        ),
-                      ),
-                    )
+                    // Align(
+                    //   alignment: Alignment.bottomCenter,
+                    //   child: Padding(
+                    //     padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                    //     child: Container(
+                    //       height: 80,
+                    //       color: Theme.of(context).canvasColor.darken(2),
+                    //     ),
+                    //   ),
+                    // )
+                    if (_isLoading.state)
+                      Container(
+                        color: Theme.of(context).canvasColor.darken(2),
+                        child: Center(
+                            child: CircularProgressIndicator(
+                          color: Theme.of(context).canvasColor.reverseBy(15),
+                        )),
+                      )
                   ],
                 ),
               ),
@@ -246,31 +274,37 @@ class OpenBox extends HookWidget {
     double width = app.windowSize.width / 4 - 14;
     width = width > 300 ? app.windowSize.width / 6 - 14 : width;
     final isOnHover = useState(false);
-    return InkWell(
-      onTap: () async {
-        final file = await openFile(
-          acceptedTypeGroups: [typeGroup],
-        );
-        if (file != null)
-          Navigator.pushNamed(context, EditorScreen.routeName,
-              arguments: StartScreenArgument(file: file));
-      },
-      onHover: (value) {
-        isOnHover.value = !isOnHover.value;
-      },
-      child: Container(
-        width: width,
-        height: width * 0.8,
-        child: DottedBorder(
-          color: Colors.black26,
-          strokeWidth: 1.5,
-          borderType: BorderType.RRect,
-          radius: Radius.circular(isOnHover.value ? 0 : 12),
-          dashPattern: [10, 3],
-          child: Center(
-            child: Icon(
-              LineIcons.plus,
-              color: isOnHover.value ? Colors.white54 : Colors.black38,
+    return Padding(
+      padding: const EdgeInsets.only(top: 4.0),
+      child: InkWell(
+        onTap: () async {
+          final file = await openFile(
+            acceptedTypeGroups: [typeGroup],
+          );
+          if (file != null) {
+            context.read(isEditorLoading).state = true;
+            Navigator.pushNamed(context, EditorScreen.routeName,
+                    arguments: StartScreenArgument(file: file))
+                .then((value) => context.read(isEditorLoading).state = false);
+          }
+        },
+        onHover: (value) {
+          isOnHover.value = !isOnHover.value;
+        },
+        child: Container(
+          width: width,
+          height: width * 0.8,
+          child: DottedBorder(
+            color: Colors.black26,
+            strokeWidth: 1.5,
+            borderType: BorderType.RRect,
+            radius: Radius.circular(!isOnHover.value ? 0 : 12),
+            dashPattern: [10, 3],
+            child: Center(
+              child: Icon(
+                LineIcons.plus,
+                color: isOnHover.value ? Colors.white54 : Colors.black38,
+              ),
             ),
           ),
         ),
@@ -325,12 +359,15 @@ class TemplateProjectButton extends HookWidget {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () {
-            if (json.value['template'] != null)
+            if (json.value['template'] != null) {
+              context.read(isEditorLoading).state = true;
               Navigator.pushNamed(context, EditorScreen.routeName,
-                  arguments: StartScreenArgument(
-                      isNew: true,
-                      data: json.value['template'],
-                      suggestedName: json.value['suggestedName']));
+                      arguments: StartScreenArgument(
+                          isNew: true,
+                          data: json.value['template'],
+                          suggestedName: json.value['suggestedName']))
+                  .then((value) => context.read(isEditorLoading).state = false);
+            }
           },
           onHover: (value) {
             isOnHover.value = !isOnHover.value;
@@ -386,9 +423,11 @@ class TemplateProjectButton extends HookWidget {
 class StartFromRecentsProjectButton extends HookWidget {
   const StartFromRecentsProjectButton({
     required this.file,
+    required this.onTap,
     Key? key,
   }) : super(key: key);
   final XFile file;
+  final Function onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -426,8 +465,7 @@ class StartFromRecentsProjectButton extends HookWidget {
         margin: const EdgeInsets.all(0),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: () => Navigator.pushNamed(context, EditorScreen.routeName,
-              arguments: StartScreenArgument(file: file)),
+          onTap: () => onTap(),
           onHover: (value) {
             isOnHover.value = !isOnHover.value;
           },

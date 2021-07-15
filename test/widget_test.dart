@@ -53,15 +53,11 @@ void main() {
 
     final app = tester.widget(appFinder) as App;
 
-    await tester.pump(Duration(seconds: 0));
+    await tester.pump(Duration(milliseconds: 100));
 
     final startupScreenFinder = find.byType(StartupScreen);
     // ignore: unused_local_variable
     final startupScreen = tester.widget(startupScreenFinder) as StartupScreen;
-
-    await tester.pump(Duration(seconds: 1));
-
-    await tester.pumpAndSettle();
   });
 
   // testWidgets('Do startup check 2', (WidgetTester tester) async {
