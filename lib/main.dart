@@ -19,6 +19,7 @@
 import 'dart:async';
 
 import 'package:better_print/better_print.dart'; // ignore: unused_import
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -113,6 +114,17 @@ class App extends HookWidget {
   Widget build(BuildContext context) {
     // handle unforeseen error may cause app to not start
     useEffect(() {
+      final connectivity = Connectivity()
+          .onConnectivityChanged
+          .listen((ConnectivityResult result) {
+        context
+            .read(appState)
+            .setConnectivityStatus(result != ConnectivityResult.none);
+        if (result != ConnectivityResult.none) {
+          if (context.read(appState).latestUrl == null)
+            context.read(appState).checkForUpdate();
+        }
+      });
       Future.delayed(Duration(milliseconds: 0)).then((value) {
         precacheImageFromAll(context);
       });
@@ -120,7 +132,6 @@ class App extends HookWidget {
         PackageInfo.fromPlatform().then((info) {
           context.read(appState).start(info, context);
           context.read(appState).setSize(MediaQuery.of(context).size);
-          context.read(appState).checkForUpdate();
           context.read(storageState).setPreferences(prefs);
           Future.delayed(Duration(seconds: 1, milliseconds: 500)).then((value) {
             if (!context.read(isAppStarted).state)
@@ -135,7 +146,9 @@ class App extends HookWidget {
           });
         });
       });
-      return;
+      return () {
+        connectivity.cancel();
+      };
     }, const []);
     final locale = useProvider(appLocale);
     final mode = useProvider(appThemeMode);

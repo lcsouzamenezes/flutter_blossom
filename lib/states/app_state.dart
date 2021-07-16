@@ -39,6 +39,7 @@ class AppStateViewNotifier extends ChangeNotifier {
   final ProviderReference _ref;
   AppStateViewNotifier(this._ref);
   bool _isAppStartupCompleted = false;
+  bool _isAppConnectedToNetwork = false;
   String? _updateUrl;
   String? _latestUrl;
   late PackageInfo _info;
@@ -58,6 +59,13 @@ class AppStateViewNotifier extends ChangeNotifier {
   String? get updateUrl => _updateUrl;
   String? get updateName => _updateName;
   bool get isAppUpToDate => _isAppUpToDate;
+  bool get isAppConnectedToNetwork => _isAppConnectedToNetwork;
+
+  setConnectivityStatus(bool arg) {
+    _isAppConnectedToNetwork = arg;
+    betterPrint(arg);
+    notifyListeners();
+  }
 
   start(
     PackageInfo info,
@@ -75,8 +83,8 @@ class AppStateViewNotifier extends ChangeNotifier {
 
   completeStart() => _isAppStartupCompleted = true;
 
-  Future<http.Response?> _fetchReleases() {
-    return http
+  Future<http.Response?> _fetchReleases() async {
+    return await http
         .get(Uri.parse(
             'https://api.github.com/repos/flutter-blossom/flutter_blossom/releases'))
         .timeout(Duration(seconds: 5));
