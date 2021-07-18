@@ -1049,23 +1049,6 @@ class TreeViewArea extends HookWidget {
                                                                       : null,
                                                                 ),
                                                                 ContextMenuItem(
-                                                                  node.isReplaceable
-                                                                      ? S
-                                                                          .of(
-                                                                              context)
-                                                                          .nodeMenuUnReplaceable
-                                                                      : S
-                                                                          .of(context)
-                                                                          .nodeMenuReplaceable,
-                                                                  info: ContextMenuHintText(
-                                                                      'Ctrl+Shift+T'),
-                                                                  height:
-                                                                      _subMenuHeight,
-                                                                  onTap: () =>
-                                                                      _toggleReplaceable(
-                                                                          node),
-                                                                ),
-                                                                ContextMenuItem(
                                                                   S
                                                                       .of(context)
                                                                       .nodeMenuRename,
@@ -1194,6 +1177,23 @@ class TreeViewArea extends HookWidget {
                                                                           _pasteAsChild(
                                                                               node)
                                                                       : null,
+                                                                ),
+                                                                ContextMenuItem(
+                                                                  node.isReplaceable
+                                                                      ? S
+                                                                          .of(
+                                                                              context)
+                                                                          .nodeMenuUnReplaceable
+                                                                      : S
+                                                                          .of(context)
+                                                                          .nodeMenuReplaceable,
+                                                                  info: ContextMenuHintText(
+                                                                      'Ctrl+Shift+T'),
+                                                                  height:
+                                                                      _subMenuHeight,
+                                                                  onTap: () =>
+                                                                      _toggleReplaceable(
+                                                                          node),
                                                                 ),
                                                                 ContextMenuItem(
                                                                   S
