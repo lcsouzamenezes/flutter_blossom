@@ -26,3 +26,52 @@ jobs:
         uses: endcrawl/github-action-slack-notify-curl@master
         with:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+
+  get-version:
+    needs: [ run-test ]
+    name: Create version number
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - run: |
+          echo "arg: ${{ github.event.inputs.updateLevel }}"
+      - name: set dummy git user
+        run: git config --global user.email "you@example.com"; git config --global user.name "Your Name";
+      - if: ${{ github.event.inputs.updateLevel == 'major' }}
+        run: git commit --allow-empty -m "breaking:"
+      - if: ${{ github.event.inputs.updateLevel == 'minor' }}
+        run: git commit --allow-empty -m "feature:"  
+      - name: Git Version
+        id: gitversion
+        uses: codacy/git-version@2.2.0
+    outputs:
+      version: ${{ steps.gitversion.outputs.version  }}
+      release-name: ${{ github.event.repository.name }}_${{ steps.gitversion.outputs.version }}+${{ github.run_number }}
+
+  build-web:
+    needs: [ get-version ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.SSH_PKEY }}
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+      - run: dart pub global activate --source path -sgit https://github.com/flutter-blossom/blossom_cli.git
+      - run: blossom switch-to private_remote
+      - run: flutter packages upgrade
+      - name: Update version in YAML
+        run: sed -i 's/0.0.0+0/${{ needs.get-version.outputs.version }}+${{ github.run_number }}/g' pubspec.yaml
+      - run: sed -i 's/buildNo = 0/buildNo = ${{ github.run_number }}/g' lib/states/app_state.dart
+      - name: build web
+        uses: erickzanardo/flutter-gh-pages@v3
+      - name: Report Status to Slack
+        if: always()
+        uses: endcrawl/github-action-slack-notify-curl@master
+        with:
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
