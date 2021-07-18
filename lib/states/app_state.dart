@@ -63,7 +63,6 @@ class AppStateViewNotifier extends ChangeNotifier {
 
   setConnectivityStatus(bool arg) {
     _isAppConnectedToNetwork = arg;
-    betterPrint(arg);
     notifyListeners();
   }
 

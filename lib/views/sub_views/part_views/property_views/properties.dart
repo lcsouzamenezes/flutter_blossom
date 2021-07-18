@@ -434,6 +434,20 @@ class PropertyEditWidget extends HookWidget {
                   main = SelectProperty(
                     valueKey: key,
                     property: p,
+                    options: p.availableValues.map((e) => '$e').toList(),
+                    infoList: Map.fromIterable(
+                      p.availableValues,
+                      key: (value) => '$value',
+                      value: (value) => Icon(
+                        getIcon(value),
+                        size: 14,
+                        color: Theme.of(context)
+                            .textTheme
+                            .button!
+                            .color!
+                            .reverseBy(contextMenuLabelBy * 2),
+                      ),
+                    ),
                     onSelect: (v) {
                       _propertyState.updateProperty(
                         key,
@@ -450,6 +464,9 @@ class PropertyEditWidget extends HookWidget {
                   main = SelectProperty(
                     valueKey: key,
                     property: p,
+                    options: p.availableValues
+                        .map((e) => EnumToString.convertToString(e))
+                        .toList(),
                     onSelect: (v) {
                       _propertyState.updateProperty(
                         key,
@@ -466,6 +483,9 @@ class PropertyEditWidget extends HookWidget {
                   main = SelectProperty(
                     valueKey: key,
                     property: p,
+                    options: p.availableValues
+                        .map((e) => EnumToString.convertToString(e))
+                        .toList(),
                     onSelect: (v) {
                       _propertyState.updateProperty(
                         key,
@@ -482,6 +502,8 @@ class PropertyEditWidget extends HookWidget {
                   main = SelectProperty(
                     valueKey: key,
                     property: p,
+                    options:
+                        p.availableValues.map((e) => e.toString()).toList(),
                     onSelect: (v) {
                       _propertyState.updateProperty(
                         key,
@@ -501,6 +523,8 @@ class PropertyEditWidget extends HookWidget {
                   main = SelectProperty(
                     valueKey: key,
                     property: p,
+                    options:
+                        p.availableValues.map((e) => e.toString()).toList(),
                     onSelect: (v) {
                       _propertyState.updateProperty(
                         key,
@@ -517,6 +541,8 @@ class PropertyEditWidget extends HookWidget {
                   main = SelectProperty(
                     valueKey: key,
                     property: p,
+                    options:
+                        p.availableValues.map((e) => e.toString()).toList(),
                     onSelect: (v) {
                       _propertyState.updateProperty(
                         key,
@@ -579,6 +605,8 @@ class PropertyEditWidget extends HookWidget {
                   main = SelectProperty(
                     valueKey: key,
                     property: p,
+                    options:
+                        p.availableValues.map((e) => e.toString()).toList(),
                     onSelect: (v) {
                       _propertyState.updateProperty(
                         key,

@@ -36,16 +36,25 @@ import 'package:flutter_widget_model/property_helpers/icons_helper.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SelectProperty extends HookWidget {
-  /// Make sure property [availableValues] is either [List] of string or enum type
   SelectProperty({
     Key? key,
     required this.valueKey,
     required this.property,
+    required this.options,
     required this.onSelect,
+    this.infoList = const <String, Widget>{},
   }) : super(key: key);
   final String valueKey;
+
+  /// property will not be used directly to generate Select options, set [options].
   final Property property;
-  final Function(dynamic value) onSelect;
+
+  /// options should be first decoded to `List<String>` format from [property.availableValues] for easy access
+  final List<String> options;
+
+  /// [infoList] should also be pre defined as per [options] list. use option as [key] for [infoList]
+  final Map<String, Widget> infoList;
+  final Function(String value) onSelect;
   final gKey = GlobalKey();
 
   @override
@@ -84,7 +93,7 @@ class SelectProperty extends HookWidget {
                 if (property.inherit == null)
                   Expanded(
                       child: InkWell(
-                    onTap: property.availableValues.isEmpty
+                    onTap: options.isEmpty
                         ? null
                         : () {
                             final pos =
@@ -115,24 +124,10 @@ class SelectProperty extends HookWidget {
                                 applyRadius: true,
                                 child: SearchList(
                                   height: hSize,
-                                  list: property.availableValues
-                                      .map((e) => e is String
-                                          ? e
-                                          : EnumToString.convertToString(e))
-                                      .toList(),
-                                  info: (value) =>
-                                      property.type == PropertyType.IconData
-                                          ? Icon(
-                                              getIcon(value),
-                                              size: 14,
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .button!
-                                                  .color!
-                                                  .reverseBy(
-                                                      contextMenuLabelBy * 2),
-                                            )
-                                          : null,
+                                  list: options,
+                                  info: (value) => infoList.containsKey(value)
+                                      ? infoList[value]
+                                      : null,
                                   onTap: (value) => onSelect(value),
                                 ),
                               ),
@@ -144,7 +139,7 @@ class SelectProperty extends HookWidget {
                       color: Theme.of(context).canvasColor,
                       child: Center(
                         child: Text(
-                          property.availableValues.isEmpty
+                          options.isEmpty
                               ? 'nothing to select'
                               : property.value == null
                                   ? 'nothing selected'
