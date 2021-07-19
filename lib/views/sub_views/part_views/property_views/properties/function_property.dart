@@ -62,8 +62,9 @@ class FunctionProperty extends HookWidget {
     }
 
     return BlockCanvas(
-      controller: property.value ??
-          BlockController(children: [], root: _getRoot(), resolve: (_) {}),
+      controller: property.value is BlockController
+          ? property.value
+          : BlockController(children: [], root: _getRoot(), resolve: (_) {}),
       onAdd: (key, type) {
         if (key != null && property.value != null)
           saveToTree(BlockController(

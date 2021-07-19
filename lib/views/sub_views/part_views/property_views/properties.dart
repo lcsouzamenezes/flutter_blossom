@@ -49,7 +49,7 @@ import 'package:flutter_blossom/views/sub_views/part_views/property_views/proper
 import 'package:flutter_blossom/views/sub_views/part_views/property_views/properties/property_change_button.dart';
 import 'package:flutter_blossom/views/sub_views/part_views/property_views/properties/select_data_property.dart';
 import 'package:flutter_blossom/views/sub_views/part_views/property_views/properties/string_property.dart';
-import 'package:flutter_blossom/views/sub_views/part_views/property_views/property_edit.dart';
+import 'package:flutter_blossom/views/sub_views/part_views/property_views/properties_with_children.dart';
 import 'package:flutter_blossom/views/sub_views/part_views/tree_view.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_widget_model/flutter_widget_model.dart';
@@ -136,15 +136,17 @@ class PropertyEditWidget extends HookWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (!property.isInitialized)
-                      InkWell(
-                        onTap: () {
+                child: InkWell(
+                  onTap: !property.isInitialized
+                      ? () {
                           editValue.value = !editValue.value;
-                        },
-                        child: Icon(
+                        }
+                      : null,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (!property.isInitialized)
+                        Icon(
                           editValue.value
                               ? Icons.keyboard_arrow_down
                               : Icons.keyboard_arrow_right,
@@ -155,9 +157,10 @@ class PropertyEditWidget extends HookWidget {
                               .color!
                               .reverseBy(panelBodyBy),
                         ),
-                      ),
-                    Flexible(child: PropertyName(propertyKey, editController)),
-                  ],
+                      Flexible(
+                          child: PropertyName(propertyKey, editController)),
+                    ],
+                  ),
                 ),
               ),
               Flexible(
@@ -367,6 +370,10 @@ class PropertyEditWidget extends HookWidget {
             property.toWidget(propertyKey, (key, p, children) {
               Widget main = SizedBox();
               switch (p.type) {
+                // ? properties that are too big to edit in sidebar should have their own on demand area specifically designed to handle that kind of property
+                case PropertyType.ThemeData:
+                case PropertyType.CupertinoThemeData:
+                  return SizedBox();
                 case PropertyType.String:
                   main = StringField(
                     valueKey: key,
@@ -635,7 +642,7 @@ class PropertyEditWidget extends HookWidget {
               if (p.inherit != null) {
                 main = InheritProperty(valueKey: key, property: p);
               }
-              return PropertyEditWidget2(
+              return PropertiesWithChildren(
                 kKey: key,
                 propertyKey: propertyKey,
                 parent: p.parent ?? property,

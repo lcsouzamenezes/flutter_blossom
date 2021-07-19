@@ -23,8 +23,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_widget_model/flutter_widget_model.dart';
 
-class PropertyEditWidget2 extends HookWidget {
-  PropertyEditWidget2({
+class PropertiesWithChildren extends HookWidget {
+  PropertiesWithChildren({
     required this.kKey,
     required this.propertyKey,
     required this.parent,
@@ -53,53 +53,55 @@ class PropertyEditWidget2 extends HookWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    if (!property.isInitialized)
-                      InkWell(
-                        onTap: () {
+                InkWell(
+                  onTap: !property.isInitialized
+                      ? () {
                           editValue.value = !editValue.value;
-                        },
-                        child: Icon(
+                        }
+                      : null,
+                  child: Row(
+                    children: [
+                      if (!property.isInitialized)
+                        Icon(
                           editValue.value
                               ? Icons.keyboard_arrow_down
                               : Icons.keyboard_arrow_right,
                           size: 14,
                         ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: (property.isInitialized || editValue.value) &&
+                                parent.siblings.isNotEmpty &&
+                                parent.siblings.keys.contains(kKey)
+                            ? DropdownButton<String>(
+                                isDense: true,
+                                onTap: () {},
+                                onChanged: (value) {
+                                  context.read(propertyState).updateProperty(
+                                      propertyKey,
+                                      parent.copyWith(constructor: value));
+                                },
+                                value: parent.constructor,
+                                items: parent.siblings.entries
+                                    .map(
+                                      (e) => DropdownMenuItem<String>(
+                                        child: Text(e.key,
+                                            style: TextStyle(
+                                                color: Colors.grey
+                                                    .withOpacity(0.6))),
+                                        value: e.key,
+                                      ),
+                                    )
+                                    .toList(),
+                              )
+                            : Text(
+                                kKey,
+                                style: TextStyle(
+                                    color: Colors.grey.withOpacity(0.6)),
+                              ),
                       ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      child: (property.isInitialized || editValue.value) &&
-                              parent.siblings.isNotEmpty &&
-                              parent.siblings.keys.contains(kKey)
-                          ? DropdownButton<String>(
-                              isDense: true,
-                              onTap: () {},
-                              onChanged: (value) {
-                                context.read(propertyState).updateProperty(
-                                    propertyKey,
-                                    parent.copyWith(constructor: value));
-                              },
-                              value: parent.constructor,
-                              items: parent.siblings.entries
-                                  .map(
-                                    (e) => DropdownMenuItem<String>(
-                                      child: Text(e.key,
-                                          style: TextStyle(
-                                              color: Colors.grey
-                                                  .withOpacity(0.6))),
-                                      value: e.key,
-                                    ),
-                                  )
-                                  .toList(),
-                            )
-                          : Text(
-                              kKey,
-                              style: TextStyle(
-                                  color: Colors.grey.withOpacity(0.6)),
-                            ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 Row(
                   children: [
@@ -128,7 +130,14 @@ class PropertyEditWidget2 extends HookWidget {
           ),
         if (kKey == propertyKey || property.isInitialized || editValue.value)
           main,
-        ...children,
+        ...children
+            .map(
+              (e) => Padding(
+                padding: const EdgeInsets.only(left: 12.0),
+                child: e,
+              ),
+            )
+            .toList(),
       ],
     );
   }

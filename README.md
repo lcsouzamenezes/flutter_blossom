@@ -59,6 +59,9 @@ To reach these goals, I'll need your support.
  - [ ] auto update app(currently supports: update available notification)
  - [ ] write test
 
+### Check out latest build for upcoming features and development 
+
+> [https://flutter-blossom.github.io/flutter_blossom](https://flutter-blossom.github.io/flutter_blossom)
 
 ## Code Contribution
 ### setup locally

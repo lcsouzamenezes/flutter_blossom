@@ -304,7 +304,6 @@ class PropertyViewArea extends HookWidget {
                             Expanded(
                               child: ListView(
                                 children: [
-                                  // ..._propertyState.propertyList
                                   if (_propertyState.model != null &&
                                       _sortedProperties != null)
                                     ..._sortedProperties
