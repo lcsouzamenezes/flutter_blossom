@@ -956,7 +956,7 @@ class TreeViewArea extends HookWidget {
                                                         treeLineColor:
                                                             Theme.of(context)
                                                                 .canvasColor
-                                                                .reverseBy(5),
+                                                                .reverseBy(4),
                                                         textTheme:
                                                             Theme.of(context)
                                                                 .textTheme
