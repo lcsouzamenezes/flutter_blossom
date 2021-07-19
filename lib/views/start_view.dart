@@ -91,155 +91,176 @@ class StartScreen extends HookWidget {
                   _contextMenu.clearSubMenus();
                 }
               },
-              child: Scaffold(
-                appBar: PreferredSize(
-                  preferredSize: Size.fromHeight(EditorScreen.appBarHeight + 8),
-                  child: AppBar(
-                    elevation: 1,
-                    title: Text(
-                      S.of(context).selectRequestSort,
-                      style: Theme.of(context).appBarTheme.titleTextStyle,
-                    ),
-                    actions: [
-                      TextButton(
-                          onPressed: () => _showSupportDialog(),
-                          child: Text(
-                            'Support!!',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontStyle: FontStyle.italic,
-                              color: Colors.amber.withOpacity(0.8),
-                            ),
-                          )),
-                      ProfileAction(),
-                    ],
-                  ),
-                ),
-                body: Stack(
-                  children: [
-                    SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 88.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 2,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12.0, vertical: 4.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text('Recently opened'),
-                                  Row(
-                                    children: [
-                                      if (_treeState.recents.isNotEmpty)
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 4.0),
-                                          child: StartNewProjectButton(true),
-                                        ),
-                                      StartNewProjectButton(false),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 2,
-                            ),
-                            Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  if (_treeState.recents.isNotEmpty)
-                                    ..._treeState.recents
-                                        .map(
-                                          (e) => Padding(
-                                            padding: const EdgeInsets.all(2.0),
-                                            child:
-                                                StartFromRecentsProjectButton(
-                                              file: e,
-                                              onTap: () {
-                                                context
-                                                    .read(isEditorLoading)
-                                                    .state = true;
-                                                Navigator.pushNamed(context,
-                                                        EditorScreen.routeName,
-                                                        arguments:
-                                                            StartScreenArgument(
-                                                                file: e))
-                                                    .then((value) => context
-                                                        .read(isEditorLoading)
-                                                        .state = false);
-                                              },
-                                              key: ValueKey(e.path),
-                                            ),
-                                          ),
-                                        )
-                                        .toList(),
-                                  if (_treeState.recents.length < 12) OpenBox()
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12.0, vertical: 8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [Text('Templates'), SizedBox()],
-                              ),
-                            ),
-                            Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  ...templates
-                                      .map(
-                                        (e) => Padding(
-                                          padding: const EdgeInsets.all(2.0),
-                                          child: TemplateProjectButton(
-                                              template: e),
-                                        ),
-                                      )
-                                      .toList()
-                                ],
-                              ),
-                            ),
-                          ],
+              child: Stack(
+                children: [
+                  Scaffold(
+                    appBar: PreferredSize(
+                      preferredSize:
+                          Size.fromHeight(EditorScreen.appBarHeight + 8),
+                      child: AppBar(
+                        elevation: 1,
+                        title: Text(
+                          S.of(context).selectRequestSort,
+                          style: Theme.of(context).appBarTheme.titleTextStyle,
                         ),
+                        actions: [
+                          TextButton(
+                              onPressed: () => _showSupportDialog(),
+                              child: Text(
+                                'Support!!',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.amber.withOpacity(0.8),
+                                ),
+                              )),
+                          ProfileAction(),
+                        ],
                       ),
                     ),
-                    // Align(
-                    //   alignment: Alignment.bottomCenter,
-                    //   child: Padding(
-                    //     padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                    //     child: Container(
-                    //       height: 80,
-                    //       color: Theme.of(context).canvasColor.darken(2),
-                    //     ),
-                    //   ),
-                    // )
-                    if (_isLoading.state)
-                      Container(
-                        color: Theme.of(context).canvasColor.darken(2),
-                        child: Center(
-                            child: CircularProgressIndicator(
-                          color: Theme.of(context).canvasColor.reverseBy(15),
-                        )),
-                      )
-                  ],
-                ),
+                    body: Stack(
+                      children: [
+                        SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 88.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  height: 2,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12.0, vertical: 4.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('Recently opened'),
+                                      Row(
+                                        children: [
+                                          if (_treeState.recents.isNotEmpty)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 4.0),
+                                              child:
+                                                  StartNewProjectButton(true),
+                                            ),
+                                          StartNewProjectButton(false),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 2,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
+                                  child: Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: [
+                                      if (_treeState.recents.isNotEmpty)
+                                        ..._treeState.recents
+                                            .map(
+                                              (e) => Padding(
+                                                padding:
+                                                    const EdgeInsets.all(2.0),
+                                                child:
+                                                    StartFromRecentsProjectButton(
+                                                  file: e,
+                                                  onTap: () {
+                                                    context
+                                                        .read(isEditorLoading)
+                                                        .state = true;
+                                                    Navigator.pushNamed(
+                                                            context,
+                                                            EditorScreen
+                                                                .routeName,
+                                                            arguments:
+                                                                StartScreenArgument(
+                                                                    file: e))
+                                                        .then((value) => context
+                                                            .read(
+                                                                isEditorLoading)
+                                                            .state = false);
+                                                  },
+                                                  key: ValueKey(e.path),
+                                                ),
+                                              ),
+                                            )
+                                            .toList(),
+                                      if (_treeState.recents.length < 12)
+                                        OpenBox()
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12.0, vertical: 8.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [Text('Templates'), SizedBox()],
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
+                                  child: Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: [
+                                      ...templates
+                                          .map(
+                                            (e) => Padding(
+                                              padding:
+                                                  const EdgeInsets.all(2.0),
+                                              child: TemplateProjectButton(
+                                                  template: e),
+                                            ),
+                                          )
+                                          .toList()
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Align(
+                        //   alignment: Alignment.bottomCenter,
+                        //   child: Padding(
+                        //     padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                        //     child: Container(
+                        //       height: 80,
+                        //       color: Theme.of(context).canvasColor.darken(2),
+                        //     ),
+                        //   ),
+                        // )
+                      ],
+                    ),
+                  ),
+                  if (_isLoading.state)
+                    Container(
+                      color: Theme.of(context).canvasColor.darken(2),
+                      child: Center(
+                        child: FutureBuilder(
+                          future: Future.delayed(Duration(milliseconds: 500)),
+                          builder: (c, s) =>
+                              s.connectionState == ConnectionState.done
+                                  ? CircularProgressIndicator(
+                                      color: Theme.of(context)
+                                          .canvasColor
+                                          .reverseBy(15),
+                                    )
+                                  : SizedBox(),
+                        ),
+                      ),
+                    )
+                ],
               ),
             ),
             Align(
