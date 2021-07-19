@@ -1,0 +1,978 @@
+import 'package:enum_to_string/enum_to_string.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_blossom/constants/colors.dart';
+import 'package:flutter_blossom/helpers/extensions.dart'; // ignore: unused_import
+import 'package:flutter_blossom/helpers/formatter.dart';
+import 'package:flutter_blossom/states/property_state.dart';
+import 'package:flutter_blossom/views/sub_views/part_views/property_views/properties/color_property.dart';
+import 'package:flutter_blossom/views/sub_views/part_views/property_views/properties/function_property.dart';
+import 'package:flutter_blossom/views/sub_views/part_views/property_views/properties/opacity_property.dart';
+import 'package:flutter_blossom/views/sub_views/part_views/property_views/properties/select_data_property.dart';
+import 'package:flutter_blossom/views/sub_views/part_views/property_views/properties/string_property.dart';
+import 'package:flutter_widget_model/property.dart';
+import 'package:flutter_widget_model/property_helpers/icons_helper.dart';
+import 'package:flutter_widget_model/types.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+/// get property editing widget by type
+Widget getPropertyWidget(BuildContext context, String key, Property property,
+    List<Widget> children) {
+  final _propertyState = context.read(propertyState);
+  Widget? main;
+  _getGenericSelectProperty() => SelectProperty(
+        options: property.availableValues
+            .map((e) => EnumToString.convertToString(e))
+            .toList(),
+        selectedValue: property.value == null ? null : property.encodeValue(),
+        onSelect: (v) {
+          _propertyState.updateProperty(
+            key,
+            property.copyWith(
+              value: v,
+              isInitialized: true,
+              forceValue: true,
+            ),
+          );
+        },
+      );
+  switch (property.type) {
+    case PropertyType.Action:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ActionDispatcher:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Alignment:
+      main = _getGenericSelectProperty();
+      break;
+    case PropertyType.AlignmentGeometry:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.AndroidViewController:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Animation:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.AnimationBehavior:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.AnimationController:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.AppBarTheme:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.AssetBundle:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.AutofillContextAction:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.AutovalidateMode:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Axis:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.AxisDirection:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BackButtonDispatcher:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BannerLocation:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BlendMode:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Bool:
+      main = InkWell(
+        onTap: () => _propertyState.updateProperty(
+          key,
+          property.copyWith(
+            value: property.value != null ? !property.value : false,
+            isInitialized: true,
+            forceValue: true,
+          ),
+        ),
+        child: Icon(
+          property.value ?? false
+              ? Icons.check_box_outlined
+              : Icons.check_box_outline_blank,
+          color: Colors.grey.withOpacity(0.6),
+        ),
+      );
+      break;
+    case PropertyType.Border:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BorderRadius:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BorderRadiusGeometry:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BorderSide:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BorderStyle:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BottomAppBarTheme:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BottomNavigationBarThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BottomNavigationBarType:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BottomSheetThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BoxBorder:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BoxConstraints:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BoxDecoration:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BoxFit:
+      main = _getGenericSelectProperty();
+      break;
+    case PropertyType.BoxHeightStyle:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BoxShape:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BoxWidthStyle:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Brightness:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.BuildContext:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ButtonBarLayoutBehavior:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ButtonBarThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ButtonStyle:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ButtonTextTheme:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ButtonThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.CacheExtentStyle:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.CardTheme:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.CheckboxThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ChipThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Clip:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.CollapseMode:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Color:
+      return ColorPropertyView(valueKey: key, value: property);
+    case PropertyType.ColorFilter:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ColorScheme:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.CrossAxisAlignment:
+      main = _getGenericSelectProperty();
+      break;
+    case PropertyType.CrossFadeState:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.CupertinoDatePickerMode:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.CupertinoTabBar:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.CupertinoTabController:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.CupertinoTextThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.CupertinoThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.CupertinoTimerPickerMode:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.CupertinoUserInterfaceLevelData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Curve:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.CustomClipper:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.CustomPainter:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.DataTableSource:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.DataTableThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.DatePickerEntryMode:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.DatePickerMode:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.DateTime:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.DateTimeRange:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Decoration:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.DecorationImage:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.DecorationPosition:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.DialogTheme:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.DismissDirection:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.DividerThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Double:
+      main = key == 'opacity'
+          ? OpacitySliderProperty(
+              color: property.parent != null &&
+                      property.parent!.type == PropertyType.Color
+                  ? property.parent!.value
+                  : property.children.values
+                          .any((x) => x.type == PropertyType.Color)
+                      ? property.children.values
+                          .firstWhere((y) => y.type == PropertyType.Color)
+                          .value
+                      : null,
+              value: property.value ?? 1.0,
+              onChange: (val) {
+                _propertyState.updateProperty(
+                    key, property.copyWith(value: val, isInitialized: true));
+              },
+            )
+          : StringField(
+              value: property.value == null ? '' : property.value.toString(),
+              formatter: [doubleFormatter],
+              onSubmitted: (v) => _propertyState.updateProperty(
+                  key,
+                  property.copyWith(
+                      value: double.tryParse(v),
+                      isInitialized: true,
+                      forceValue: true)),
+            );
+      break;
+    case PropertyType.DragAnchor:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.DragStartBehavior:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.DrawerAlignment:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Duration:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Dynamic:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.EdgeInsets:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.EdgeInsetsDirectional:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.EdgeInsetsGeometry:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ElevatedButtonThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Error:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.File:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FilterQuality:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FixedExtentScrollController:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FlexFit:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FloatingActionButtonAnimator:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FloatingActionButtonLocation:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FloatingActionButtonThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FloatingLabelBehavior:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FlowDelegate:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FlutterError:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FlutterLogoStyle:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FocusNode:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FocusOrder:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FocusScopeNode:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FocusTraversalPolicy:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FontStyle:
+      main = _getGenericSelectProperty();
+      break;
+    case PropertyType.FontWeight:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Function:
+      return FunctionProperty(
+        valueKey: key,
+        property: property,
+        model: _propertyState.model!,
+      );
+    case PropertyType.Future:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.FutureOr:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.GestureRecognizer:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.GlobalKey:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Gradient:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.GradientTransform:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.HeroController:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.HitTestBehavior:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Icon:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.IconData:
+      main = SelectProperty(
+        options: property.availableValues.map((e) => '$e').toList(),
+        selectedValue: property.value == null ? null : property.encodeValue(),
+        infoList: Map.fromIterable(
+          property.availableValues,
+          key: (value) => '$value',
+          value: (value) => Icon(
+            getIcon(value),
+            size: 14,
+            color: Theme.of(context)
+                .textTheme
+                .button!
+                .color!
+                .reverseBy(contextMenuLabelBy * 2),
+          ),
+        ),
+        onSelect: (v) {
+          _propertyState.updateProperty(
+            key,
+            property.copyWith(
+              value: v,
+              isInitialized: true,
+              forceValue: true,
+            ),
+          );
+        },
+      );
+      break;
+    case PropertyType.IconThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Image:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ImageFilter:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ImageProvider:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ImageRepeat:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.InlineSpan:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.InputBorder:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.InputDecoration:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.InputDecorationTheme:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Int:
+      main = StringField(
+        value: property.value == null ? '' : property.value.toString(),
+        formatter: [FilteringTextInputFormatter.digitsOnly],
+        onSubmitted: (v) => _propertyState.updateProperty(
+            key,
+            property.copyWith(
+                value: int.tryParse(
+                  v,
+                ),
+                isInitialized: true,
+                forceValue: true)),
+      );
+      break;
+    case PropertyType.InteractiveInkFeatureFactory:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Iterable:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Key:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.LayerLink:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.List:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ListTileControlAffinity:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ListTileStyle:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ListWheelChildDelegate:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Listenable:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Locale:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.MainAxisAlignment:
+      main = _getGenericSelectProperty();
+      break;
+    case PropertyType.MainAxisSize:
+      main = _getGenericSelectProperty();
+      break;
+    case PropertyType.Map:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.MaterialBannerThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.MaterialColor:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.MaterialStateProperty:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.MaterialTapTargetSize:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.MaterialType:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Matrix4:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.MaxLengthEnforcement:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.MediaQueryData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.MessageCodec:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.MouseCursor:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.MultiChildLayoutDelegate:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.NavigationMode:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.NavigationRailLabelType:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.NavigationRailThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.NoDefaultCupertinoThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.NotchedShape:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Object:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ObstructingPreferredSizeWidget:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Offset:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.OutlinedBorder:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.OutlinedButtonThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Overflow:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.OverflowBarAlignment:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.OverlayVisibilityMode:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.PageController:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.PageStorageBucket:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.PageTransitionsTheme:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Paint:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.PlatformViewController:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.PlatformViewHitTestBehavior:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.PointerDeviceKind:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.PopupMenuThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.RadioThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Radius:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.RangeLabels:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.RangeSliderThumbShape:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.RangeSliderTickMarkShape:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.RangeSliderTrackShape:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.RangeSliderValueIndicatorShape:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.RangeValues:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Rect:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.RefreshIndicatorTriggerMode:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.RelativeRect:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.RenderBox:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.RenderObjectWithChildMixin:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.RestorationBucket:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.RouteInformationParser:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.RouteInformationProvider:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.RouterDelegate:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ScrollBehavior:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ScrollController:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ScrollPhysics:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ScrollViewKeyboardDismissBehavior:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ScrollbarThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SemanticsGestureDelegate:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SemanticsHintOverrides:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SemanticsProperties:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SemanticsSortKey:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SemanticsTag:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Set:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ShapeBorder:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ShortcutManager:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ShowValueIndicator:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SingleChildLayoutDelegate:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Size:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SliderComponentShape:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SliderThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SliderTickMarkShape:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SliderTrackShape:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SliverChildDelegate:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SliverGridDelegate:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SliverOverlapAbsorberHandle:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SliverPersistentHeaderDelegate:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SmartDashesType:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SmartQuotesType:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SnackBarAction:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SnackBarBehavior:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SnackBarThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.StackFit:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.StepperType:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Stream:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.String:
+      main = StringField(
+        value: property.value == null ? '' : property.value.toString(),
+        onSubmitted: (v) => _propertyState.updateProperty(
+          key,
+          property.copyWith(value: v, isInitialized: true, forceValue: true),
+        ),
+      );
+      break;
+    case PropertyType.StrutStyle:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SwitchThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.SystemUiOverlayStyle:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TabBarIndicatorSize:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TabBarTheme:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TabController:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TableBorder:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TableCellVerticalAlignment:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TableColumnWidth:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TargetPlatform:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextAlign:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextAlignVertical:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextBaseline:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextButtonThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextCapitalization:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextDecoration:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextDecorationStyle:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextDirection:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextEditingController:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextHeightBehavior:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextInputAction:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextInputType:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextLeadingDistribution:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextOverflow:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextSelectionControls:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextSelectionThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextSpan:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextStyle:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextTheme:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TextWidthBasis:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ThemeMode:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TickerProvider:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TimePickerThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ToggleButtonsThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ToolbarOptions:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TooltipThemeData:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TransformationController:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.TransitionDelegate:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Tween:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Typography:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Uint8List:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ValueListenable:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.VerticalDirection:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.ViewportOffset:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.VisualDensity:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.Widget:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.WrapAlignment:
+      // TODO: Handle this case.
+      break;
+    case PropertyType.WrapCrossAlignment:
+      // TODO: Handle this case.
+      break;
+  }
+  return Column(
+    children: [
+      if (main != null)
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              flex: 2,
+              child: Opacity(
+                opacity: property.isInitialized ||
+                        _propertyState.model!.type == ModelType.Root
+                    ? 1
+                    : 0.4,
+                child: Container(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    key.separate.capitalize,
+                    style: TextStyle(color: Colors.grey.withOpacity(0.8)),
+                  ),
+                ),
+              ),
+            ),
+            Flexible(
+              flex: 3,
+              fit: FlexFit.tight,
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: main,
+                    )
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
+      ...children
+          .map(
+            (e) => Padding(
+              padding: const EdgeInsets.only(left: 12.0, top: 4),
+              child: e,
+            ),
+          )
+          .toList(),
+    ],
+  );
+}

@@ -45,68 +45,72 @@ class ColorPropertyView extends HookWidget {
       return;
     }, const []);
 
-    return Builder(builder: (context) {
-      try {
-        return ColorPicker(
-          color: color.value,
-          onColorChanged: (Color c) {
-            color.value = c;
-          },
-          onColorChangeEnd: (c) {
-            _propertyState.updateProperty(
-              valueKey,
-              value.copyWith(value: c, isInitialized: true),
-            );
-            _colorState.addToRecent(c);
-          },
-          padding: EdgeInsets.all(2.0),
-          enableShadesSelection: false,
-          enableOpacity: false,
-          showRecentColors: false,
-          opacityTrackHeight: 16,
-          opacityThumbRadius: 12,
-          width: 30,
-          height: 30,
-          borderRadius: 6,
-          spacing: 6,
-          runSpacing: 6,
-          columnSpacing: 10,
-          maxRecentColors: _colorState.recentLimit,
-          colorCodeTextStyle: TextStyle(color: Colors.grey),
-          colorNameTextStyle: TextStyle(color: Colors.grey.withOpacity(0.7)),
-          heading: null,
-          subheading: SizedBox(
-            height: 10,
-          ),
-          recentColorsSubheading: _colorState.recents.isNotEmpty
-              ? Text(
-                  'Recent Colors',
-                  style: TextStyle(color: Colors.grey),
-                )
-              : null,
-          recentColors: _colorState.recents,
-          pickersEnabled: {
-            ColorPickerType.wheel: true,
-            ColorPickerType.custom: true,
-            ColorPickerType.both: false,
-            ColorPickerType.primary: false,
-            ColorPickerType.accent: false,
-            ColorPickerType.bw: false,
-          },
-          pickerTypeLabels: {ColorPickerType.custom: 'Bucket'},
-          customColorSwatchesAndNames: <ColorSwatch<Object>, String>{
-            ColorTools.createPrimarySwatch(Color(0xFF6200EE)): 'Purple',
-            ColorTools.createAccentSwatch(Color(0xFF03DAC6)): 'Teal',
-            ColorTools.createPrimarySwatch(Color(0xFFB00020)): 'Red',
-          },
-        );
-      } catch (e) {
-        betterPrint('Color Error');
-        return Text(
-          'Color Error',
-          style: TextStyle(color: Colors.red),
-        );
-      }
-    });
+    return Tooltip(
+      message: valueKey,
+      waitDuration: Duration(milliseconds: 500),
+      child: Builder(builder: (context) {
+        try {
+          return ColorPicker(
+            color: color.value,
+            onColorChanged: (Color c) {
+              color.value = c;
+            },
+            onColorChangeEnd: (c) {
+              _propertyState.updateProperty(
+                valueKey,
+                value.copyWith(value: c, isInitialized: true),
+              );
+              _colorState.addToRecent(c);
+            },
+            padding: EdgeInsets.all(2.0),
+            enableShadesSelection: false,
+            enableOpacity: false,
+            showRecentColors: false,
+            opacityTrackHeight: 16,
+            opacityThumbRadius: 12,
+            width: 30,
+            height: 30,
+            borderRadius: 6,
+            spacing: 6,
+            runSpacing: 6,
+            columnSpacing: 10,
+            maxRecentColors: _colorState.recentLimit,
+            colorCodeTextStyle: TextStyle(color: Colors.grey),
+            colorNameTextStyle: TextStyle(color: Colors.grey.withOpacity(0.7)),
+            heading: null,
+            subheading: SizedBox(
+              height: 10,
+            ),
+            recentColorsSubheading: _colorState.recents.isNotEmpty
+                ? Text(
+                    'Recent Colors',
+                    style: TextStyle(color: Colors.grey),
+                  )
+                : null,
+            recentColors: _colorState.recents,
+            pickersEnabled: {
+              ColorPickerType.wheel: true,
+              ColorPickerType.custom: true,
+              ColorPickerType.both: false,
+              ColorPickerType.primary: false,
+              ColorPickerType.accent: false,
+              ColorPickerType.bw: false,
+            },
+            pickerTypeLabels: {ColorPickerType.custom: 'Bucket'},
+            customColorSwatchesAndNames: <ColorSwatch<Object>, String>{
+              ColorTools.createPrimarySwatch(Color(0xFF6200EE)): 'Purple',
+              ColorTools.createAccentSwatch(Color(0xFF03DAC6)): 'Teal',
+              ColorTools.createPrimarySwatch(Color(0xFFB00020)): 'Red',
+            },
+          );
+        } catch (e) {
+          betterPrint('Color Error');
+          return Text(
+            'Color Error',
+            style: TextStyle(color: Colors.red),
+          );
+        }
+      }),
+    );
   }
 }

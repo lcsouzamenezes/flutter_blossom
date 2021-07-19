@@ -324,10 +324,10 @@ class PropertyViewArea extends HookWidget {
                                                     PropertyEditWidget(
                                                         e.key, e.value),
                                                     Divider(
-                                                      thickness: 0.8,
-                                                      color: Colors.grey
-                                                          .withOpacity(0.2),
-                                                    ),
+                                                        // thickness: 0.8,
+                                                        // color: Colors.grey
+                                                        //     .withOpacity(0.2),
+                                                        ),
                                                   ],
                                                 ),
                                         )

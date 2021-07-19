@@ -61,44 +61,48 @@ class FunctionProperty extends HookWidget {
       return root;
     }
 
-    return BlockCanvas(
-      controller: property.value is BlockController
-          ? property.value
-          : BlockController(children: [], root: _getRoot(), resolve: (_) {}),
-      onAdd: (key, type) {
-        if (key != null && property.value != null)
-          saveToTree(BlockController(
-              children: property.value
-                  .addBlock(key, Block(key: uuid.v4(), data: {}, type: type)),
-              root: _getRoot(),
-              resolve: property.value.resolve));
-        else
-          saveToTree(BlockController(children: [
-            ...(property.value?.children ?? []),
-            Block(key: uuid.v4(), data: {}, type: type)
-          ], root: _getRoot(), resolve: (_) {}));
-      },
-      onUpdate: (key, updated) {
-        if (property.value != null)
-          saveToTree(BlockController(
-              children: property.value.updateBlock(key, updated),
-              root: _getRoot(),
-              resolve: property.value.resolve));
-      },
-      onDelete: (key) {
-        if (property.value != null)
-          saveToTree(BlockController(
-              children: property.value.deleteBlock(key, deleteChildren: true),
-              root: _getRoot(),
-              resolve: property.value.resolve));
-      },
-      maxHeight: property.value == null ||
-              //! fix: fix value should always be [BlockController]
-              (property.value is BlockController &&
-                  property.value.children.isEmpty)
-          ? 120
-          : 200,
-      // backgroundColor: Colors.blueAccent,
+    return Tooltip(
+      message: valueKey,
+      waitDuration: Duration(milliseconds: 500),
+      child: BlockCanvas(
+        controller: property.value is BlockController
+            ? property.value
+            : BlockController(children: [], root: _getRoot(), resolve: (_) {}),
+        onAdd: (key, type) {
+          if (key != null && property.value != null)
+            saveToTree(BlockController(
+                children: property.value
+                    .addBlock(key, Block(key: uuid.v4(), data: {}, type: type)),
+                root: _getRoot(),
+                resolve: property.value.resolve));
+          else
+            saveToTree(BlockController(children: [
+              ...(property.value?.children ?? []),
+              Block(key: uuid.v4(), data: {}, type: type)
+            ], root: _getRoot(), resolve: (_) {}));
+        },
+        onUpdate: (key, updated) {
+          if (property.value != null)
+            saveToTree(BlockController(
+                children: property.value.updateBlock(key, updated),
+                root: _getRoot(),
+                resolve: property.value.resolve));
+        },
+        onDelete: (key) {
+          if (property.value != null)
+            saveToTree(BlockController(
+                children: property.value.deleteBlock(key, deleteChildren: true),
+                root: _getRoot(),
+                resolve: property.value.resolve));
+        },
+        maxHeight: property.value == null ||
+                //! fix: fix value should always be [BlockController]
+                (property.value is BlockController &&
+                    property.value.children.isEmpty)
+            ? 120
+            : 200,
+        // backgroundColor: Colors.blueAccent,
+      ),
     );
   }
 }
