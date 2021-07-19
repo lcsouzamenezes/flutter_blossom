@@ -92,8 +92,12 @@ class FunctionProperty extends HookWidget {
               root: _getRoot(),
               resolve: property.value.resolve));
       },
-      maxHeight:
-          property.value == null || property.value.children.isEmpty ? 120 : 200,
+      maxHeight: property.value == null ||
+              //! fix: fix value should always be [BlockController]
+              (property.value is BlockController &&
+                  property.value.children.isEmpty)
+          ? 120
+          : 200,
       // backgroundColor: Colors.blueAccent,
     );
   }

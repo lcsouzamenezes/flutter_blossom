@@ -438,8 +438,7 @@ class PropertyEditWidget extends HookWidget {
                     );
                     break;
                   case PropertyType.Color:
-                    main = ColorPropertyView(valueKey: key, value: p);
-                    break;
+                    return ColorPropertyView(valueKey: key, value: p);
                   case PropertyType.Error:
                     // TODO: Handle this case.
                     break;
@@ -618,12 +617,11 @@ class PropertyEditWidget extends HookWidget {
                     // TODO: Handle this case.
                     break;
                   case PropertyType.Function:
-                    main = FunctionProperty(
+                    return FunctionProperty(
                       valueKey: key,
                       property: p,
                       model: _propertyState.model!,
                     );
-                    break;
                   default:
                     break;
                 }
