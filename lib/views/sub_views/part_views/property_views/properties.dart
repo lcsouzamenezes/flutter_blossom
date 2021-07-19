@@ -85,7 +85,7 @@ class PropertyName extends HookWidget {
               contentPadding: const EdgeInsets.all(4.0),
               isDense: true,
               border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.blue, width: 1.0),
+                borderSide: BorderSide(color: Colors.green, width: 1.0),
               ),
             ),
           )
@@ -369,285 +369,310 @@ class PropertyEditWidget extends HookWidget {
           if (property.inherit == null)
             property.toWidget(propertyKey, (key, p, children) {
               Widget main = SizedBox();
-              switch (p.type) {
-                // ? properties that are too big to edit in sidebar should have their own on demand area specifically designed to handle that kind of property
-                case PropertyType.ThemeData:
-                case PropertyType.CupertinoThemeData:
-                  return SizedBox();
-                case PropertyType.String:
-                  main = StringField(
-                    valueKey: key,
-                    property: p,
-                    onSubmitted: (v) => _propertyState.updateProperty(
-                      key,
-                      p.copyWith(
-                          value: v, isInitialized: true, forceValue: true),
-                    ),
-                  );
-                  break;
-                case PropertyType.Double:
-                  main = key == 'opacity'
-                      ? OpacitySliderProperty(
-                          color: p.parent != null &&
-                                  p.parent!.type == PropertyType.Color
-                              ? p.parent!.value
-                              : property.children.values
-                                      .any((x) => x.type == PropertyType.Color)
-                                  ? property.children.values
-                                      .firstWhere(
-                                          (y) => y.type == PropertyType.Color)
-                                      .value
-                                  : null,
-                          value: p.value ?? 1.0,
-                          onChange: (val) {
-                            _propertyState.updateProperty(key,
-                                p.copyWith(value: val, isInitialized: true));
-                          },
-                        )
-                      : StringField(
-                          valueKey: key,
-                          property: p,
-                          formatter: [doubleFormatter],
-                          onSubmitted: (v) => _propertyState.updateProperty(
-                              key,
-                              p.copyWith(
-                                  value: double.tryParse(v),
-                                  isInitialized: true,
-                                  forceValue: true)),
-                        );
-                  break;
-                case PropertyType.Int:
-                  main = StringField(
-                    valueKey: key,
-                    property: p,
-                    formatter: [FilteringTextInputFormatter.digitsOnly],
-                    onSubmitted: (v) => _propertyState.updateProperty(
-                        key,
-                        p.copyWith(
-                            value: int.tryParse(
-                              v,
-                            ),
-                            isInitialized: true,
-                            forceValue: true)),
-                  );
-                  break;
-                case PropertyType.Color:
-                  main = ColorPropertyView(valueKey: key, value: p);
-                  break;
-                case PropertyType.Error:
-                  // TODO: Handle this case.
-                  break;
-                case PropertyType.IconData:
-                  main = SelectProperty(
-                    valueKey: key,
-                    property: p,
-                    options: p.availableValues.map((e) => '$e').toList(),
-                    infoList: Map.fromIterable(
-                      p.availableValues,
-                      key: (value) => '$value',
-                      value: (value) => Icon(
-                        getIcon(value),
-                        size: 14,
-                        color: Theme.of(context)
-                            .textTheme
-                            .button!
-                            .color!
-                            .reverseBy(contextMenuLabelBy * 2),
-                      ),
-                    ),
-                    onSelect: (v) {
-                      _propertyState.updateProperty(
-                        key,
-                        p.copyWith(
-                          value: v,
-                          isInitialized: true,
-                          forceValue: true,
-                        ),
-                      );
-                    },
-                  );
-                  break;
-                case PropertyType.MainAxisAlignment:
-                  main = SelectProperty(
-                    valueKey: key,
-                    property: p,
-                    options: p.availableValues
-                        .map((e) => EnumToString.convertToString(e))
-                        .toList(),
-                    onSelect: (v) {
-                      _propertyState.updateProperty(
-                        key,
-                        p.copyWith(
-                          value: v,
-                          isInitialized: true,
-                          forceValue: true,
-                        ),
-                      );
-                    },
-                  );
-                  break;
-                case PropertyType.CrossAxisAlignment:
-                  main = SelectProperty(
-                    valueKey: key,
-                    property: p,
-                    options: p.availableValues
-                        .map((e) => EnumToString.convertToString(e))
-                        .toList(),
-                    onSelect: (v) {
-                      _propertyState.updateProperty(
-                        key,
-                        p.copyWith(
-                          value: v,
-                          isInitialized: true,
-                          forceValue: true,
-                        ),
-                      );
-                    },
-                  );
-                  break;
-                case PropertyType.MainAxisSize:
-                  main = SelectProperty(
-                    valueKey: key,
-                    property: p,
-                    options:
-                        p.availableValues.map((e) => e.toString()).toList(),
-                    onSelect: (v) {
-                      _propertyState.updateProperty(
-                        key,
-                        p.copyWith(
-                          value: v,
-                          isInitialized: true,
-                          forceValue: true,
-                        ),
-                      );
-                    },
-                  );
-                  break;
-                case PropertyType.Widget:
-                  // TODO: Handle this case.
-                  break;
-                case PropertyType.Alignment:
-                  main = SelectProperty(
-                    valueKey: key,
-                    property: p,
-                    options:
-                        p.availableValues.map((e) => e.toString()).toList(),
-                    onSelect: (v) {
-                      _propertyState.updateProperty(
-                        key,
-                        p.copyWith(
-                          value: v,
-                          isInitialized: true,
-                          forceValue: true,
-                        ),
-                      );
-                    },
-                  );
-                  break;
-                case PropertyType.BoxFit:
-                  main = SelectProperty(
-                    valueKey: key,
-                    property: p,
-                    options:
-                        p.availableValues.map((e) => e.toString()).toList(),
-                    onSelect: (v) {
-                      _propertyState.updateProperty(
-                        key,
-                        p.copyWith(
-                          value: v,
-                          isInitialized: true,
-                          forceValue: true,
-                        ),
-                      );
-                    },
-                  );
-                  break;
-                case PropertyType.Bool:
-                  main = Row(
-                    children: [
-                      Flexible(
-                        flex: 3,
-                        child: Opacity(
-                          opacity: p.isInitialized ||
-                                  _propertyState.model!.type == ModelType.Root
-                              ? 1
-                              : 0.4,
-                          child: Container(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              key.separate.capitalize,
-                              style: TextStyle(
-                                  color: Colors.grey.withOpacity(0.8)),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        fit: FlexFit.tight,
-                        child: InkWell(
-                          onTap: () => _propertyState.updateProperty(
-                            key,
-                            p.copyWith(
-                              value: p.value != null ? !p.value : false,
-                              isInitialized: true,
-                              forceValue: true,
-                            ),
-                          ),
-                          child: Container(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(
-                              p.value ?? false
-                                  ? Icons.check_box_outlined
-                                  : Icons.check_box_outline_blank,
-                              color: Colors.grey.withOpacity(0.6),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                  break;
-                case PropertyType.FontStyle:
-                  main = SelectProperty(
-                    valueKey: key,
-                    property: p,
-                    options:
-                        p.availableValues.map((e) => e.toString()).toList(),
-                    onSelect: (v) {
-                      _propertyState.updateProperty(
-                        key,
-                        p.copyWith(
-                          value: v,
-                          isInitialized: true,
-                          forceValue: true,
-                        ),
-                      );
-                    },
-                  );
-                  break;
-                case PropertyType.TextStyle:
-                  // TODO: Handle this case.
-                  break;
-                case PropertyType.Function:
-                  main = FunctionProperty(
-                    valueKey: key,
-                    property: p,
-                    model: _propertyState.model!,
-                  );
-                  break;
-                default:
-                  break;
-              }
               if (p.inherit != null) {
                 main = InheritProperty(valueKey: key, property: p);
+              } else {
+                switch (p.type) {
+                  // ? properties that are too big to edit in sidebar should have their own on demand area specifically designed to handle that kind of property
+                  case PropertyType.ThemeData:
+                  case PropertyType.CupertinoThemeData:
+                    return SizedBox();
+                  case PropertyType.String:
+                    main = StringField(
+                      value: property.value == null
+                          ? ''
+                          : property.value.toString(),
+                      onSubmitted: (v) => _propertyState.updateProperty(
+                        key,
+                        p.copyWith(
+                            value: v, isInitialized: true, forceValue: true),
+                      ),
+                    );
+                    break;
+                  case PropertyType.Double:
+                    main = key == 'opacity'
+                        ? OpacitySliderProperty(
+                            color: p.parent != null &&
+                                    p.parent!.type == PropertyType.Color
+                                ? p.parent!.value
+                                : property.children.values.any(
+                                        (x) => x.type == PropertyType.Color)
+                                    ? property.children.values
+                                        .firstWhere(
+                                            (y) => y.type == PropertyType.Color)
+                                        .value
+                                    : null,
+                            value: p.value ?? 1.0,
+                            onChange: (val) {
+                              _propertyState.updateProperty(key,
+                                  p.copyWith(value: val, isInitialized: true));
+                            },
+                          )
+                        : StringField(
+                            value: property.value == null
+                                ? ''
+                                : property.value.toString(),
+                            formatter: [doubleFormatter],
+                            onSubmitted: (v) => _propertyState.updateProperty(
+                                key,
+                                p.copyWith(
+                                    value: double.tryParse(v),
+                                    isInitialized: true,
+                                    forceValue: true)),
+                          );
+                    break;
+                  case PropertyType.Int:
+                    main = StringField(
+                      value: property.value == null
+                          ? ''
+                          : property.value.toString(),
+                      formatter: [FilteringTextInputFormatter.digitsOnly],
+                      onSubmitted: (v) => _propertyState.updateProperty(
+                          key,
+                          p.copyWith(
+                              value: int.tryParse(
+                                v,
+                              ),
+                              isInitialized: true,
+                              forceValue: true)),
+                    );
+                    break;
+                  case PropertyType.Color:
+                    main = ColorPropertyView(valueKey: key, value: p);
+                    break;
+                  case PropertyType.Error:
+                    // TODO: Handle this case.
+                    break;
+                  case PropertyType.IconData:
+                    main = SelectProperty(
+                      options: p.availableValues.map((e) => '$e').toList(),
+                      selectedValue: property.value == null
+                          ? null
+                          : property.encodeValue(),
+                      infoList: Map.fromIterable(
+                        p.availableValues,
+                        key: (value) => '$value',
+                        value: (value) => Icon(
+                          getIcon(value),
+                          size: 14,
+                          color: Theme.of(context)
+                              .textTheme
+                              .button!
+                              .color!
+                              .reverseBy(contextMenuLabelBy * 2),
+                        ),
+                      ),
+                      onSelect: (v) {
+                        _propertyState.updateProperty(
+                          key,
+                          p.copyWith(
+                            value: v,
+                            isInitialized: true,
+                            forceValue: true,
+                          ),
+                        );
+                      },
+                    );
+                    break;
+                  case PropertyType.MainAxisAlignment:
+                    main = SelectProperty(
+                      options: p.availableValues
+                          .map((e) => EnumToString.convertToString(e))
+                          .toList(),
+                      selectedValue: property.value == null
+                          ? null
+                          : property.encodeValue(),
+                      onSelect: (v) {
+                        _propertyState.updateProperty(
+                          key,
+                          p.copyWith(
+                            value: v,
+                            isInitialized: true,
+                            forceValue: true,
+                          ),
+                        );
+                      },
+                    );
+                    break;
+                  case PropertyType.CrossAxisAlignment:
+                    main = SelectProperty(
+                      options: p.availableValues
+                          .map((e) => EnumToString.convertToString(e))
+                          .toList(),
+                      selectedValue: property.value == null
+                          ? null
+                          : property.encodeValue(),
+                      onSelect: (v) {
+                        _propertyState.updateProperty(
+                          key,
+                          p.copyWith(
+                            value: v,
+                            isInitialized: true,
+                            forceValue: true,
+                          ),
+                        );
+                      },
+                    );
+                    break;
+                  case PropertyType.MainAxisSize:
+                    main = SelectProperty(
+                      options:
+                          p.availableValues.map((e) => e.toString()).toList(),
+                      selectedValue: property.value == null
+                          ? null
+                          : property.encodeValue(),
+                      onSelect: (v) {
+                        _propertyState.updateProperty(
+                          key,
+                          p.copyWith(
+                            value: v,
+                            isInitialized: true,
+                            forceValue: true,
+                          ),
+                        );
+                      },
+                    );
+                    break;
+                  case PropertyType.Widget:
+                    // TODO: Handle this case.
+                    break;
+                  case PropertyType.Alignment:
+                    main = SelectProperty(
+                      options:
+                          p.availableValues.map((e) => e.toString()).toList(),
+                      selectedValue: property.value == null
+                          ? null
+                          : property.encodeValue(),
+                      onSelect: (v) {
+                        _propertyState.updateProperty(
+                          key,
+                          p.copyWith(
+                            value: v,
+                            isInitialized: true,
+                            forceValue: true,
+                          ),
+                        );
+                      },
+                    );
+                    break;
+                  case PropertyType.BoxFit:
+                    main = SelectProperty(
+                      options:
+                          p.availableValues.map((e) => e.toString()).toList(),
+                      selectedValue: property.value == null
+                          ? null
+                          : property.encodeValue(),
+                      onSelect: (v) {
+                        _propertyState.updateProperty(
+                          key,
+                          p.copyWith(
+                            value: v,
+                            isInitialized: true,
+                            forceValue: true,
+                          ),
+                        );
+                      },
+                    );
+                    break;
+                  case PropertyType.Bool:
+                    main = InkWell(
+                      onTap: () => _propertyState.updateProperty(
+                        key,
+                        p.copyWith(
+                          value: p.value != null ? !p.value : false,
+                          isInitialized: true,
+                          forceValue: true,
+                        ),
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
+                          p.value ?? false
+                              ? Icons.check_box_outlined
+                              : Icons.check_box_outline_blank,
+                          color: Colors.grey.withOpacity(0.6),
+                        ),
+                      ),
+                    );
+                    break;
+                  case PropertyType.FontStyle:
+                    main = SelectProperty(
+                      options:
+                          p.availableValues.map((e) => e.toString()).toList(),
+                      selectedValue: property.value == null
+                          ? null
+                          : property.encodeValue(),
+                      onSelect: (v) {
+                        _propertyState.updateProperty(
+                          key,
+                          p.copyWith(
+                            value: v,
+                            isInitialized: true,
+                            forceValue: true,
+                          ),
+                        );
+                      },
+                    );
+                    break;
+                  case PropertyType.TextStyle:
+                    // TODO: Handle this case.
+                    break;
+                  case PropertyType.Function:
+                    main = FunctionProperty(
+                      valueKey: key,
+                      property: p,
+                      model: _propertyState.model!,
+                    );
+                    break;
+                  default:
+                    break;
+                }
               }
+
               return PropertiesWithChildren(
                 kKey: key,
                 propertyKey: propertyKey,
                 parent: p.parent ?? property,
                 property: p,
-                main: main,
+                main: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      flex: 2,
+                      child: Opacity(
+                        opacity: property.isInitialized ||
+                                _propertyState.model!.type == ModelType.Root
+                            ? 1
+                            : 0.4,
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            key.separate.capitalize,
+                            style:
+                                TextStyle(color: Colors.grey.withOpacity(0.8)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 3,
+                      fit: FlexFit.tight,
+                      child: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            if (property.inherit == null)
+                              Expanded(
+                                child: main,
+                              )
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
                 children: children,
               );
             })

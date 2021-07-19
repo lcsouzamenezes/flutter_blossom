@@ -29,93 +29,50 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class StringField extends HookWidget {
   StringField({
     Key? key,
-    required this.valueKey,
-    required this.property,
+    required this.value,
     required this.onSubmitted,
     this.formatter = const [],
   }) : super(key: key);
-  final String valueKey;
-  final Property property;
+
+  final String value;
+
   final List<TextInputFormatter> formatter;
   final Function(String value) onSubmitted;
 
   @override
   Widget build(BuildContext context) {
-    final _propertyState = useProvider(propertyState);
-
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Flexible(
-          flex: 2,
-          child: Opacity(
-            opacity: property.isInitialized ||
-                    _propertyState.model!.type == ModelType.Root
-                ? 1
-                : 0.4,
-            child: Container(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                valueKey.separate.capitalize,
-                style: TextStyle(color: Colors.grey.withOpacity(0.8)),
-              ),
-            ),
+    return TextField(
+      controller: RichTextController(
+        patternMap: {
+          RegExp(r"\B\$[a-zA-Z0-9]+\b"): TextStyle(
+            color: Theme.of(context).accentColor.withOpacity(0.8),
+            // fontWeight: FontWeight.w800,
+            // fontStyle: FontStyle.italic,
           ),
+        },
+        onMatch: (List<String> matches) {
+          // betterPrint(matches);
+          return matches.join();
+        },
+        text: value,
+      ),
+      autofocus: false,
+      inputFormatters: formatter,
+      style: TextStyle(
+        color: Colors.grey.withOpacity(0.7),
+      ),
+      onSubmitted: onSubmitted,
+      decoration: InputDecoration(
+        hintText: value,
+        contentPadding: const EdgeInsets.all(4.0),
+        isDense: true,
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.blue, width: 1.0),
         ),
-        Flexible(
-          flex: 3,
-          fit: FlexFit.tight,
-          child: Container(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (property.inherit == null)
-                  Expanded(
-                    child: TextField(
-                      controller: RichTextController(
-                        patternMap: {
-                          RegExp(r"\B\$[a-zA-Z0-9]+\b"): TextStyle(
-                            color:
-                                Theme.of(context).accentColor.withOpacity(0.8),
-                            // fontWeight: FontWeight.w800,
-                            // fontStyle: FontStyle.italic,
-                          ),
-                        },
-                        onMatch: (List<String> matches) {
-                          // betterPrint(matches);
-                          return matches.join();
-                        },
-                        text: property.value == null
-                            ? ''
-                            : property.value.toString(),
-                      ),
-                      autofocus: false,
-                      inputFormatters: formatter,
-                      style: TextStyle(
-                        color: Colors.grey.withOpacity(0.7),
-                      ),
-                      onSubmitted: onSubmitted,
-                      decoration: InputDecoration(
-                        hintText: property.value.toString(),
-                        contentPadding: const EdgeInsets.all(4.0),
-                        isDense: true,
-                        border: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.blue, width: 1.0),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red, width: 1.0),
-                        ),
-                      ),
-                    ),
-                  )
-              ],
-            ),
-          ),
-        )
-      ],
+        errorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red, width: 1.0),
+        ),
+      ),
     );
   }
 }

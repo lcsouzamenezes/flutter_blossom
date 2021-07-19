@@ -58,6 +58,10 @@ class PropertyTitle extends HookWidget {
   }
 }
 
+/// responsible for rendering all property in list view for a given `Node`.
+///
+/// only used for quick value change. for complex operation
+/// use dedicated `view` designed specifically for a property.
 class PropertyViewArea extends HookWidget {
   static const id = "property-view-area";
   PropertyViewArea({required this.key}) : super(key: key);
