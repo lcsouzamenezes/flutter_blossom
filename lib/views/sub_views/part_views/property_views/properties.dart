@@ -54,57 +54,80 @@ import 'package:flutter_blossom/views/sub_views/part_views/tree_view.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_widget_model/flutter_widget_model.dart';
 import 'package:flutter_widget_model/property_helpers/icons_helper.dart';
+import 'package:gesture_x_detector/gesture_x_detector.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:keyboard_shortcuts/keyboard_shortcuts.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:uuid/uuid.dart';
 
 class PropertyName extends HookWidget {
-  PropertyName(this.propertyKey, this.editController);
+  PropertyName(
+    this.propertyKey, {
+    required this.onTap,
+    this.onEdit,
+  }) : super(key: ValueKey(propertyKey));
 
   final String propertyKey;
-  final TextEditingController editController;
+  final void Function(bool)? onEdit;
+  final void Function() onTap;
 
   Widget build(BuildContext context) {
-    final _isRenameActive = useProvider(editPropertyNameKey);
+    final _isRenameActive = useState(false);
 
-    return _isRenameActive.state == propertyKey
-        ? TextField(
-            controller: editController,
+    _activateEditMode() {
+      _isRenameActive.value = true;
+      Future.delayed(Duration(milliseconds: 0)).then((value) {
+        onEdit?.call(true);
+      });
+    }
+
+    _deactivateEditMode() {
+      onEdit?.call(false);
+      _isRenameActive.value = false;
+    }
+
+    useEffect(() {}, const []);
+
+    return _isRenameActive.value
+        ? StringField(
             autofocus: true,
-            style: TextStyle(
-              color: Colors.grey.withOpacity(0.7),
-            ),
-            onSubmitted: (_) {
-              _isRenameActive.state = null;
-              context
-                  .read(propertyState)
-                  .updatePropertyKey(propertyKey, editController.text);
+            onSubmitted: (newValue) {
+              _deactivateEditMode();
+              if (newValue != '') {
+                context
+                    .read(propertyState)
+                    .updatePropertyKey(propertyKey, newValue);
+              }
             },
-            decoration: InputDecoration(
-              hintText: '',
-              contentPadding: const EdgeInsets.all(4.0),
-              isDense: true,
-              border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.green, width: 1.0),
-              ),
-            ),
+            onFocusChange: (node) {
+              if (!node.hasFocus) {
+                _deactivateEditMode();
+              }
+            },
+            value: propertyKey,
           )
-        : Padding(
-            padding: const EdgeInsets.all(1.0),
-            child: Tooltip(
-              message: propertyKey,
-              waitDuration: Duration(milliseconds: 600),
-              child: Text(
-                propertyKey,
-                style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                      color: Theme.of(context)
-                          .textTheme
-                          .bodyText1!
-                          .color!
-                          .reverseBy(panelBodyBy + 5),
-                    ),
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
+        : XGestureDetector(
+            onDoubleTap: (_) => _activateEditMode(),
+            onTap: (_) => onTap(),
+            bypassTapEventOnDoubleTap: true,
+            doubleTapTimeConsider: 200,
+            child: Padding(
+              padding: const EdgeInsets.all(1.0),
+              child: Tooltip(
+                message: propertyKey,
+                waitDuration: Duration(milliseconds: 600),
+                child: Text(
+                  propertyKey,
+                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodyText1!
+                            .color!
+                            .reverseBy(panelBodyBy + 5),
+                      ),
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
           );
@@ -115,7 +138,6 @@ class PropertyEditWidget extends HookWidget {
   PropertyEditWidget(this.propertyKey, this.property);
   final String propertyKey;
   final Property property;
-  final editController = useTextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -136,14 +158,14 @@ class PropertyEditWidget extends HookWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
-                child: InkWell(
-                  onTap: () {
-                    editValue.value = !editValue.value;
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        editValue.value = !editValue.value;
+                      },
+                      child: Icon(
                         editValue.value
                             ? Icons.keyboard_arrow_down
                             : Icons.keyboard_arrow_right,
@@ -154,10 +176,14 @@ class PropertyEditWidget extends HookWidget {
                             .color!
                             .reverseBy(panelBodyBy),
                       ),
-                      Flexible(
-                          child: PropertyName(propertyKey, editController)),
-                    ],
-                  ),
+                    ),
+                    Flexible(
+                      child: PropertyName(
+                        propertyKey,
+                        onTap: () => editValue.value = !editValue.value,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Flexible(
@@ -185,43 +211,6 @@ class PropertyEditWidget extends HookWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            InkWell(
-                              onHover: (val) {
-                                _isRenameOnHover.value =
-                                    _isRenameOnHover.value == null
-                                        ? propertyKey
-                                        : null;
-                              },
-                              onTap: () {
-                                context.read(editTreeName).state = null;
-                                context.read(editNodeName).state = null;
-                                _contextMenuState.clear();
-                                context.read((editPropertyNameKey)).state =
-                                    context.read((editPropertyNameKey)).state ==
-                                            null
-                                        ? propertyKey
-                                        : context
-                                                    .read((editPropertyNameKey))
-                                                    .state ==
-                                                propertyKey
-                                            ? null
-                                            : propertyKey;
-                                editController.text = propertyKey;
-                                editController.selection = TextSelection(
-                                  baseOffset: 0,
-                                  extentOffset:
-                                      editController.value.text.length,
-                                );
-                              },
-                              child: Icon(
-                                LineIcons.edit,
-                                size: 16,
-                                color: Colors.grey.withOpacity(
-                                    _isRenameOnHover.value == propertyKey
-                                        ? 0.7
-                                        : 0.5),
-                              ),
-                            ),
                             InkWell(
                               onHover: (val) {
                                 _isStarOnHover.value =

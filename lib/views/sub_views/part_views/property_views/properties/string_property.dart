@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Flutter Blossom.  If not, see <http://www.gnu.org/licenses/>.
 
+import 'package:better_print/better_print.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blossom/helpers/rich_text_controller.dart';
@@ -31,46 +32,77 @@ class StringField extends HookWidget {
     Key? key,
     required this.value,
     required this.onSubmitted,
+    this.onEscaped,
+    this.focusNode,
+    this.onFocusChange,
+    this.autofocus = false,
     this.formatter = const [],
   }) : super(key: key);
 
   final String value;
 
   final List<TextInputFormatter> formatter;
-  final Function(String value) onSubmitted;
-
+  final void Function(String value) onSubmitted;
+  final void Function()? onEscaped;
+  final FocusNode? focusNode;
+  final void Function(FocusNode node)? onFocusChange;
+  final bool autofocus;
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: RichTextController(
-        patternMap: {
-          RegExp(r"\B\$[a-zA-Z0-9]+\b"): TextStyle(
-            color: Theme.of(context).accentColor.withOpacity(0.8),
-            // fontWeight: FontWeight.w800,
-            // fontStyle: FontStyle.italic,
-          ),
+    final _focusNode = focusNode ?? FocusNode();
+    var _text = value;
+    useEffect(() {
+      if (autofocus) {
+        Future.delayed(Duration(milliseconds: 100))
+            .then((value) => _focusNode.requestFocus());
+      }
+      _focusNode.addListener(() {
+        onFocusChange?.call(_focusNode);
+      });
+    }, const []);
+    return RawKeyboardListener(
+      focusNode: FocusNode(
+        onKey: (FocusNode node, RawKeyEvent event) {
+          if (event.logicalKey == LogicalKeyboardKey.enter) {
+            onSubmitted(_text);
+          } else if (event.logicalKey == LogicalKeyboardKey.escape) {
+            onEscaped?.call();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
         },
-        onMatch: (List<String> matches) {
-          // betterPrint(matches);
-          return matches.join();
-        },
-        text: value,
       ),
-      autofocus: false,
-      inputFormatters: formatter,
-      style: TextStyle(
-        color: Colors.grey.withOpacity(0.7),
-      ),
-      onSubmitted: onSubmitted,
-      decoration: InputDecoration(
-        hintText: value,
-        contentPadding: const EdgeInsets.all(4.0),
-        isDense: true,
-        border: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+      child: TextField(
+        focusNode: _focusNode,
+        controller: RichTextController(
+          patternMap: {
+            RegExp(r"\B\$[a-zA-Z0-9]+\b"): TextStyle(
+              color: Theme.of(context).accentColor.withOpacity(0.8),
+              // fontWeight: FontWeight.w800,
+              // fontStyle: FontStyle.italic,
+            ),
+          },
+          onMatch: (List<String> matches) {
+            // betterPrint(matches);
+            return matches.join();
+          },
+          text: value,
         ),
-        errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red, width: 1.0),
+        onChanged: (v) => _text = v,
+        inputFormatters: formatter,
+        style: TextStyle(
+          color: Colors.grey.withOpacity(0.7),
+        ),
+        decoration: InputDecoration(
+          hintText: value,
+          contentPadding: const EdgeInsets.all(4.0),
+          isDense: true,
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red, width: 1.0),
+          ),
         ),
       ),
     );
