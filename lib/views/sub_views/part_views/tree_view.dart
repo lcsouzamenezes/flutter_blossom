@@ -58,6 +58,8 @@ import 'package:uuid/uuid.dart';
 
 bool _isTreeSelectAreaActive = false;
 
+final isNodeDragging = StateProvider((_) => false);
+
 _getFilterValues(Node node, [bool returnAll = false]) {
   List<ModelType> filterValues = [];
   if (node.children.isNotEmpty || returnAll) {
@@ -72,11 +74,11 @@ class TreeViewArea extends HookWidget {
   static const id = "tree-view-area";
   TreeViewArea({required this.key}) : super(key: key);
   final GlobalKey key;
-  final _subMenuHeight = contextMenuItemHeight;
-  final newBtnKey = GlobalKey();
-  final parentBtnKey = GlobalKey();
   final selectNodeKey = GlobalKey();
   final uuid = Uuid();
+
+  final newBtnKey = GlobalKey();
+  final parentBtnKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -84,12 +86,10 @@ class TreeViewArea extends HookWidget {
     final _width = useProvider(treeViewAreaSize);
     final _editorLayout = useProvider(editorLayout);
     final _treeState = useProvider(treeState);
-    final _shadowKey = useProvider(treeShadowKey);
     final _contextMenu = useProvider(contextMenuState);
-    final editNode = useState<Node?>(null);
-    final hoverNode = useState<Node?>(null);
-    final isNodeDragging = useState(false);
-    final showTrees = useState(false);
+    final _shadowKey = useProvider(treeShadowKey);
+    final _isNodeDragging = useProvider(isNodeDragging);
+
     final length = _editorLayout.list.length;
     final treeIndex = _editorLayout.getIndex(id);
     final propertyIndex = _editorLayout.getIndex(PropertyViewArea.id);
@@ -104,28 +104,6 @@ class TreeViewArea extends HookWidget {
             .then((value) => context.read(treeViewNotifier.notifier).set(w));
       return;
     }, const []);
-
-    _newTree() {
-      showTrees.value = true;
-      final key = uuid.v4();
-      final no = _treeState.treesInfo.length;
-      _treeState.addTree(key, 'tree${no == 0 ? '' : no + 1}');
-    }
-
-    _newRootNode() {
-      final key = uuid.v4();
-      final model = ModelType.Root.getModel(key, null);
-      final node = Node.fromMap(model.asMap);
-      _treeState.addNodeToRoot(node);
-      editNode.value = node;
-    }
-
-    _reloadTree() {
-      if (_treeState.recents.isNotEmpty &&
-          _treeState.file?.name == _treeState.recents.firstOrNull?.name)
-        _treeState.loadFromFile(
-            _treeState.recents.first, _treeState.activeTree);
-    }
 
     _changeGroup(Node node, [Offset? offset]) {
       final parent = _treeState.controller.getParent(node.key);
@@ -447,204 +425,79 @@ class TreeViewArea extends HookWidget {
                       isActive:
                           context.read(activeLayout).state == TreeViewArea.id,
                     ),
-                    Listener(
-                      onPointerDown: (_) => _isTreeSelectAreaActive = true,
-                      child: Column(
-                        children: [
-                          KeyBoardShortcuts(
-                            keysToPress: {
-                              LogicalKeyboardKey.controlLeft,
-                              LogicalKeyboardKey.keyE
-                            },
-                            onKeysPressed: () {
-                              if (context.read(activeLayout).state ==
-                                  TreeViewArea.id) _newRootNode();
-                            },
-                            child: KeyBoardShortcuts(
-                              keysToPress: {
-                                LogicalKeyboardKey.controlLeft,
-                                LogicalKeyboardKey.keyT
-                              },
-                              onKeysPressed: () {
-                                if (context.read(activeLayout).state ==
-                                    TreeViewArea.id) _newTree();
-                              },
-                              child: KeyBoardShortcuts(
-                                keysToPress: {
-                                  LogicalKeyboardKey.controlLeft,
-                                  LogicalKeyboardKey.shiftLeft,
-                                  LogicalKeyboardKey.keyR
-                                },
-                                onKeysPressed: () {
-                                  if (context.read(activeLayout).state ==
-                                      TreeViewArea.id) _reloadTree();
-                                },
-                                child: InkWell(
-                                  onTap: () {
-                                    showTrees.value = !showTrees.value;
-                                  },
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Row(
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 5.0),
-                                              child: Icon(
-                                                showTrees.value
-                                                    ? Icons.keyboard_arrow_down
-                                                    : Icons
-                                                        .keyboard_arrow_right,
-                                                size: 16,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 2,
-                                            ),
-                                            Text(
-                                              _treeState
-                                                      .treesInfo[
-                                                          _treeState.activeTree]
-                                                      ?.name ??
-                                                  '',
-                                              style: TextStyle(fontSize: 16),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(2.0),
-                                        child: Row(
-                                          children: [
-                                            TreeIconButton(
-                                              icon: LineIcons.plus,
-                                              size: 16,
-                                              tooltip:
-                                                  '${S.of(context).tooltipNewRoot} (Ctrl+E)',
-                                              onTap: () => _newRootNode(),
-                                            ),
-                                            TreeIconButton(
-                                              icon: LineIcons.plusSquare,
-                                              size: 16,
-                                              tooltip:
-                                                  '${S.of(context).tooltipNewTree} (Ctrl+T)',
-                                              onTap: () => _newTree(),
-                                            ),
-                                            TreeIconButton(
-                                              icon: LineIcons.alternateRedo,
-                                              size: 16,
-                                              tooltip:
-                                                  '${S.of(context).tooltipReloadTree} (Ctrl+Shift+R)',
-                                              onTap: _reloadTree,
-                                            ),
-                                            TreeIconButton(
-                                              icon: LineIcons.minusSquare,
-                                              size: 16,
-                                              tooltip: S
-                                                  .of(context)
-                                                  .tooltipCollapseTree,
-                                              onTap: () {
-                                                _treeState.collapseChildren();
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          if (showTrees.value)
-                            Column(
-                              children: _treeState.treesInfo.keys
-                                  .map((e) => TreeItem(
-                                        treeKey: e,
-                                      ))
-                                  .toList(),
-                            ),
-                          Divider(
-                            height: 2,
-                            thickness: 1,
-                          ),
-                        ],
-                      ),
-                    ),
+                    TreeSelectionArea(id: id),
                     Expanded(
                       child: KeyBoardShortcuts(
                         keysToPress: {
-                          LogicalKeyboardKey.f2,
+                          LogicalKeyboardKey.controlLeft,
+                          LogicalKeyboardKey.shiftLeft,
+                          LogicalKeyboardKey.keyT,
                         },
                         onKeysPressed: () {
-                          if (context.read(activeLayout).state ==
-                                  TreeViewArea.id &&
-                              !_isTreeSelectAreaActive) {
-                            editNode.value = _treeState.controller.selectedNode;
-                          }
+                          if (_treeState.controller.selectedNode != null)
+                            _toggleReplaceable(
+                                _treeState.controller.selectedNode!);
                         },
                         child: KeyBoardShortcuts(
                           keysToPress: {
                             LogicalKeyboardKey.controlLeft,
                             LogicalKeyboardKey.shiftLeft,
-                            LogicalKeyboardKey.keyT,
+                            LogicalKeyboardKey.keyD,
                           },
                           onKeysPressed: () {
-                            if (_treeState.controller.selectedNode != null)
-                              _toggleReplaceable(
-                                  _treeState.controller.selectedNode!);
+                            if (context.read(activeLayout).state ==
+                                    TreeViewArea.id &&
+                                _treeState.controller.selectedNode != null) {
+                              final pos = getCenterOffsetFromKey(selectNodeKey);
+                              _replaceNode(
+                                  _treeState.controller.selectedNode!, pos);
+                            }
                           },
                           child: KeyBoardShortcuts(
                             keysToPress: {
                               LogicalKeyboardKey.controlLeft,
-                              LogicalKeyboardKey.shiftLeft,
                               LogicalKeyboardKey.keyD,
                             },
                             onKeysPressed: () {
                               if (context.read(activeLayout).state ==
                                       TreeViewArea.id &&
                                   _treeState.controller.selectedNode != null) {
-                                final pos =
-                                    getCenterOffsetFromKey(selectNodeKey);
-                                _replaceNode(
-                                    _treeState.controller.selectedNode!, pos);
+                                _duplicateNode(
+                                    _treeState.controller.selectedNode!);
                               }
                             },
                             child: KeyBoardShortcuts(
                               keysToPress: {
                                 LogicalKeyboardKey.controlLeft,
-                                LogicalKeyboardKey.keyD,
+                                LogicalKeyboardKey.keyC,
                               },
                               onKeysPressed: () {
                                 if (context.read(activeLayout).state ==
                                         TreeViewArea.id &&
                                     _treeState.controller.selectedNode !=
                                         null) {
-                                  _duplicateNode(
+                                  _copyNode(
                                       _treeState.controller.selectedNode!);
                                 }
                               },
                               child: KeyBoardShortcuts(
                                 keysToPress: {
                                   LogicalKeyboardKey.controlLeft,
-                                  LogicalKeyboardKey.keyC,
+                                  LogicalKeyboardKey.keyX,
                                 },
                                 onKeysPressed: () {
                                   if (context.read(activeLayout).state ==
                                           TreeViewArea.id &&
                                       _treeState.controller.selectedNode !=
                                           null) {
-                                    _copyNode(
+                                    _cutNode(
                                         _treeState.controller.selectedNode!);
                                   }
                                 },
                                 child: KeyBoardShortcuts(
                                   keysToPress: {
                                     LogicalKeyboardKey.controlLeft,
+                                    LogicalKeyboardKey.shiftLeft,
                                     LogicalKeyboardKey.keyX,
                                   },
                                   onKeysPressed: () {
@@ -652,7 +505,7 @@ class TreeViewArea extends HookWidget {
                                             TreeViewArea.id &&
                                         _treeState.controller.selectedNode !=
                                             null) {
-                                      _cutNode(
+                                      _pasteReplaceNode(
                                           _treeState.controller.selectedNode!);
                                     }
                                   },
@@ -660,21 +513,22 @@ class TreeViewArea extends HookWidget {
                                     keysToPress: {
                                       LogicalKeyboardKey.controlLeft,
                                       LogicalKeyboardKey.shiftLeft,
-                                      LogicalKeyboardKey.keyX,
+                                      LogicalKeyboardKey.keyV,
                                     },
                                     onKeysPressed: () {
                                       if (context.read(activeLayout).state ==
                                               TreeViewArea.id &&
                                           _treeState.controller.selectedNode !=
                                               null) {
-                                        _pasteReplaceNode(_treeState
-                                            .controller.selectedNode!);
+                                        _pasteAsParentNode(
+                                            _treeState.controller.selectedNode!,
+                                            getCenterOffsetFromKey(
+                                                selectNodeKey));
                                       }
                                     },
                                     child: KeyBoardShortcuts(
                                       keysToPress: {
                                         LogicalKeyboardKey.controlLeft,
-                                        LogicalKeyboardKey.shiftLeft,
                                         LogicalKeyboardKey.keyV,
                                       },
                                       onKeysPressed: () {
@@ -683,7 +537,7 @@ class TreeViewArea extends HookWidget {
                                             _treeState
                                                     .controller.selectedNode !=
                                                 null) {
-                                          _pasteAsParentNode(
+                                          _pasteAsChild(
                                               _treeState
                                                   .controller.selectedNode!,
                                               getCenterOffsetFromKey(
@@ -693,30 +547,35 @@ class TreeViewArea extends HookWidget {
                                       child: KeyBoardShortcuts(
                                         keysToPress: {
                                           LogicalKeyboardKey.controlLeft,
-                                          LogicalKeyboardKey.keyV,
+                                          LogicalKeyboardKey.space,
                                         },
                                         onKeysPressed: () {
+                                          // ? manage focus
                                           if (context
                                                       .read(activeLayout)
                                                       .state ==
                                                   TreeViewArea.id &&
                                               _treeState.controller
                                                       .selectedNode !=
-                                                  null) {
-                                            _pasteAsChild(
+                                                  null &&
+                                              _contextMenu.menu?.id !=
+                                                  'tree-node-model-list' &&
+                                              _contextMenu.menu?.id !=
+                                                  'tree-node-model-group-list') {
+                                            final pos = getCenterOffsetFromKey(
+                                                selectNodeKey);
+                                            _addNode(
                                                 _treeState
                                                     .controller.selectedNode!,
-                                                getCenterOffsetFromKey(
-                                                    selectNodeKey));
+                                                pos);
                                           }
                                         },
                                         child: KeyBoardShortcuts(
                                           keysToPress: {
-                                            LogicalKeyboardKey.controlLeft,
+                                            LogicalKeyboardKey.shiftLeft,
                                             LogicalKeyboardKey.space,
                                           },
                                           onKeysPressed: () {
-                                            // ? manage focus
                                             if (context
                                                         .read(activeLayout)
                                                         .state ==
@@ -725,13 +584,11 @@ class TreeViewArea extends HookWidget {
                                                         .selectedNode !=
                                                     null &&
                                                 _contextMenu.menu?.id !=
-                                                    'tree-node-model-list' &&
-                                                _contextMenu.menu?.id !=
-                                                    'tree-node-model-group-list') {
+                                                    'tree-node-model-list-filtered') {
                                               final pos =
                                                   getCenterOffsetFromKey(
                                                       selectNodeKey);
-                                              _addNode(
+                                              _addParent(
                                                   _treeState
                                                       .controller.selectedNode!,
                                                   pos);
@@ -739,8 +596,7 @@ class TreeViewArea extends HookWidget {
                                           },
                                           child: KeyBoardShortcuts(
                                             keysToPress: {
-                                              LogicalKeyboardKey.shiftLeft,
-                                              LogicalKeyboardKey.space,
+                                              LogicalKeyboardKey.delete,
                                             },
                                             onKeysPressed: () {
                                               if (context
@@ -749,20 +605,16 @@ class TreeViewArea extends HookWidget {
                                                       TreeViewArea.id &&
                                                   _treeState.controller
                                                           .selectedNode !=
-                                                      null &&
-                                                  _contextMenu.menu?.id !=
-                                                      'tree-node-model-list-filtered') {
-                                                final pos =
-                                                    getCenterOffsetFromKey(
-                                                        selectNodeKey);
-                                                _addParent(
+                                                      null) {
+                                                _treeState.removeNode(
                                                     _treeState.controller
                                                         .selectedNode!,
-                                                    pos);
+                                                    false);
                                               }
                                             },
                                             child: KeyBoardShortcuts(
                                               keysToPress: {
+                                                LogicalKeyboardKey.controlLeft,
                                                 LogicalKeyboardKey.delete,
                                               },
                                               onKeysPressed: () {
@@ -776,14 +628,12 @@ class TreeViewArea extends HookWidget {
                                                   _treeState.removeNode(
                                                       _treeState.controller
                                                           .selectedNode!,
-                                                      false);
+                                                      true);
                                                 }
                                               },
                                               child: KeyBoardShortcuts(
                                                 keysToPress: {
-                                                  LogicalKeyboardKey
-                                                      .controlLeft,
-                                                  LogicalKeyboardKey.delete,
+                                                  LogicalKeyboardKey.space,
                                                 },
                                                 onKeysPressed: () {
                                                   if (context
@@ -794,15 +644,17 @@ class TreeViewArea extends HookWidget {
                                                       _treeState.controller
                                                               .selectedNode !=
                                                           null) {
-                                                    _treeState.removeNode(
-                                                        _treeState.controller
-                                                            .selectedNode!,
-                                                        true);
+                                                    _focus(
+                                                      _treeState.controller
+                                                          .selectedNode!,
+                                                    );
                                                   }
                                                 },
                                                 child: KeyBoardShortcuts(
                                                   keysToPress: {
-                                                    LogicalKeyboardKey.space,
+                                                    LogicalKeyboardKey
+                                                        .controlLeft,
+                                                    LogicalKeyboardKey.keyG,
                                                   },
                                                   onKeysPressed: () {
                                                     if (context
@@ -812,530 +664,46 @@ class TreeViewArea extends HookWidget {
                                                             TreeViewArea.id &&
                                                         _treeState.controller
                                                                 .selectedNode !=
+                                                            null &&
+                                                        _treeState
+                                                                .controller
+                                                                .selectedNode
+                                                                ?.group !=
                                                             null) {
-                                                      _focus(
-                                                        _treeState.controller
-                                                            .selectedNode!,
-                                                      );
+                                                      final pos =
+                                                          getCenterOffsetFromKey(
+                                                              selectNodeKey);
+                                                      _changeGroup(
+                                                          _treeState.controller
+                                                              .selectedNode!,
+                                                          pos);
                                                     }
                                                   },
-                                                  child: KeyBoardShortcuts(
-                                                    keysToPress: {
-                                                      LogicalKeyboardKey
-                                                          .controlLeft,
-                                                      LogicalKeyboardKey.keyG,
-                                                    },
-                                                    onKeysPressed: () {
-                                                      if (context
-                                                                  .read(
-                                                                      activeLayout)
-                                                                  .state ==
-                                                              TreeViewArea.id &&
-                                                          _treeState.controller
-                                                                  .selectedNode !=
-                                                              null &&
-                                                          _treeState
-                                                                  .controller
-                                                                  .selectedNode
-                                                                  ?.group !=
-                                                              null) {
-                                                        final pos =
-                                                            getCenterOffsetFromKey(
-                                                                selectNodeKey);
-                                                        _changeGroup(
-                                                            _treeState
-                                                                .controller
-                                                                .selectedNode!,
-                                                            pos);
-                                                      }
-                                                    },
-                                                    child: Listener(
-                                                      onPointerDown: (_) =>
-                                                          _isTreeSelectAreaActive =
-                                                              false,
-                                                      child: TreeView(
-                                                        controller: _treeState
-                                                            .controller,
-                                                        renameKey:
-                                                            editNode.value?.key,
-                                                        // physics: _contextMenu.isActive
-                                                        //     ? NeverScrollableScrollPhysics()
-                                                        //     : null,
-                                                        editField:
-                                                            (key, node) =>
-                                                                StringField(
-                                                          autofocus: true,
-                                                          value: node.name,
-                                                          onSubmitted: (value) {
-                                                            _treeState
-                                                                .changeNode(
-                                                              key,
-                                                              node.copyWith(
-                                                                  name: value),
-                                                            );
-                                                            editNode.value =
-                                                                null;
-                                                            hoverNode.value =
-                                                                null;
-                                                          },
-                                                          onEscaped: () {
-                                                            editNode.value =
-                                                                null;
-                                                            hoverNode.value =
-                                                                null;
-                                                          },
-                                                          onFocusChange:
-                                                              (focus) {
-                                                            if (!focus
-                                                                .hasFocus) {
-                                                              editNode.value =
-                                                                  null;
-                                                              hoverNode.value =
-                                                                  null;
-                                                            }
-                                                          },
-                                                        ),
-                                                        onHover: (node) {
-                                                          hoverNode.value =
-                                                              node;
-                                                        },
-                                                        hoverKey: hoverNode
-                                                            .value?.key,
-                                                        shadowKey:
-                                                            _shadowKey.state,
-                                                        selectedKey: _treeState
-                                                                .treesInfo[
-                                                                    _treeState
-                                                                        .activeTree]
-                                                                ?.selectIndicatorId ??
-                                                            _treeState
-                                                                .treesInfo[
-                                                                    _treeState
-                                                                        .activeTree]
-                                                                ?.selectId,
-                                                        theme: TreeTheme(
-                                                          primaryColor:
-                                                              Theme.of(context)
-                                                                  .accentColor,
-                                                          selectColor:
-                                                              Theme.of(context)
-                                                                  .canvasColor
-                                                                  .by(1),
-                                                          hoverColor:
-                                                              Theme.of(context)
-                                                                  .canvasColor
-                                                                  .reverseBy(1),
-                                                          shadowColor:
-                                                              Theme.of(context)
-                                                                  .canvasColor
-                                                                  .reverseBy(1),
-                                                          treeLineColor:
-                                                              Theme.of(context)
-                                                                  .canvasColor
-                                                                  .reverseBy(4),
-                                                          textTheme:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodyText1!
-                                                                  .copyWith(
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .textTheme
-                                                                        .bodyText1!
-                                                                        .color!
-                                                                        .reverseBy(
-                                                                            panelBodyBy),
-                                                                  ),
-                                                          leftPadding: 16,
-                                                        ),
-                                                        doubleTapDelay: 250,
-                                                        onNodeDoubleTap:
-                                                            (node) {
-                                                          editNode.value = node;
-                                                        },
-                                                        onNodeTap: (node) {
-                                                          editNode.value = null;
-                                                          _treeState.selectNode(
-                                                              node.key);
-                                                          if (editNode.value !=
-                                                              null) {
-                                                            if (editNode.value
-                                                                    ?.key ==
-                                                                context
-                                                                    .read(
-                                                                        propertyState)
-                                                                    .model
-                                                                    ?.key)
-                                                              context
-                                                                  .read(
-                                                                      propertyState)
-                                                                  .setPropertyView(
-                                                                      editNode
-                                                                          .value
-                                                                          ?.key);
-                                                          }
-                                                        },
-                                                        onNodeRightClick:
-                                                            (node, pos) {
-                                                          _shadowKey.state =
-                                                              node.key;
-                                                          _contextMenu.show(
-                                                            id: 'tree-node',
-                                                            width: 240,
-                                                            height:
-                                                                _subMenuHeight *
-                                                                    11,
-                                                            menu:
-                                                                ContextMenuContainer(
-                                                              applyRadius: true,
-                                                              child: Column(
-                                                                children: [
-                                                                  ContextMenuItem(
-                                                                    S
-                                                                        .of(context)
-                                                                        .nodeMenuGroup,
-                                                                    info: ContextMenuHintText(
-                                                                        'Ctrl+G'),
-                                                                    height:
-                                                                        _subMenuHeight,
-                                                                    onTap: node.group !=
-                                                                            null
-                                                                        ? () =>
-                                                                            _changeGroup(node)
-                                                                        : null,
-                                                                  ),
-                                                                  ContextMenuItem(
-                                                                    S
-                                                                        .of(context)
-                                                                        .nodeMenuRename,
-                                                                    info: ContextMenuHintText(
-                                                                        'F2'),
-                                                                    height:
-                                                                        _subMenuHeight,
-                                                                    onTap: () {
-                                                                      editNode.value =
-                                                                          node;
-                                                                    },
-                                                                  ),
-                                                                  ContextMenuItem(
-                                                                    S
-                                                                        .of(context)
-                                                                        .nodeMenuReplace,
-                                                                    info: ContextMenuHintText(
-                                                                        'Ctrl+Shift+D'),
-                                                                    height:
-                                                                        _subMenuHeight,
-                                                                    onTap: node.group !=
-                                                                            null
-                                                                        ? () => _replaceNode(
-                                                                            node,
-                                                                            pos)
-                                                                        : null,
-                                                                  ),
-                                                                  ContextMenuItem(
-                                                                    S
-                                                                        .of(context)
-                                                                        .nodeMenuDuplicate,
-                                                                    info: ContextMenuHintText(
-                                                                        'Ctrl+D'),
-                                                                    height:
-                                                                        _subMenuHeight,
-                                                                    onTap: () =>
-                                                                        _duplicateNode(
-                                                                            node),
-                                                                  ),
-                                                                  ContextMenuItem(
-                                                                    S
-                                                                        .of(context)
-                                                                        .nodeMenuCopy,
-                                                                    info: ContextMenuHintText(
-                                                                        'Ctrl+C'),
-                                                                    height:
-                                                                        _subMenuHeight,
-                                                                    onTap: () =>
-                                                                        _copyNode(
-                                                                            node),
-                                                                  ),
-                                                                  ContextMenuItem(
-                                                                    S
-                                                                        .of(context)
-                                                                        .nodeMenuCut,
-                                                                    info: ContextMenuHintText(
-                                                                        'Ctrl+X'),
-                                                                    height:
-                                                                        _subMenuHeight,
-                                                                    onTap: () =>
-                                                                        _cutNode(
-                                                                            node),
-                                                                  ),
-                                                                  ContextMenuItem(
-                                                                    S
-                                                                        .of(context)
-                                                                        .nodeMenuPasteReplace,
-                                                                    info: ContextMenuHintText(
-                                                                        'Ctrl+Shift+X'),
-                                                                    height:
-                                                                        _subMenuHeight,
-                                                                    onTap: context.read(appClipboardState).state.type == AppClipBoardDataType.node &&
-                                                                            (context.read(appClipboardState).state.data.group == null ||
-                                                                                node.type !=
-                                                                                    'Root')
-                                                                        ? () =>
-                                                                            _pasteReplaceNode(node)
-                                                                        : null,
-                                                                  ),
-                                                                  ContextMenuItem(
-                                                                    S
-                                                                        .of(context)
-                                                                        .nodeMenuPasteParent,
-                                                                    info: ContextMenuHintText(
-                                                                        'Ctrl+Shift+V'),
-                                                                    height:
-                                                                        _subMenuHeight,
-                                                                    onTap: node.group !=
-                                                                                null &&
-                                                                            context.read(appClipboardState).state.type ==
-                                                                                AppClipBoardDataType.node
-                                                                        ? () => _pasteAsParentNode(node)
-                                                                        : null,
-                                                                  ),
-                                                                  ContextMenuItem(
-                                                                    S
-                                                                        .of(context)
-                                                                        .nodeMenuPasteChild,
-                                                                    info: ContextMenuHintText(
-                                                                        'Ctrl+V'),
-                                                                    height:
-                                                                        _subMenuHeight,
-                                                                    onTap: node.maxChildren >
-                                                                                0 &&
-                                                                            context.read(appClipboardState).state.type ==
-                                                                                AppClipBoardDataType
-                                                                                    .node &&
-                                                                            context.read(appClipboardState).state.data.group !=
-                                                                                null
-                                                                        ? () =>
-                                                                            _pasteAsChild(node)
-                                                                        : null,
-                                                                  ),
-                                                                  ContextMenuItem(
-                                                                    node.isReplaceable
-                                                                        ? S
-                                                                            .of(
-                                                                                context)
-                                                                            .nodeMenuUnReplaceable
-                                                                        : S
-                                                                            .of(context)
-                                                                            .nodeMenuReplaceable,
-                                                                    info: ContextMenuHintText(
-                                                                        'Ctrl+Shift+T'),
-                                                                    height:
-                                                                        _subMenuHeight,
-                                                                    onTap: () =>
-                                                                        _toggleReplaceable(
-                                                                            node),
-                                                                  ),
-                                                                  ContextMenuItem(
-                                                                    S
-                                                                        .of(context)
-                                                                        .nodeMenuDeleteAll,
-                                                                    info: ContextMenuHintText(
-                                                                        'Ctrl+Delete'),
-                                                                    height:
-                                                                        _subMenuHeight,
-                                                                    onTap: () =>
-                                                                        _treeState.removeNode(
-                                                                            node,
-                                                                            true),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            offset: pos,
-                                                          );
-                                                        },
-                                                        getIconForNode:
-                                                            (node, size) =>
-                                                                getTreeIcon(
-                                                                    node, size),
-                                                        getNotificationIconForNode:
-                                                            (node, size) =>
-                                                                getNotificationIcon(
-                                                                    node,
-                                                                    size,
-                                                                    context),
-                                                        onIconTap: (node) {
-                                                          _treeState
-                                                              .expandNode(node);
-                                                        },
-                                                        isDragging:
-                                                            isNodeDragging
-                                                                .value,
-                                                        onDragStart: () {
-                                                          isNodeDragging.value =
-                                                              true;
-                                                        },
-                                                        onDragEnd: () {
-                                                          isNodeDragging.value =
-                                                              false;
-                                                        },
-                                                        onDragSuccess:
-                                                            (start, end) {
-                                                          final node =
-                                                              _treeState
-                                                                  .controller
-                                                                  .getNode(
-                                                                      start);
-                                                          if (node != null) {
-                                                            final sParent =
-                                                                _treeState
-                                                                    .controller
-                                                                    .getParent(
-                                                                        node.key);
-                                                            // final eParent = _treeState.controller.getParent(end.key);
-                                                            if (sParent !=
-                                                                null) {
-                                                              if (sParent.key ==
-                                                                          end
-                                                                              .key &&
-                                                                      sParent
-                                                                              .children
-                                                                              .last
-                                                                              .key ==
-                                                                          start ||
-                                                                  end.children
-                                                                          .length ==
-                                                                      end.maxChildren)
-                                                                betterPrint(
-                                                                    "skip move!");
-                                                              else
-                                                                _treeState.moveNode(
-                                                                    end, node,
-                                                                    keepChildren: _treeState.controller.getNode(
-                                                                            end.key,
-                                                                            parent: node) !=
-                                                                        null);
-                                                            }
-                                                          }
-                                                        },
-                                                        onDragSuccessSecondary:
-                                                            (start, end) {
-                                                          final node =
-                                                              _treeState
-                                                                  .controller
-                                                                  .getNode(
-                                                                      start);
-                                                          if (node != null) {
-                                                            final sParent =
-                                                                _treeState
-                                                                    .controller
-                                                                    .getParent(
-                                                                        node.key);
-                                                            final eParent =
-                                                                _treeState
-                                                                    .controller
-                                                                    .getParent(
-                                                                        end.key);
-                                                            if (sParent != null &&
-                                                                eParent !=
-                                                                    null &&
-                                                                sParent.key ==
-                                                                    eParent
-                                                                        .key) {
-                                                              _treeState
-                                                                  .reOrderChildren(
-                                                                start,
-                                                                eParent.children
-                                                                    .indexWhere((child) =>
-                                                                        child
-                                                                            .key ==
-                                                                        end.key),
-                                                              );
-                                                            } else if ((sParent ==
-                                                                    null &&
-                                                                eParent ==
-                                                                    null)) {
-                                                              _treeState
-                                                                  .reOrderChildren(
-                                                                start,
-                                                                _treeState
-                                                                    .controller
-                                                                    .children
-                                                                    .indexWhere((child) =>
-                                                                        child
-                                                                            .key ==
-                                                                        end.key),
-                                                              );
-                                                            }
-                                                          }
-                                                        },
-                                                        buildActionsWidgets:
-                                                            (node) {
-                                                          return [
-                                                            if (node.group ==
-                                                                null)
-                                                              TreeIconButton(
-                                                                icon: LineIcons
-                                                                    .eye,
-                                                                tooltip:
-                                                                    '${S.of(context).tooltipNodeFocus} (Space)',
-                                                                onTap: () =>
-                                                                    _focus(
-                                                                        node),
-                                                              ),
-                                                            TreeIconButton(
-                                                              key: newBtnKey,
-                                                              icon: LineIcons
-                                                                  .plus,
-                                                              tooltip:
-                                                                  '${S.of(context).tooltipNodeAdd} (Ctrl+Space)',
-                                                              onTap: node.maxChildren ==
-                                                                      node.children
-                                                                          .length
-                                                                  ? null
-                                                                  : () =>
-                                                                      _addNode(
-                                                                          node),
-                                                            ),
-                                                            if (node.group !=
-                                                                null)
-                                                              TreeIconButton(
-                                                                  key:
-                                                                      parentBtnKey,
-                                                                  icon: LineIcons
-                                                                      .reply,
-                                                                  tooltip:
-                                                                      '${S.of(context).tooltipNodeAddParent} (Shift+Space)',
-                                                                  onTap: () =>
-                                                                      _addParent(
-                                                                          node)),
-                                                            TreeIconButton(
-                                                              icon: LineIcons
-                                                                  .times,
-                                                              tooltip: S
-                                                                  .of(context)
-                                                                  .tooltipNodeDelete,
-                                                              onTap: () {
-                                                                _treeState
-                                                                    .removeNode(
-                                                                        node);
-                                                              },
-                                                            ),
-                                                            TreeIconButton(
-                                                              icon: LineIcons
-                                                                  .minusSquare,
-                                                              tooltip: S
-                                                                  .of(context)
-                                                                  .tooltipNodeCollapse,
-                                                              onTap: () {
-                                                                _treeState
-                                                                    .collapseChildren(
-                                                                        node);
-                                                              },
-                                                            )
-                                                          ];
-                                                        },
-                                                      ),
+                                                  child: Listener(
+                                                    onPointerDown: (_) =>
+                                                        _isTreeSelectAreaActive =
+                                                            false,
+                                                    child: TreeViewPackage(
+                                                      newBtnKey: newBtnKey,
+                                                      parentBtnKey:
+                                                          parentBtnKey,
+                                                      changeGroup: _changeGroup,
+                                                      toggleReplaceable:
+                                                          _toggleReplaceable,
+                                                      replaceNode: _replaceNode,
+                                                      duplicateNode:
+                                                          _duplicateNode,
+                                                      copyNode: _copyNode,
+                                                      cutNode: _cutNode,
+                                                      pasteReplaceNode:
+                                                          _pasteReplaceNode,
+                                                      pasteAsParentNode:
+                                                          _pasteAsParentNode,
+                                                      pasteAsChild:
+                                                          _pasteAsChild,
+                                                      addParent: _addParent,
+                                                      addNode: _addNode,
+                                                      focus: _focus,
                                                     ),
                                                   ),
                                                 ),
@@ -1369,7 +737,7 @@ class TreeViewArea extends HookWidget {
                 ),
             ],
           ),
-          if (!isNodeDragging.value)
+          if (!_isNodeDragging.state)
             Container(
               width: _width,
               child: EditorLayoutDragTarget(
@@ -1377,6 +745,483 @@ class TreeViewArea extends HookWidget {
                 acceptId: [PropertyViewArea.id],
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+class TreeViewPackage extends HookWidget {
+  TreeViewPackage({
+    Key? key,
+    required this.newBtnKey,
+    required this.parentBtnKey,
+    required this.changeGroup,
+    required this.toggleReplaceable,
+    required this.replaceNode,
+    required this.duplicateNode,
+    required this.copyNode,
+    required this.cutNode,
+    required this.pasteReplaceNode,
+    required this.pasteAsParentNode,
+    required this.pasteAsChild,
+    required this.addParent,
+    required this.addNode,
+    required this.focus,
+  }) : super(key: key);
+
+  final GlobalKey newBtnKey;
+  final GlobalKey parentBtnKey;
+  final void Function(Node node, [Offset? offset]) changeGroup;
+  final void Function(Node node) toggleReplaceable;
+  final void Function(Node node, Offset pos) replaceNode;
+  final void Function(Node node) duplicateNode;
+  final void Function(Node node) copyNode;
+  final void Function(Node node) cutNode;
+  final void Function(Node node) pasteReplaceNode;
+  final void Function(Node node, [Offset? pos]) pasteAsParentNode;
+  final void Function(Node node, [Offset? pos]) pasteAsChild;
+  final void Function(Node node, [Offset? pos]) addParent;
+  final void Function(Node node, [Offset? pos]) addNode;
+  final void Function(Node node) focus;
+
+  final _subMenuHeight = contextMenuItemHeight;
+
+  @override
+  Widget build(BuildContext context) {
+    final _treeState = useProvider(treeState);
+    final _shadowKey = useProvider(treeShadowKey);
+    final _contextMenu = useProvider(contextMenuState);
+    final _isNodeDragging = useProvider(isNodeDragging);
+    final editNode = useState<Node?>(null);
+    final hoverNode = useState<Node?>(null);
+
+    return KeyBoardShortcuts(
+      keysToPress: {
+        LogicalKeyboardKey.f2,
+      },
+      onKeysPressed: () {
+        if (context.read(activeLayout).state == TreeViewArea.id &&
+            !_isTreeSelectAreaActive) {
+          editNode.value = _treeState.controller.selectedNode;
+        }
+      },
+      child: TreeView(
+        controller: _treeState.controller,
+        renameKey: editNode.value?.key,
+        // physics: _contextMenu.isActive
+        //     ? NeverScrollableScrollPhysics()
+        //     : null,
+        editField: (key, node) => StringField(
+          autofocus: true,
+          value: node.name,
+          onSubmitted: (value) {
+            _treeState.changeNode(
+              key,
+              node.copyWith(name: value),
+            );
+            editNode.value = null;
+            hoverNode.value = null;
+          },
+          onEscaped: () {
+            editNode.value = null;
+            hoverNode.value = null;
+          },
+          onFocusChange: (focus) {
+            if (!focus.hasFocus) {
+              editNode.value = null;
+              hoverNode.value = null;
+            }
+          },
+        ),
+        onHover: (node) {
+          hoverNode.value = node;
+        },
+        hoverKey: hoverNode.value?.key,
+        shadowKey: _shadowKey.state,
+        selectedKey:
+            _treeState.treesInfo[_treeState.activeTree]?.selectIndicatorId ??
+                _treeState.treesInfo[_treeState.activeTree]?.selectId,
+        theme: TreeTheme(
+          primaryColor: Theme.of(context).accentColor,
+          selectColor: Theme.of(context).canvasColor.by(1),
+          hoverColor: Theme.of(context).canvasColor.reverseBy(1),
+          shadowColor: Theme.of(context).canvasColor.reverseBy(1),
+          treeLineColor: Theme.of(context).canvasColor.reverseBy(4),
+          textTheme: Theme.of(context).textTheme.bodyText1!.copyWith(
+                color: Theme.of(context)
+                    .textTheme
+                    .bodyText1!
+                    .color!
+                    .reverseBy(panelBodyBy),
+              ),
+          leftPadding: 16,
+        ),
+        doubleTapDelay: 250,
+        onNodeDoubleTap: (node) {
+          editNode.value = node;
+        },
+        onNodeTap: (node) {
+          editNode.value = null;
+          _treeState.selectNode(node.key);
+          if (editNode.value != null) {
+            if (editNode.value?.key == context.read(propertyState).model?.key)
+              context.read(propertyState).setPropertyView(editNode.value?.key);
+          }
+        },
+        onNodeRightClick: (node, pos) {
+          _shadowKey.state = node.key;
+          _contextMenu.show(
+            id: 'tree-node',
+            width: 240,
+            height: _subMenuHeight * 11,
+            menu: ContextMenuContainer(
+              applyRadius: true,
+              child: Column(
+                children: [
+                  ContextMenuItem(
+                    S.of(context).nodeMenuGroup,
+                    info: ContextMenuHintText('Ctrl+G'),
+                    height: _subMenuHeight,
+                    onTap: node.group != null ? () => changeGroup(node) : null,
+                  ),
+                  ContextMenuItem(
+                    S.of(context).nodeMenuRename,
+                    info: ContextMenuHintText('F2'),
+                    height: _subMenuHeight,
+                    onTap: () {
+                      editNode.value = node;
+                    },
+                  ),
+                  ContextMenuItem(
+                    S.of(context).nodeMenuReplace,
+                    info: ContextMenuHintText('Ctrl+Shift+D'),
+                    height: _subMenuHeight,
+                    onTap: node.group != null
+                        ? () => replaceNode(node, pos)
+                        : null,
+                  ),
+                  ContextMenuItem(
+                    S.of(context).nodeMenuDuplicate,
+                    info: ContextMenuHintText('Ctrl+D'),
+                    height: _subMenuHeight,
+                    onTap: () => duplicateNode(node),
+                  ),
+                  ContextMenuItem(
+                    S.of(context).nodeMenuCopy,
+                    info: ContextMenuHintText('Ctrl+C'),
+                    height: _subMenuHeight,
+                    onTap: () => copyNode(node),
+                  ),
+                  ContextMenuItem(
+                    S.of(context).nodeMenuCut,
+                    info: ContextMenuHintText('Ctrl+X'),
+                    height: _subMenuHeight,
+                    onTap: () => cutNode(node),
+                  ),
+                  ContextMenuItem(
+                    S.of(context).nodeMenuPasteReplace,
+                    info: ContextMenuHintText('Ctrl+Shift+X'),
+                    height: _subMenuHeight,
+                    onTap: context.read(appClipboardState).state.type ==
+                                AppClipBoardDataType.node &&
+                            (context.read(appClipboardState).state.data.group ==
+                                    null ||
+                                node.type != 'Root')
+                        ? () => pasteReplaceNode(node)
+                        : null,
+                  ),
+                  ContextMenuItem(
+                    S.of(context).nodeMenuPasteParent,
+                    info: ContextMenuHintText('Ctrl+Shift+V'),
+                    height: _subMenuHeight,
+                    onTap: node.group != null &&
+                            context.read(appClipboardState).state.type ==
+                                AppClipBoardDataType.node
+                        ? () => pasteAsParentNode(node)
+                        : null,
+                  ),
+                  ContextMenuItem(
+                    S.of(context).nodeMenuPasteChild,
+                    info: ContextMenuHintText('Ctrl+V'),
+                    height: _subMenuHeight,
+                    onTap: node.maxChildren > 0 &&
+                            context.read(appClipboardState).state.type ==
+                                AppClipBoardDataType.node &&
+                            context.read(appClipboardState).state.data.group !=
+                                null
+                        ? () => pasteAsChild(node)
+                        : null,
+                  ),
+                  ContextMenuItem(
+                    node.isReplaceable
+                        ? S.of(context).nodeMenuUnReplaceable
+                        : S.of(context).nodeMenuReplaceable,
+                    info: ContextMenuHintText('Ctrl+Shift+T'),
+                    height: _subMenuHeight,
+                    onTap: () => toggleReplaceable(node),
+                  ),
+                  ContextMenuItem(
+                    S.of(context).nodeMenuDeleteAll,
+                    info: ContextMenuHintText('Ctrl+Delete'),
+                    height: _subMenuHeight,
+                    onTap: () => _treeState.removeNode(node, true),
+                  ),
+                ],
+              ),
+            ),
+            offset: pos,
+          );
+        },
+        getIconForNode: (node, size) => getTreeIcon(node, size),
+        getNotificationIconForNode: (node, size) =>
+            getNotificationIcon(node, size, context),
+        onIconTap: (node) {
+          _treeState.expandNode(node);
+        },
+        isDragging: _isNodeDragging.state,
+        onDragStart: () {
+          _isNodeDragging.state = true;
+        },
+        onDragEnd: () {
+          _isNodeDragging.state = false;
+        },
+        onDragSuccess: (start, end) {
+          final node = _treeState.controller.getNode(start);
+          if (node != null) {
+            final sParent = _treeState.controller.getParent(node.key);
+            // final eParent = _treeState.controller.getParent(end.key);
+            if (sParent != null) {
+              if (sParent.key == end.key &&
+                      sParent.children.last.key == start ||
+                  end.children.length == end.maxChildren)
+                betterPrint("skip move!");
+              else
+                _treeState.moveNode(end, node,
+                    keepChildren:
+                        _treeState.controller.getNode(end.key, parent: node) !=
+                            null);
+            }
+          }
+        },
+        onDragSuccessSecondary: (start, end) {
+          final node = _treeState.controller.getNode(start);
+          if (node != null) {
+            final sParent = _treeState.controller.getParent(node.key);
+            final eParent = _treeState.controller.getParent(end.key);
+            if (sParent != null &&
+                eParent != null &&
+                sParent.key == eParent.key) {
+              _treeState.reOrderChildren(
+                start,
+                eParent.children.indexWhere((child) => child.key == end.key),
+              );
+            } else if ((sParent == null && eParent == null)) {
+              _treeState.reOrderChildren(
+                start,
+                _treeState.controller.children
+                    .indexWhere((child) => child.key == end.key),
+              );
+            }
+          }
+        },
+        buildActionsWidgets: (node) {
+          return [
+            if (node.group == null)
+              TreeIconButton(
+                icon: LineIcons.eye,
+                tooltip: '${S.of(context).tooltipNodeFocus} (Space)',
+                onTap: () => focus(node),
+              ),
+            TreeIconButton(
+              key: newBtnKey,
+              icon: LineIcons.plus,
+              tooltip: '${S.of(context).tooltipNodeAdd} (Ctrl+Space)',
+              onTap: node.maxChildren == node.children.length
+                  ? null
+                  : () => addNode(node),
+            ),
+            if (node.group != null)
+              TreeIconButton(
+                  key: parentBtnKey,
+                  icon: LineIcons.reply,
+                  tooltip:
+                      '${S.of(context).tooltipNodeAddParent} (Shift+Space)',
+                  onTap: () => addParent(node)),
+            TreeIconButton(
+              icon: LineIcons.times,
+              tooltip: S.of(context).tooltipNodeDelete,
+              onTap: () {
+                _treeState.removeNode(node);
+              },
+            ),
+            TreeIconButton(
+              icon: LineIcons.minusSquare,
+              tooltip: S.of(context).tooltipNodeCollapse,
+              onTap: () {
+                _treeState.collapseChildren(node);
+              },
+            )
+          ];
+        },
+      ),
+    );
+  }
+}
+
+class TreeSelectionArea extends HookWidget {
+  TreeSelectionArea({
+    Key? key,
+    required this.id,
+  }) : super(key: key);
+
+  final String id;
+  final uuid = Uuid();
+
+  @override
+  Widget build(BuildContext context) {
+    final _treeState = useProvider(treeState);
+    final showTrees = useState(false);
+    _newTree() {
+      showTrees.value = true;
+      final key = uuid.v4();
+      final no = _treeState.treesInfo.length;
+      _treeState.addTree(key, 'tree${no == 0 ? '' : no + 1}');
+    }
+
+    _newRootNode() {
+      final key = uuid.v4();
+      final model = ModelType.Root.getModel(key, null);
+      final node = Node.fromMap(model.asMap);
+      _treeState.addNodeToRoot(node);
+      // editNode.value = node;
+    }
+
+    _reloadTree() {
+      if (_treeState.recents.isNotEmpty &&
+          _treeState.file?.name == _treeState.recents.firstOrNull?.name)
+        _treeState.loadFromFile(
+            _treeState.recents.first, _treeState.activeTree);
+    }
+
+    return Listener(
+      onPointerDown: (_) => _isTreeSelectAreaActive = true,
+      child: Column(
+        children: [
+          KeyBoardShortcuts(
+            keysToPress: {
+              LogicalKeyboardKey.controlLeft,
+              LogicalKeyboardKey.keyE
+            },
+            onKeysPressed: () {
+              if (context.read(activeLayout).state == TreeViewArea.id)
+                _newRootNode();
+            },
+            child: KeyBoardShortcuts(
+              keysToPress: {
+                LogicalKeyboardKey.controlLeft,
+                LogicalKeyboardKey.keyT
+              },
+              onKeysPressed: () {
+                if (context.read(activeLayout).state == TreeViewArea.id)
+                  _newTree();
+              },
+              child: KeyBoardShortcuts(
+                keysToPress: {
+                  LogicalKeyboardKey.controlLeft,
+                  LogicalKeyboardKey.shiftLeft,
+                  LogicalKeyboardKey.keyR
+                },
+                onKeysPressed: () {
+                  if (context.read(activeLayout).state == TreeViewArea.id)
+                    _reloadTree();
+                },
+                child: InkWell(
+                  onTap: () {
+                    showTrees.value = !showTrees.value;
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5.0),
+                              child: Icon(
+                                showTrees.value
+                                    ? Icons.keyboard_arrow_down
+                                    : Icons.keyboard_arrow_right,
+                                size: 16,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 2,
+                            ),
+                            Text(
+                              _treeState
+                                      .treesInfo[_treeState.activeTree]?.name ??
+                                  '',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: Row(
+                          children: [
+                            TreeIconButton(
+                              icon: LineIcons.plus,
+                              size: 16,
+                              tooltip:
+                                  '${S.of(context).tooltipNewRoot} (Ctrl+E)',
+                              onTap: () => _newRootNode(),
+                            ),
+                            TreeIconButton(
+                              icon: LineIcons.plusSquare,
+                              size: 16,
+                              tooltip:
+                                  '${S.of(context).tooltipNewTree} (Ctrl+T)',
+                              onTap: () => _newTree(),
+                            ),
+                            TreeIconButton(
+                              icon: LineIcons.alternateRedo,
+                              size: 16,
+                              tooltip:
+                                  '${S.of(context).tooltipReloadTree} (Ctrl+Shift+R)',
+                              onTap: _reloadTree,
+                            ),
+                            TreeIconButton(
+                              icon: LineIcons.minusSquare,
+                              size: 16,
+                              tooltip: S.of(context).tooltipCollapseTree,
+                              onTap: () {
+                                _treeState.collapseChildren();
+                              },
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          if (showTrees.value)
+            Column(
+              children: _treeState.treesInfo.keys
+                  .map((e) => TreeItem(
+                        treeKey: e,
+                      ))
+                  .toList(),
+            ),
+          Divider(
+            height: 2,
+            thickness: 1,
+          ),
         ],
       ),
     );

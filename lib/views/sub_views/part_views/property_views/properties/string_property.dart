@@ -23,6 +23,7 @@ import 'package:flutter_blossom/states/context_menu_state.dart';
 import 'package:flutter_blossom/states/property_state.dart';
 import 'package:flutter_blossom/utils/handle_keys.dart';
 import 'package:flutter_blossom/helpers/extensions.dart';
+import 'package:flutter_blossom/utils/tap_watcher.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_widget_model/flutter_widget_model.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -63,6 +64,43 @@ class StringField extends HookWidget {
         onFocusChange?.call(_focusNode);
       });
     }, const []);
+    var textField = TextField(
+      focusNode: _focusNode,
+      controller: RichTextController(
+        patternMap: {
+          RegExp(r"\B\$[a-zA-Z0-9]+\b"): TextStyle(
+            color: Theme.of(context).accentColor.withOpacity(0.8),
+            // fontWeight: FontWeight.w800,
+            // fontStyle: FontStyle.italic,
+          ),
+        },
+        onMatch: (List<String> matches) {
+          // betterPrint(matches);
+          return matches.join();
+        },
+        text: value,
+      )..selection = TextSelection(
+          baseOffset: autofocus ? 0 : value.length,
+          extentOffset: value.length,
+        ),
+      onChanged: (v) => _text = v,
+      onTap: () {},
+      inputFormatters: formatter,
+      style: TextStyle(
+        color: Colors.grey.withOpacity(0.7),
+      ),
+      decoration: InputDecoration(
+        hintText: value,
+        contentPadding: const EdgeInsets.all(4.0),
+        isDense: true,
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red, width: 1.0),
+        ),
+      ),
+    );
     return RawKeyboardListener(
       focusNode: FocusNode(
         onKey: (FocusNode node, RawKeyEvent event) {
@@ -75,43 +113,7 @@ class StringField extends HookWidget {
           return KeyEventResult.ignored;
         },
       ),
-      child: TextField(
-        focusNode: _focusNode,
-        controller: RichTextController(
-          patternMap: {
-            RegExp(r"\B\$[a-zA-Z0-9]+\b"): TextStyle(
-              color: Theme.of(context).accentColor.withOpacity(0.8),
-              // fontWeight: FontWeight.w800,
-              // fontStyle: FontStyle.italic,
-            ),
-          },
-          onMatch: (List<String> matches) {
-            // betterPrint(matches);
-            return matches.join();
-          },
-          text: value,
-        )..selection = TextSelection(
-            baseOffset: autofocus ? 0 : value.length,
-            extentOffset: value.length,
-          ),
-        onChanged: (v) => _text = v,
-        onTap: () {},
-        inputFormatters: formatter,
-        style: TextStyle(
-          color: Colors.grey.withOpacity(0.7),
-        ),
-        decoration: InputDecoration(
-          hintText: value,
-          contentPadding: const EdgeInsets.all(4.0),
-          isDense: true,
-          border: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.blue, width: 1.0),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.red, width: 1.0),
-          ),
-        ),
-      ),
+      child: autofocus ? IgnoreTapWatcher(child: textField) : textField,
     );
   }
 }
