@@ -119,7 +119,6 @@ class NodeModelList extends HookWidget {
       else {
         final model = type.getModel(key, group, label, inheritKey);
         onTap(node, model);
-        context.read(editNodeName).state = null;
         _contextMenu.clear();
       }
     }

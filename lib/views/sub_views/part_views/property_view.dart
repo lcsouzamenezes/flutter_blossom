@@ -40,8 +40,6 @@ import 'package:flutter_widget_model/flutter_widget_model.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 
-final editPropertyNameKey = StateProvider<String?>((_) => null);
-
 class PropertyTitle extends HookWidget {
   @override
   Widget build(BuildContext context) {

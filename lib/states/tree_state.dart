@@ -395,10 +395,7 @@ class TreeViewNotifier extends ChangeNotifier {
     _controller = TreeViewController();
     _ref.read(canvasState).resetViewList();
     _ref.read(treeShadowKey).state = null;
-    _ref.read(editPropertyNameKey).state = null;
     _ref.read(propertyState).setPropertyView(null);
-    _ref.read(editTreeName).state = null;
-    _ref.read(editNodeName).state = null;
   }
 
   newProject(
@@ -508,7 +505,6 @@ class TreeViewNotifier extends ChangeNotifier {
       _controller = _controller.copyWith(selectedKey: key);
       _selectedOnce = true;
       _ref.read(propertyState).setPropertyView(_lockKey ?? key);
-      _ref.read(editPropertyNameKey).state = null;
       // need to be called here because selected box indicator on canvas need repaint on every new select
       _ref.read(canvasState).loadCanvas();
       notifyListeners();

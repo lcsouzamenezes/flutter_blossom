@@ -74,7 +74,6 @@ class NodeGroupList extends HookWidget {
                             'tree-node-model-group-list' &&
                         _selectIndex.state == i) if (!isExist) {
                       onTap(node, _list.state[i]);
-                      context.read(editNodeName).state = null;
                       context.read(contextMenuState).clear();
                     }
                   },
@@ -93,7 +92,6 @@ class NodeGroupList extends HookWidget {
                           ? null
                           : () {
                               onTap(node, _list.state[i]);
-                              context.read(editNodeName).state = null;
                               context.read(contextMenuState).clear();
                             },
                     ),

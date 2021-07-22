@@ -441,13 +441,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.14.2"
-  gesture_x_detector:
-    dependency: "direct main"
-    description:
-      name: gesture_x_detector
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
   glob:
     dependency: transitive
     description:

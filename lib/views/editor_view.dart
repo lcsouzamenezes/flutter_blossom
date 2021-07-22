@@ -35,6 +35,7 @@ import 'package:flutter_blossom/states/canvas_state.dart';
 import 'package:flutter_blossom/states/context_menu_state.dart';
 import 'package:flutter_blossom/states/editor_state.dart';
 import 'package:flutter_blossom/states/tree_state.dart';
+import 'package:flutter_blossom/utils/tap_watcher.dart';
 import 'package:flutter_blossom/views/sub_views/editor_canvas.dart';
 import 'package:flutter_blossom/views/sub_views/editor_panels.dart';
 import 'package:flutter_blossom/views/sub_views/part_views/console_view.dart';
@@ -75,10 +76,6 @@ class EditorScreen extends HookWidget {
           context
               .read(treeState)
               .newProject(true, data, this.suggestedFileName);
-      });
-      Future.delayed(Duration(milliseconds: 500)).then((value) {
-        FocusScope.of(context).unfocus();
-        FocusManager.instance.primaryFocus?.unfocus();
       });
       return;
     }, const []);
@@ -323,8 +320,6 @@ class EditorScreen extends HookWidget {
                   children: [
                     Listener(
                       onPointerDown: (_) {
-                        FocusScope.of(context).unfocus();
-                        FocusManager.instance.primaryFocus?.unfocus();
                         if (_contextMenu.menu != null) {
                           _contextMenu.clear();
                           _contextMenu.clearSubMenus();
@@ -334,14 +329,10 @@ class EditorScreen extends HookWidget {
                         // reset
                         onTap: () {
                           context.read(treeShadowKey).state = null;
-                          context.read(editTreeName).state = null;
-                          context.read(editNodeName).state = null;
-                          context.read(editPropertyNameKey).state = null;
                         },
                         child: KeyBoardShortcuts(
                           keysToPress: {LogicalKeyboardKey.escape},
                           onKeysPressed: () {
-                            FocusManager.instance.primaryFocus?.unfocus();
                             if (_contextMenu.menu != null) {
                               if (_contextMenu.subMenus.isEmpty)
                                 _contextMenu.clear();
@@ -349,43 +340,45 @@ class EditorScreen extends HookWidget {
                                 _contextMenu.removeLastSubMenu();
                             }
                           },
-                          child: Scaffold(
-                            appBar: PreferredSize(
-                              preferredSize:
-                                  Size.fromHeight(EditorScreen.appBarHeight),
-                              child: Listener(
-                                onPointerDown: (_) => context
-                                    .read(activeLayout)
-                                    .state = 'editor-appbar-area',
-                                child: AppBar(
-                                  elevation: 0,
-                                  backgroundColor:
-                                      Theme.of(context).primaryColor,
-                                  automaticallyImplyLeading: false,
-                                  leadingWidth: 40.0 * _leadingList.length,
-                                  leading: Row(
-                                    children: _leadingList,
+                          child: TapWatcher(
+                            child: Scaffold(
+                              appBar: PreferredSize(
+                                preferredSize:
+                                    Size.fromHeight(EditorScreen.appBarHeight),
+                                child: Listener(
+                                  onPointerDown: (_) => context
+                                      .read(activeLayout)
+                                      .state = 'editor-appbar-area',
+                                  child: AppBar(
+                                    elevation: 0,
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor,
+                                    automaticallyImplyLeading: false,
+                                    leadingWidth: 40.0 * _leadingList.length,
+                                    leading: Row(
+                                      children: _leadingList,
+                                    ),
+                                    title: Text(
+                                        '${_treeState.file?.name ?? ''}${_treeState.isFileEdited ? '*' : ''}'),
+                                    actions: [
+                                      ProfileAction(),
+                                    ],
                                   ),
-                                  title: Text(
-                                      '${_treeState.file?.name ?? ''}${_treeState.isFileEdited ? '*' : ''}'),
-                                  actions: [
-                                    ProfileAction(),
-                                  ],
                                 ),
                               ),
-                            ),
-                            body: Container(
-                              child: FutureBuilder(
-                                  future: Future.delayed(
-                                      Duration(milliseconds: 100)),
-                                  builder: (context, snapshot) {
-                                    return Stack(
-                                      children: [
-                                        EditorCanvas(),
-                                        EditorPanels(),
-                                      ],
-                                    );
-                                  }),
+                              body: Container(
+                                child: FutureBuilder(
+                                    future: Future.delayed(
+                                        Duration(milliseconds: 100)),
+                                    builder: (context, snapshot) {
+                                      return Stack(
+                                        children: [
+                                          EditorCanvas(),
+                                          EditorPanels(),
+                                        ],
+                                      );
+                                    }),
+                              ),
                             ),
                           ),
                         ),

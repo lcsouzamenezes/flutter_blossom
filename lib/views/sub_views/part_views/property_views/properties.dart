@@ -40,6 +40,7 @@ import 'package:flutter_blossom/states/model_state.dart';
 import 'package:flutter_blossom/states/property_state.dart';
 import 'package:flutter_blossom/states/storage_state.dart';
 import 'package:flutter_blossom/states/tree_state.dart';
+import 'package:flutter_blossom/utils/double_tap.dart';
 import 'package:flutter_blossom/utils/handle_keys.dart';
 import 'package:flutter_blossom/views/sub_views/part_views/property_view.dart';
 import 'package:flutter_blossom/views/sub_views/part_views/property_views/get_property_widget.dart';
@@ -54,7 +55,6 @@ import 'package:flutter_blossom/views/sub_views/part_views/tree_view.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_widget_model/flutter_widget_model.dart';
 import 'package:flutter_widget_model/property_helpers/icons_helper.dart';
-import 'package:gesture_x_detector/gesture_x_detector.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:keyboard_shortcuts/keyboard_shortcuts.dart';
 import 'package:line_icons/line_icons.dart';
@@ -104,13 +104,13 @@ class PropertyName extends HookWidget {
                 _deactivateEditMode();
               }
             },
+            onEscaped: _deactivateEditMode,
             value: propertyKey,
           )
-        : XGestureDetector(
-            onDoubleTap: (_) => _activateEditMode(),
-            onTap: (_) => onTap(),
-            bypassTapEventOnDoubleTap: true,
-            doubleTapTimeConsider: 200,
+        : DoubleTap(
+            onDoubleTap: _activateEditMode,
+            onTap: onTap,
+            doubleDelay: 250,
             child: Padding(
               padding: const EdgeInsets.all(1.0),
               child: Tooltip(
@@ -142,6 +142,7 @@ class PropertyEditWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final editValue = useState(property.isInitialized);
+    final isKeyEditMode = useState(false);
     // final _width = useProvider(propertyViewAreaSize);
     final _isRenameOnHover = useState<String?>(null);
     final _isDeleteOnHover = useState<String?>(null);
@@ -162,9 +163,11 @@ class PropertyEditWidget extends HookWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        editValue.value = !editValue.value;
-                      },
+                      onTap: isKeyEditMode.value
+                          ? null
+                          : () {
+                              editValue.value = !editValue.value;
+                            },
                       child: Icon(
                         editValue.value
                             ? Icons.keyboard_arrow_down
@@ -181,6 +184,10 @@ class PropertyEditWidget extends HookWidget {
                       child: PropertyName(
                         propertyKey,
                         onTap: () => editValue.value = !editValue.value,
+                        onEdit: (value) {
+                          isKeyEditMode.value = value;
+                          if (!editValue.value) editValue.value = true;
+                        },
                       ),
                     ),
                   ],

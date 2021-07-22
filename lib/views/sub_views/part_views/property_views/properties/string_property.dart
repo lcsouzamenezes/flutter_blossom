@@ -53,8 +53,11 @@ class StringField extends HookWidget {
     var _text = value;
     useEffect(() {
       if (autofocus) {
-        Future.delayed(Duration(milliseconds: 100))
+        Future.delayed(Duration(milliseconds: 0))
             .then((value) => _focusNode.requestFocus());
+      }
+      if (FocusManager.instance.primaryFocus != _focusNode) {
+        FocusManager.instance.primaryFocus?.unfocus();
       }
       _focusNode.addListener(() {
         onFocusChange?.call(_focusNode);
@@ -87,8 +90,12 @@ class StringField extends HookWidget {
             return matches.join();
           },
           text: value,
-        ),
+        )..selection = TextSelection(
+            baseOffset: autofocus ? 0 : value.length,
+            extentOffset: value.length,
+          ),
         onChanged: (v) => _text = v,
+        onTap: () {},
         inputFormatters: formatter,
         style: TextStyle(
           color: Colors.grey.withOpacity(0.7),
