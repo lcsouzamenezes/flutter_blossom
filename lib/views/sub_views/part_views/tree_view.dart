@@ -687,6 +687,8 @@ class TreeViewArea extends HookWidget {
                                                       newBtnKey: newBtnKey,
                                                       parentBtnKey:
                                                           parentBtnKey,
+                                                      selectedKey:
+                                                          selectNodeKey,
                                                       changeGroup: _changeGroup,
                                                       toggleReplaceable:
                                                           _toggleReplaceable,
@@ -756,6 +758,7 @@ class TreeViewPackage extends HookWidget {
     Key? key,
     required this.newBtnKey,
     required this.parentBtnKey,
+    required this.selectedKey,
     required this.changeGroup,
     required this.toggleReplaceable,
     required this.replaceNode,
@@ -772,6 +775,7 @@ class TreeViewPackage extends HookWidget {
 
   final GlobalKey newBtnKey;
   final GlobalKey parentBtnKey;
+  final GlobalKey selectedKey;
   final void Function(Node node, [Offset? offset]) changeGroup;
   final void Function(Node node) toggleReplaceable;
   final void Function(Node node, Offset pos) replaceNode;
@@ -795,6 +799,10 @@ class TreeViewPackage extends HookWidget {
     final _isNodeDragging = useProvider(isNodeDragging);
     final editNode = useState<Node?>(null);
     final hoverNode = useState<Node?>(null);
+
+    useEffect(() {
+      if (hoverNode.value != null) hoverNode.value = null;
+    }, [_contextMenu.menu]);
 
     return KeyBoardShortcuts(
       keysToPress: {
@@ -835,13 +843,14 @@ class TreeViewPackage extends HookWidget {
           },
         ),
         onHover: (node) {
-          hoverNode.value = node;
+          if (_contextMenu.menu == null) hoverNode.value = node;
         },
         hoverKey: hoverNode.value?.key,
         shadowKey: _shadowKey.state,
         selectedKey:
             _treeState.treesInfo[_treeState.activeTree]?.selectIndicatorId ??
                 _treeState.treesInfo[_treeState.activeTree]?.selectId,
+        selectedGlobalKey: selectedKey,
         theme: TreeTheme(
           primaryColor: Theme.of(context).accentColor,
           selectColor: Theme.of(context).canvasColor.by(1),
