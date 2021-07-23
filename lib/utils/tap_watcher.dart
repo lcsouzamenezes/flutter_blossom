@@ -18,12 +18,19 @@
 // along with Flutter Blossom.  If not, see <http://www.gnu.org/licenses/>.
 
 import 'package:better_print/better_print.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class TapWatcherIgnoreRenderBox extends RenderPointerListener {}
 
 class TapWatcherForceRenderBox extends RenderPointerListener {}
+
+HitTestEntry? _pre;
+
+String? _getId(String s) => (s.contains('#') && s.contains('@'))
+    ? s.substring(s.indexOf('#'), s.indexOf('@'))
+    : null;
 
 class IgnoreTapWatcher extends SingleChildRenderObjectWidget {
   final Widget child;
@@ -66,23 +73,27 @@ class TapWatcher extends StatelessWidget {
                   entry.target.runtimeType == TapWatcherIgnoreRenderBox)) {
                 return;
               }
-              var isEditable = result.path.any((entry) =>
-                  entry.target.runtimeType == RenderEditable ||
-                  entry.target.runtimeType == RenderParagraph ||
-                  entry.target.runtimeType == TapWatcherForceRenderBox);
+              HitTestEntry? editable;
+              result.path.forEach((e) {
+                if (e.target.runtimeType == RenderEditable ||
+                    e.target.runtimeType == RenderParagraph ||
+                    e.target.runtimeType == TapWatcherForceRenderBox) {
+                  if (editable == null) editable = e;
+                }
+              });
 
               var currentFocus = FocusScope.of(context);
-              if (!currentFocus.hasPrimaryFocus) {
+              if (editable != null) {
+                if (_pre == null) {
+                  currentFocus.unfocus();
+                } else if (_getId(_pre.toString()) !=
+                    _getId(editable.toString())) {
+                  currentFocus.unfocus();
+                }
+              } else {
                 currentFocus.unfocus();
               }
-              if (!isEditable) {
-              } else {
-                // for (var entry in result.path) {
-                // var isEditable = entry.target.runtimeType == RenderEditable ||
-                //     entry.target.runtimeType == RenderParagraph ||
-                //     entry.target.runtimeType == TapWatcherForceRenderBox;
-                // }
-              }
+              _pre = editable;
             },
             child: child,
           ),

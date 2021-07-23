@@ -42,6 +42,9 @@ class StringField extends HookWidget {
 
   final String value;
 
+  bool get isDouble => double.tryParse(value) != null;
+  bool get isInt => int.tryParse(value) != null;
+
   final List<TextInputFormatter> formatter;
   final void Function(String value) onSubmitted;
   final void Function()? onEscaped;
@@ -84,7 +87,6 @@ class StringField extends HookWidget {
           extentOffset: value.length,
         ),
       onChanged: (v) => _text = v,
-      onTap: () {},
       inputFormatters: formatter,
       style: TextStyle(
         color: Colors.grey.withOpacity(0.7),

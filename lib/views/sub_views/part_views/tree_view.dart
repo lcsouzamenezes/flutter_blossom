@@ -1230,6 +1230,7 @@ class TreeSelectionArea extends HookWidget {
           Divider(
             height: 2,
             thickness: 1,
+            color: Theme.of(context).canvasColor,
           ),
         ],
       ),
