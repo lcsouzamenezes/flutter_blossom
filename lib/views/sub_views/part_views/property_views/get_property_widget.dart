@@ -294,12 +294,14 @@ Widget getPropertyWidget(BuildContext context, String key, Property property,
           : StringField(
               value: property.value == null ? '' : property.value.toString(),
               formatter: [doubleFormatter],
+              isDouble: true,
               onSubmitted: (v) => _propertyState.updateProperty(
-                  key,
-                  property.copyWith(
-                      value: double.tryParse(v),
-                      isInitialized: true,
-                      forceValue: true)),
+                key,
+                property.copyWith(
+                    value: double.tryParse(v),
+                    isInitialized: true,
+                    forceValue: true),
+              ),
             );
       break;
     case PropertyType.DragAnchor:
@@ -476,14 +478,16 @@ Widget getPropertyWidget(BuildContext context, String key, Property property,
       main = StringField(
         value: property.value == null ? '' : property.value.toString(),
         formatter: [FilteringTextInputFormatter.digitsOnly],
+        isInt: true,
         onSubmitted: (v) => _propertyState.updateProperty(
-            key,
-            property.copyWith(
-                value: int.tryParse(
-                  v,
-                ),
-                isInitialized: true,
-                forceValue: true)),
+          key,
+          property.copyWith(
+              value: int.parse(
+                v,
+              ),
+              isInitialized: true,
+              forceValue: true),
+        ),
       );
       break;
     case PropertyType.InteractiveInkFeatureFactory:

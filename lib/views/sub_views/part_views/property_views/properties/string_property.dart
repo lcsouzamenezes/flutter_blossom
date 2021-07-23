@@ -27,6 +27,7 @@ import 'package:flutter_blossom/utils/tap_watcher.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_widget_model/flutter_widget_model.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:line_icons/line_icons.dart';
 
 class StringField extends HookWidget {
   StringField({
@@ -37,13 +38,17 @@ class StringField extends HookWidget {
     this.focusNode,
     this.onFocusChange,
     this.autofocus = false,
+    this.isDouble = false,
+    this.isInt = false,
+    this.allowNegative = true,
     this.formatter = const [],
   }) : super(key: key);
 
   final String value;
 
-  bool get isDouble => double.tryParse(value) != null;
-  bool get isInt => int.tryParse(value) != null;
+  final bool isDouble;
+  final bool isInt;
+  final bool allowNegative;
 
   final List<TextInputFormatter> formatter;
   final void Function(String value) onSubmitted;
@@ -53,6 +58,7 @@ class StringField extends HookWidget {
   final bool autofocus;
   @override
   Widget build(BuildContext context) {
+    final _value = useState<dynamic>(null);
     final _focusNode = focusNode ?? FocusNode();
     var _text = value;
     useEffect(() {
@@ -81,10 +87,11 @@ class StringField extends HookWidget {
           // betterPrint(matches);
           return matches.join();
         },
-        text: value,
+        text: _value.value?.toString() ?? value,
       )..selection = TextSelection(
-          baseOffset: autofocus ? 0 : value.length,
-          extentOffset: value.length,
+          baseOffset:
+              autofocus ? 0 : _value.value?.toString().length ?? value.length,
+          extentOffset: _value.value?.toString().length ?? value.length,
         ),
       onChanged: (v) => _text = v,
       inputFormatters: formatter,
@@ -92,8 +99,70 @@ class StringField extends HookWidget {
         color: Colors.grey.withOpacity(0.7),
       ),
       decoration: InputDecoration(
-        hintText: value,
-        contentPadding: const EdgeInsets.all(4.0),
+        prefix: isDouble || isInt
+            ? Padding(
+                padding: const EdgeInsets.only(right: 4.0),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.resizeColumn,
+                  child: GestureDetector(
+                    onHorizontalDragDown: (_) {
+                      _value.value =
+                          isDouble ? double.parse(value) : int.parse(value);
+                    },
+                    onHorizontalDragUpdate: (d) {
+                      if (d.delta.dx.abs() < 2) return;
+                      if (_value.value != null) {
+                        if (isDouble) {
+                          if (d.delta.dx > 0)
+                            _value.value += 0.5;
+                          else
+                            _value.value -=
+                                !allowNegative && _value.value - 0.5 <= 0
+                                    ? 0
+                                    : 0.5;
+                        } else {
+                          if (d.delta.dx > 0)
+                            _value.value++;
+                          else
+                            _value.value -=
+                                !allowNegative && _value.value - 1 <= 0 ? 0 : 1;
+                        }
+                      }
+                    },
+                    onHorizontalDragEnd: (_) {
+                      onSubmitted(_value.value.toString());
+                    },
+                    child: Container(
+                      height: 21,
+                      decoration: BoxDecoration(
+                          border: Border(
+                        right: BorderSide(
+                          color: Colors.grey.withOpacity(0.7),
+                          width: 1,
+                        ),
+                      )),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Transform.rotate(
+                          angle: 1.6,
+                          child: Icon(
+                            LineIcons.sort,
+                            size: 14,
+                            color: Colors.grey.withOpacity(0.7),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : null,
+        hintText: '',
+        contentPadding: EdgeInsets.only(
+            left: isDouble || isInt ? 0 : 4.0,
+            right: 4.0,
+            top: 4.0,
+            bottom: 4.0),
         isDense: true,
         border: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.blue, width: 1.0),
