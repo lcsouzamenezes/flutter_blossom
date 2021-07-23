@@ -131,6 +131,7 @@ class StringField extends HookWidget {
                     },
                     onHorizontalDragEnd: (_) {
                       onSubmitted(_value.value.toString());
+                      _value.value = null;
                     },
                     child: Container(
                       height: 21,
