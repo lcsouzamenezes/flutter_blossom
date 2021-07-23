@@ -843,7 +843,8 @@ class TreeViewPackage extends HookWidget {
           },
         ),
         onHover: (node) {
-          if (_contextMenu.menu == null) hoverNode.value = node;
+          if (_contextMenu.menu == null && editNode.value == null)
+            hoverNode.value = node;
         },
         hoverKey: hoverNode.value?.key,
         shadowKey: _shadowKey.state,
