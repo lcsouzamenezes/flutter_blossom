@@ -19,6 +19,7 @@
 import 'dart:async';
 
 import 'package:better_print/better_print.dart'; // ignore: unused_import
+import 'package:catcher/catcher.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -62,12 +63,29 @@ void main() async {
     yield LicenseEntryWithLineBreaks(['google_fonts'], nunitoLicense);
     yield LicenseEntryWithLineBreaks(['google_fonts'], interLicense);
   });
+  CatcherOptions debugOptions =
+      CatcherOptions(DialogReportMode(), [ConsoleHandler()]);
+
+  /// Release configuration. Same as above, but once user accepts dialog, user will be prompted to send email with crash to support.
+  CatcherOptions releaseOptions = CatcherOptions(DialogReportMode(), [
+    EmailManualHandler(["work.sanihaq@gmail.com"])
+  ]);
   if (kIsWeb) {
     await Firebase.initializeApp();
-    runApp(_app);
+    Catcher(
+      rootWidget: _app,
+      debugConfig: debugOptions,
+      releaseConfig: releaseOptions,
+      ensureInitialized: true,
+    );
     // runZonedGuarded(() => _ranApp, FirebaseCrashlytics.instance.recordError);
   } else
-    runApp(_app);
+    Catcher(
+      rootWidget: _app,
+      debugConfig: debugOptions,
+      releaseConfig: releaseOptions,
+      ensureInitialized: true,
+    );
 }
 
 final _app = ProviderScope(
@@ -154,6 +172,7 @@ class App extends HookWidget {
     final mode = useProvider(appThemeMode);
     return SizeChangedLayoutNotifier(
       child: MaterialApp(
+        navigatorKey: Catcher.navigatorKey,
         theme: lightTheme,
         darkTheme: darkTheme,
         // Todo: set to [ThemeMode.system] when light theme is ready

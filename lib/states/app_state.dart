@@ -83,10 +83,8 @@ class AppStateViewNotifier extends ChangeNotifier {
   completeStart() => _isAppStartupCompleted = true;
 
   Future<http.Response?> _fetchReleases() async {
-    return await http
-        .get(Uri.parse(
-            'https://api.github.com/repos/flutter-blossom/flutter_blossom/releases'))
-        .timeout(Duration(seconds: 5));
+    return await http.get(Uri.parse(
+        'https://api.github.com/repos/flutter-blossom/flutter_blossom/releases'));
   }
 
   Future<bool> checkForUpdate() async {

@@ -134,7 +134,7 @@ class StringField extends HookWidget {
                       _value.value = null;
                     },
                     child: Container(
-                      height: 21,
+                      height: 20,
                       decoration: BoxDecoration(
                           border: Border(
                         right: BorderSide(
@@ -160,7 +160,7 @@ class StringField extends HookWidget {
             : null,
         hintText: '',
         contentPadding: EdgeInsets.only(
-            left: isDouble || isInt ? 0 : 4.0,
+            left: isDouble || isInt ? 2.0 : 4.0,
             right: 4.0,
             top: 4.0,
             bottom: 4.0),
@@ -172,6 +172,8 @@ class StringField extends HookWidget {
           borderSide: BorderSide(color: Colors.red, width: 1.0),
         ),
       ),
+      cursorWidth: 2,
+      cursorHeight: 24,
     );
     return RawKeyboardListener(
       focusNode: FocusNode(
