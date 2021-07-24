@@ -38,6 +38,7 @@ class WidgetModelNotifier extends ChangeNotifier {
     _controller = _controller.loadNodes(
       (block) {
         block.calculate(_controller);
+        // apply changes to canvas
         _ref.read(canvasState).loadCanvas();
       },
       nodes,

@@ -20,6 +20,7 @@ import 'dart:async';
 
 import 'package:better_print/better_print.dart'; // ignore: unused_import
 import 'package:catcher/catcher.dart';
+import 'package:catcher/model/platform_type.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -63,17 +64,26 @@ void main() async {
     yield LicenseEntryWithLineBreaks(['google_fonts'], nunitoLicense);
     yield LicenseEntryWithLineBreaks(['google_fonts'], interLicense);
   });
-  CatcherOptions debugOptions =
-      CatcherOptions(DialogReportMode(), [ConsoleHandler()]);
+  CatcherOptions debugOptions = CatcherOptions(
+    DialogReportMode(),
+    [ConsoleHandler()],
+    filterFunction: _filterFunction,
+    explicitExceptionHandlersMap: {},
+  );
 
   /// Release configuration. Same as above, but once user accepts dialog, user will be prompted to send email with crash to support.
-  CatcherOptions releaseOptions = CatcherOptions(DialogReportMode(), [
-    EmailManualHandler(["work.sanihaq@gmail.com"])
-  ]);
+  CatcherOptions releaseOptions = CatcherOptions(
+    DialogReportMode(),
+    [
+      EmailManualHandler(["work.sanihaq@gmail.com"])
+    ],
+    filterFunction: _filterFunction,
+    explicitExceptionHandlersMap: {},
+  );
   if (kIsWeb) {
     await Firebase.initializeApp();
     Catcher(
-      rootWidget: _app,
+      runAppFunction: () => runApp(_app),
       debugConfig: debugOptions,
       releaseConfig: releaseOptions,
       ensureInitialized: true,
@@ -81,11 +91,37 @@ void main() async {
     // runZonedGuarded(() => _ranApp, FirebaseCrashlytics.instance.recordError);
   } else
     Catcher(
-      rootWidget: _app,
+      runAppFunction: () => runApp(_app),
       debugConfig: debugOptions,
       releaseConfig: releaseOptions,
       ensureInitialized: true,
     );
+}
+
+bool _filterFunction(Report report) {
+  if ('${report.error}'.contains('ModelWidgetWrapper')) {
+    betterPrint("Skipped error !!");
+    return false;
+  }
+  return true;
+}
+
+class CustomHandler extends ReportHandler {
+  @override
+  Future<bool> handle(Report report, BuildContext? context) async {
+    //my implementation
+    return Future.value(true);
+  }
+
+  @override
+  List<PlatformType> getSupportedPlatforms() => [
+        PlatformType.android,
+        PlatformType.iOS,
+        PlatformType.web,
+        PlatformType.linux,
+        PlatformType.macOS,
+        PlatformType.windows,
+      ];
 }
 
 final _app = ProviderScope(
@@ -105,22 +141,29 @@ class AppWrapper extends HookWidget {
       title: 'Flutter Blossom',
       color: appColor,
       debugShowCheckedModeBanner: false,
-      builder: (context, _) =>
-          NotificationListener<SizeChangedLayoutNotification>(
-        child: App(),
-        onNotification: (details) {
-          Future.delayed(Duration(milliseconds: 0)).then((value) {
-            context.read(appState).setSize(MediaQuery.of(context).size);
-            if (_contextMenu.menu != null) {
-              _contextMenu.clear();
-              _contextMenu.clearSubMenus();
-            }
-            if (context.read(enableCanvasControl).state)
-              context.read(canvasState).setSelectedBox();
-          });
-          return true;
-        },
-      ),
+      builder: (context, _) {
+        Catcher.addDefaultErrorWidget(
+          showStacktrace: true,
+          title: "An error occurred",
+          description: "Please be patient and help solve the problem.",
+          maxWidthForSmallMode: 150,
+        );
+        return NotificationListener<SizeChangedLayoutNotification>(
+          child: App(),
+          onNotification: (details) {
+            Future.delayed(Duration(milliseconds: 0)).then((value) {
+              context.read(appState).setSize(MediaQuery.of(context).size);
+              if (_contextMenu.menu != null) {
+                _contextMenu.clear();
+                _contextMenu.clearSubMenus();
+              }
+              if (context.read(enableCanvasControl).state)
+                context.read(canvasState).setSelectedBox();
+            });
+            return true;
+          },
+        );
+      },
     );
   }
 }

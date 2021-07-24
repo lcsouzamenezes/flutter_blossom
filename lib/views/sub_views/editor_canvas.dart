@@ -24,13 +24,16 @@ import 'package:flutter_blossom/constants/device_sizes.dart';
 import 'package:flutter_blossom/constants/lengths.dart';
 import 'package:flutter_blossom/helpers/extensions.dart'; // ignore: unused_import
 import 'package:flutter/material.dart';
+import 'package:flutter_blossom/models/console_message.dart';
 import 'package:flutter_blossom/models/context_menu.dart';
 import 'package:flutter_blossom/states/canvas_state.dart';
+import 'package:flutter_blossom/states/console_state.dart';
 import 'package:flutter_blossom/states/context_menu_state.dart';
 import 'package:flutter_blossom/states/editor_state.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:blossom_canvas/blossom_canvas.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:uuid/uuid.dart';
 
 class EditorCanvas extends HookWidget {
   static const id = "canvas-view-area";
@@ -92,6 +95,17 @@ class EditorCanvas extends HookWidget {
               onZoom: (value) {
                 _canvasState.setSelectBox(null);
                 _canvasState.setSelectedBox(value);
+              },
+              onError: (details) {
+                Future.delayed(Duration(milliseconds: 0)).then(
+                  (value) => context.read(consoleState).addMessage(
+                        ConsoleMessage(
+                          id: Uuid().v4(),
+                          message: details.summary.toString(),
+                          type: ConsoleMessageType.error,
+                        ),
+                      ),
+                );
               },
               onDeviceChange: (item, pos) {
                 final _menu = context.read(contextMenuState);

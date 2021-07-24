@@ -25,6 +25,7 @@ import 'package:flutter_blossom/states/tree_state.dart';
 import 'package:flutter_blossom/utils/handle_keys.dart';
 import 'package:flutter_blossom/helpers/extensions.dart';
 import 'package:blossom_canvas/blossom_canvas.dart';
+import 'package:flutter_widget_model/flutter_widget_model.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:tree_view/node_model.dart';
 import 'package:uuid/uuid.dart';
@@ -116,20 +117,11 @@ class CanvasViewNotifier extends ChangeNotifier {
             e.key,
             e.rootKey,
             e.label,
-            _ref
+            getWidgetFromModel(_ref
                 .read(modelState)
                 .controller
                 .children
-                .firstWhereOrNull((el) => el.key == e.rootKey)
-                ?.toWidget(
-                  (key, {required Widget child}) => ModelWidgetWrapper(
-                    modelKey: key,
-                    child: child,
-                    isSelected:
-                        key == _ref.read(treeState).controller.selectedKey,
-                  ),
-                  _ref.read(enableCanvasControl).state,
-                ),
+                .firstWhereOrNull((el) => el.key == e.rootKey)),
             e.size,
             e.sizeProfile,
             e.rotate,
@@ -145,6 +137,22 @@ class CanvasViewNotifier extends ChangeNotifier {
     });
     _controller = CanvasController(children: children, notifier: notify);
     notifyListeners();
+  }
+
+  Widget? getWidgetFromModel(WidgetModel? model) {
+    try {
+      return model?.toWidget(
+            (key, {required Widget child}) => ModelWidgetWrapper(
+              modelKey: key,
+              child: child,
+              isSelected: key == _ref.read(treeState).controller.selectedKey,
+            ),
+            _ref.read(enableCanvasControl).state,
+          ) ??
+          null;
+    } catch (e) {
+      return null;
+    }
   }
 
   centerOrAdd(Node node) {
