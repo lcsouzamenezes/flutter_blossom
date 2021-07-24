@@ -302,7 +302,9 @@ class ProfileAction extends HookWidget {
                   ContextMenuItem(
                     S.of(context).userMenuSignIn,
                     height: _subMenuHeight,
-                    onTap: () {},
+                    onTap: () {
+                      throw AssertionError("Sign in not available");
+                    },
                   ),
                 ],
               ),

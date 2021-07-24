@@ -1,5 +1,5 @@
-// @Skip('skip for now')
 // @dart=2.9
+@Skip('skip for now')
 
 // This is a basic Flutter widget test.
 //
