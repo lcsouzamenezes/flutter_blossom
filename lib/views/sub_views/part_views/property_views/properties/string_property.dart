@@ -106,8 +106,9 @@ class StringField extends HookWidget {
                   cursor: SystemMouseCursors.resizeColumn,
                   child: GestureDetector(
                     onHorizontalDragDown: (_) {
-                      _value.value =
-                          isDouble ? double.parse(value) : int.parse(value);
+                      if (value != '')
+                        _value.value =
+                            isDouble ? double.parse(value) : int.parse(value);
                     },
                     onHorizontalDragUpdate: (d) {
                       if (d.delta.dx.abs() < 2) return;
