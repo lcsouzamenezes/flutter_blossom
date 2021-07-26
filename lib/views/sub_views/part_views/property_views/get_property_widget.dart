@@ -1,3 +1,4 @@
+import 'package:better_print/better_print.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,24 +17,15 @@ import 'package:flutter_widget_model/types.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// get property editing widget by type
-Widget getPropertyWidget(BuildContext context, String key, Property property,
-    List<Widget> children) {
+Widget getPropertyWidget(
+    BuildContext context, String key, Property property, List<Widget> children) {
   final _propertyState = context.read(propertyState);
   Widget? main;
   _getGenericSelectProperty() => SelectProperty(
-        options: property.availableValues
-            .map((e) => EnumToString.convertToString(e))
-            .toList(),
+        options: property.availableValues,
         selectedValue: property.value == null ? null : property.encodeValue(),
         onSelect: (v) {
-          _propertyState.updateProperty(
-            key,
-            property.copyWith(
-              value: v,
-              isInitialized: true,
-              forceValue: true,
-            ),
-          );
+          _propertyState.updatePropertyValue(property, v);
         },
       );
   switch (property.type) {
@@ -90,14 +82,8 @@ Widget getPropertyWidget(BuildContext context, String key, Property property,
       break;
     case PropertyType.Bool:
       main = InkWell(
-        onTap: () => _propertyState.updateProperty(
-          key,
-          property.copyWith(
-            value: property.value != null ? !property.value : false,
-            isInitialized: true,
-            forceValue: true,
-          ),
-        ),
+        onTap: () => _propertyState.updatePropertyValue(
+            property, property.value != null ? !property.value : false),
         child: Icon(
           property.value ?? false
               ? Icons.check_box_outlined
@@ -276,32 +262,24 @@ Widget getPropertyWidget(BuildContext context, String key, Property property,
     case PropertyType.Double:
       main = key == 'opacity'
           ? OpacitySliderProperty(
-              color: property.parent != null &&
-                      property.parent!.type == PropertyType.Color
-                  ? property.parent!.value
-                  : property.children.values
-                          .any((x) => x.type == PropertyType.Color)
-                      ? property.children.values
-                          .firstWhere((y) => y.type == PropertyType.Color)
-                          .value
-                      : null,
+              color:
+                  property.parent != null && property.parent!.type == PropertyType.Color
+                      ? property.parent!.value
+                      : property.children.values.any((x) => x.type == PropertyType.Color)
+                          ? property.children.values
+                              .firstWhere((y) => y.type == PropertyType.Color)
+                              .value
+                          : null,
               value: property.value ?? 1.0,
               onChange: (val) {
-                _propertyState.updateProperty(
-                    key, property.copyWith(value: val, isInitialized: true));
+                _propertyState.updatePropertyValue(property, val);
               },
             )
           : StringField(
               value: property.value == null ? '' : property.value.toString(),
               formatter: [doubleFormatter],
               isDouble: true,
-              onSubmitted: (v) => _propertyState.updateProperty(
-                key,
-                property.copyWith(
-                    value: double.tryParse(v),
-                    isInitialized: true,
-                    forceValue: true),
-              ),
+              onSubmitted: (v) => _propertyState.updatePropertyValue(property, v),
             );
       break;
     case PropertyType.DragAnchor:
@@ -420,7 +398,7 @@ Widget getPropertyWidget(BuildContext context, String key, Property property,
       break;
     case PropertyType.IconData:
       main = SelectProperty(
-        options: property.availableValues.map((e) => '$e').toList(),
+        options: property.availableValues,
         selectedValue: property.value == null ? null : property.encodeValue(),
         infoList: Map.fromIterable(
           property.availableValues,
@@ -435,16 +413,7 @@ Widget getPropertyWidget(BuildContext context, String key, Property property,
                 .reverseBy(contextMenuLabelBy * 2),
           ),
         ),
-        onSelect: (v) {
-          _propertyState.updateProperty(
-            key,
-            property.copyWith(
-              value: v,
-              isInitialized: true,
-              forceValue: true,
-            ),
-          );
-        },
+        onSelect: (v) => _propertyState.updatePropertyValue(property, v),
       );
       break;
     case PropertyType.IconThemeData:
@@ -479,15 +448,7 @@ Widget getPropertyWidget(BuildContext context, String key, Property property,
         value: property.value == null ? '' : property.value.toString(),
         formatter: [FilteringTextInputFormatter.digitsOnly],
         isInt: true,
-        onSubmitted: (v) => _propertyState.updateProperty(
-          key,
-          property.copyWith(
-              value: int.parse(
-                v,
-              ),
-              isInitialized: true,
-              forceValue: true),
-        ),
+        onSubmitted: (v) => _propertyState.updatePropertyValue(property, v),
       );
       break;
     case PropertyType.InteractiveInkFeatureFactory:
@@ -775,10 +736,7 @@ Widget getPropertyWidget(BuildContext context, String key, Property property,
     case PropertyType.String:
       main = StringField(
         value: property.value == null ? '' : property.value.toString(),
-        onSubmitted: (v) => _propertyState.updateProperty(
-          key,
-          property.copyWith(value: v, isInitialized: true, forceValue: true),
-        ),
+        onSubmitted: (v) => _propertyState.updatePropertyValue(property, v),
       );
       break;
     case PropertyType.StrutStyle:
@@ -939,10 +897,10 @@ Widget getPropertyWidget(BuildContext context, String key, Property property,
             Flexible(
               flex: 2,
               child: Opacity(
-                opacity: property.isInitialized ||
-                        _propertyState.model!.type == ModelType.Root
-                    ? 1
-                    : 0.4,
+                opacity:
+                    property.isInitialized || _propertyState.model!.type == ModelType.Root
+                        ? 1
+                        : 0.4,
                 child: Container(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(

@@ -42,22 +42,19 @@ class FunctionProperty extends HookWidget {
     final _propertyState = useProvider(propertyState);
 
     void saveToTree(BlockController controller) {
-      _propertyState.updateProperty(
-        valueKey,
-        property.copyWith(
-          value: controller,
-          isInitialized: true,
-          forceValue: true,
-        ),
+      property.copyWith(
+        value: controller,
+        isInitialized: true,
+        forceValue: true,
       );
+      _propertyState.attachToTree();
     }
 
     WidgetModel _getRoot() {
       WidgetModel root = model;
       final controller = context.read(modelState).controller;
-      root = controller.children.firstWhere(
-          (e) => controller.getModel(e.key) != null,
-          orElse: () => root);
+      root = controller.children
+          .firstWhere((e) => controller.getModel(e.key) != null, orElse: () => root);
       return root;
     }
 
@@ -97,8 +94,7 @@ class FunctionProperty extends HookWidget {
         },
         maxHeight: property.value == null ||
                 //! fix: fix value should always be [BlockController]
-                (property.value is BlockController &&
-                    property.value.children.isEmpty)
+                (property.value is BlockController && property.value.children.isEmpty)
             ? 120
             : 200,
         // backgroundColor: Colors.blueAccent,

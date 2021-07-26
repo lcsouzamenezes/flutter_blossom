@@ -226,10 +226,9 @@ class PropertyEditWidget extends HookWidget {
                                         : null;
                               },
                               onTap: () {
-                                _propertyState.updateProperty(
-                                    propertyKey,
-                                    property.copyWith(
-                                        replaceable: !property.isReplaceable));
+                                property.copyWith(
+                                    replaceable: !property.isReplaceable);
+                                _propertyState.attachToTree();
                               },
                               child: Icon(
                                 property.isReplaceable
@@ -250,10 +249,9 @@ class PropertyEditWidget extends HookWidget {
                                         : null;
                               },
                               onTap: () {
-                                _propertyState.updateProperty(
-                                    propertyKey,
-                                    property.copyWith(
-                                        nullable: !property.isNullable));
+                                property.copyWith(
+                                    nullable: !property.isNullable);
+                                _propertyState.attachToTree();
                               },
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -291,10 +289,9 @@ class PropertyEditWidget extends HookWidget {
                                         : null;
                               },
                               onTap: () {
-                                _propertyState.updateProperty(
-                                    propertyKey,
-                                    property.copyWith(
-                                        finalStatus: !property.isFinal));
+                                property.copyWith(
+                                    finalStatus: !property.isFinal);
+                                _propertyState.attachToTree();
                               },
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,

@@ -44,7 +44,7 @@ class PropertyChangeButtons extends HookWidget {
         if (value.isNullable && value.inherit == null)
           InkWell(
             onTap: () {
-              _propertyState.updateProperty(valueKey, value.setAllToNull());
+              value.setAllToNull();
             },
             child: Icon(
               Icons.block_outlined,
@@ -55,10 +55,8 @@ class PropertyChangeButtons extends HookWidget {
         if (_propertyState.model!.type == ModelType.Root)
           InkWell(
             onTap: () {
-              _propertyState.updateProperty(
-                valueKey,
-                value.copyWith(replaceable: !value.isReplaceable),
-              );
+              value.copyWith(replaceable: !value.isReplaceable);
+              _propertyState.attachToTree();
             },
             child: Icon(
               value.isReplaceable
@@ -86,12 +84,10 @@ class PropertyChangeButtons extends HookWidget {
                           children: model.inheritData.entries
                               .map((e) => TextButton(
                                   onPressed: () {
-                                    _propertyState.updateProperty(
-                                      valueKey,
-                                      value.copyWith(
-                                          inherit: InheritData(e.key),
-                                          forceInherit: true),
-                                    );
+                                    value.copyWith(
+                                        inherit: InheritData(e.key),
+                                        forceInherit: true);
+                                    _propertyState.attachToTree();
                                     context.read(contextMenuState).clear();
                                   },
                                   child: Text(e.key)))
@@ -100,10 +96,8 @@ class PropertyChangeButtons extends HookWidget {
                       ));
                 }
               } else {
-                _propertyState.updateProperty(
-                  valueKey,
-                  value.copyWith(inherit: null, forceInherit: true),
-                );
+                value.copyWith(inherit: null, forceInherit: true);
+                _propertyState.attachToTree();
               }
             },
             child: Icon(

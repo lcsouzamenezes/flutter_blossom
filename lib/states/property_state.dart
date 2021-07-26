@@ -65,13 +65,8 @@ class PropertyViewNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  updateProperty(String key, Property property) {
-    // if (_model != null)
-    //   _ref.read(modelState).controller.updateModel(
-    //       _model!.key,
-    //       _model!.coptWith(
-    //           properties: model!.properties.map((k, value) =>
-    //               k == key ? MapEntry(k, property) : MapEntry(k, value))));
+  updatePropertyValue(Property property, dynamic value) {
+    property.resolveValue(value?.toString());
     _attachToTree();
     notifyListeners();
   }
@@ -91,6 +86,11 @@ class PropertyViewNotifier extends ChangeNotifier {
           _model!.coptWith(
               properties: _model!.properties
                 ..removeWhere((k, value) => k == key)));
+    _attachToTree();
+    notifyListeners();
+  }
+
+  attachToTree([force = false]) {
     _attachToTree();
     notifyListeners();
   }

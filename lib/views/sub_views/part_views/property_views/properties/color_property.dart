@@ -56,10 +56,8 @@ class ColorPropertyView extends HookWidget {
               color.value = c;
             },
             onColorChangeEnd: (c) {
-              _propertyState.updateProperty(
-                valueKey,
-                value.copyWith(value: c, isInitialized: true),
-              );
+              _propertyState.updatePropertyValue(value, value.encodeValue(c));
+
               _colorState.addToRecent(c);
             },
             padding: EdgeInsets.all(2.0),

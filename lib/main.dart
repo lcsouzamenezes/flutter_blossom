@@ -65,8 +65,13 @@ void main() async {
     yield LicenseEntryWithLineBreaks(['google_fonts'], interLicense);
   });
   CatcherOptions debugOptions = CatcherOptions(
-    DialogReportMode(),
-    [ConsoleHandler()],
+    SilentReportMode(),
+    [
+      ConsoleHandler(
+        enableDeviceParameters: false,
+        enableApplicationParameters: false,
+      )
+    ],
     filterFunction: _filterFunction,
     explicitExceptionHandlersMap: {},
   );
