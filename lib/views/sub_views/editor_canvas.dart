@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Flutter Blossom.  If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:convert';
+
 import 'package:better_print/better_print.dart'; // ignore: unused_import
 import 'package:flutter_blossom/components/context_menu_item.dart';
 import 'package:flutter_blossom/components/micro_components/context_menu_container.dart';
@@ -35,8 +37,8 @@ import 'package:blossom_canvas/blossom_canvas.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
-void generateFalseError() async {
-  throw ArgumentError("False");
+void generateFalseError(String arg) async {
+  throw ArgumentError(arg);
 }
 
 class EditorCanvas extends HookWidget {
@@ -61,6 +63,8 @@ class EditorCanvas extends HookWidget {
       });
       return;
     }, [_canvasPos]);
+
+    final uuid = Uuid();
 
     return Padding(
       padding: EdgeInsets.only(
@@ -99,12 +103,19 @@ class EditorCanvas extends HookWidget {
                 _canvasState.setSelectedBox(value);
               },
               onError: (details) {
-                generateFalseError();
+                String content = details.exceptionAsString();
+                if (content.contains('The ancestors of this widget were'))
+                  content = content.substring(
+                      0, content.indexOf('The ancestors of this widget were'));
+                final lines =
+                    LineSplitter().convert(content).map((e) => e.trim()).toList();
+                final id = uuid.v4();
+                generateFalseError(id);
                 Future.delayed(Duration(milliseconds: 0)).then(
                   (value) => context.read(consoleState).addMessage(
                         ConsoleMessage(
-                          id: Uuid().v4(),
-                          message: details.summary.toString(),
+                          id: id,
+                          message: lines.firstOrNull ?? 'Unknown error!',
                           type: ConsoleMessageType.error,
                         ),
                       ),

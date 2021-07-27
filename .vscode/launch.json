@@ -12,6 +12,30 @@
       "program": "lib/main.dart",
     },
     {
+      "name": "windows-profile",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "Windows",
+      "flutterMode": "profile",
+      "program": "lib/main.dart",
+    },
+    {
+      "name": "windows-release",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "Windows",
+      "flutterMode": "release",
+      "program": "lib/main.dart",
+    },
+    {
+      "name": "Edge-profile",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "Edge",
+      "flutterMode": "profile",
+      "program": "lib/main.dart",
+    },
+    {
       "name": "Edge",
       "request": "launch",
       "type": "dart",
@@ -24,6 +48,15 @@
       "type": "dart",
       "deviceId": "chrome",
       "program": "lib/main.dart",
+      "args": ["--no-sound-null-safety"]
+    },
+    {
+      "name": "Chrome-release",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "chrome",
+      "program": "lib/main.dart",
+      "flutterMode": "release",
       "args": ["--no-sound-null-safety"]
     },
   ]

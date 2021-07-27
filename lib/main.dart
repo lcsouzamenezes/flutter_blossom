@@ -70,7 +70,7 @@ void main() async {
 
   /// Release configuration. Same as above, but once user accepts dialog, user will be prompted to send email with crash to support.
   CatcherOptions releaseOptions = CatcherOptions(
-    DialogReportMode(),
+    CustomReportMode(),
     [
       EmailManualHandler(["work.sanihaq@gmail.com"])
     ],
@@ -89,6 +89,7 @@ void main() async {
     Catcher(
       runAppFunction: () => runApp(_app),
       debugConfig: debugOptions,
+      profileConfig: debugOptions,
       releaseConfig: releaseOptions,
       ensureInitialized: true,
     );
