@@ -25,8 +25,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:tree_view/node_model.dart';
 import 'package:flutter_widget_model/flutter_widget_model.dart';
 
-final propertyState =
-    ChangeNotifierProvider((ref) => PropertyViewNotifier(ref));
+final propertyState = ChangeNotifierProvider((ref) => PropertyViewNotifier(ref));
 
 class PropertyViewNotifier extends ChangeNotifier {
   final ProviderReference _ref;
@@ -67,14 +66,15 @@ class PropertyViewNotifier extends ChangeNotifier {
 
   updatePropertyValue(Property property, dynamic value) {
     property.resolveValue(value?.toString());
+    property.copyWith(isInitialized: true);
     _attachToTree();
     notifyListeners();
   }
 
   addProperty(Map<String, Property> property) {
     if (_model != null)
-      _ref.read(modelState).controller.updateModel(_model!.key,
-          _model!.coptWith(properties: model!.properties..addAll(property)));
+      _ref.read(modelState).controller.updateModel(
+          _model!.key, _model!.coptWith(properties: model!.properties..addAll(property)));
     _attachToTree(true);
     notifyListeners();
   }
@@ -84,8 +84,7 @@ class PropertyViewNotifier extends ChangeNotifier {
       _ref.read(modelState).controller.updateModel(
           _model!.key,
           _model!.coptWith(
-              properties: _model!.properties
-                ..removeWhere((k, value) => k == key)));
+              properties: _model!.properties..removeWhere((k, value) => k == key)));
     _attachToTree();
     notifyListeners();
   }
@@ -99,14 +98,14 @@ class PropertyViewNotifier extends ChangeNotifier {
     if (_model != null) {
       final Map<String, dynamic> data = {};
       _model!.properties.forEach((key, value) {
-        if (forceAttach ||
-            value.isInitialized ||
-            value.checkChildrenInitialized(value)) data[key] = value.asMap;
+        if (forceAttach || value.isInitialized || value.checkChildrenInitialized(value))
+          data[key] = value.asMap;
       });
       final node = _ref.read(treeState).controller.getNode(_model!.key);
       if (node != null) {
-        _ref.read(treeState).changeNode(
-            _model!.key, node.copyWith(data: data), _justUpdatedModel);
+        _ref
+            .read(treeState)
+            .changeNode(_model!.key, node.copyWith(data: data), _justUpdatedModel);
         _justUpdatedModel = false;
       } else
         betterPrint('error');
