@@ -94,9 +94,7 @@ class PropertyName extends HookWidget {
             onSubmitted: (newValue) {
               _deactivateEditMode();
               if (newValue != '') {
-                context
-                    .read(propertyState)
-                    .updatePropertyKey(propertyKey, newValue);
+                context.read(propertyState).updatePropertyKey(propertyKey, newValue);
               }
             },
             onFocusChange: (node) {
@@ -197,8 +195,7 @@ class PropertyEditWidget extends HookWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    if (propertyKey !=
-                        EnumToString.convertToString(property.type))
+                    if (propertyKey != EnumToString.convertToString(property.type))
                       Flexible(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 2.0),
@@ -221,13 +218,10 @@ class PropertyEditWidget extends HookWidget {
                             InkWell(
                               onHover: (val) {
                                 _isStarOnHover.value =
-                                    _isStarOnHover.value == null
-                                        ? propertyKey
-                                        : null;
+                                    _isStarOnHover.value == null ? propertyKey : null;
                               },
                               onTap: () {
-                                property.copyWith(
-                                    replaceable: !property.isReplaceable);
+                                property.copyWith(replaceable: !property.isReplaceable);
                                 _propertyState.attachToTree();
                               },
                               child: Icon(
@@ -236,29 +230,23 @@ class PropertyEditWidget extends HookWidget {
                                     : LineIcons.star,
                                 size: 16,
                                 color: Colors.grey.withOpacity(
-                                    _isStarOnHover.value == propertyKey
-                                        ? 0.7
-                                        : 0.5),
+                                    _isStarOnHover.value == propertyKey ? 0.7 : 0.5),
                               ),
                             ),
                             InkWell(
                               onHover: (val) {
                                 _isNullOnHover.value =
-                                    _isNullOnHover.value == null
-                                        ? propertyKey
-                                        : null;
+                                    _isNullOnHover.value == null ? propertyKey : null;
                               },
                               onTap: () {
-                                property.copyWith(
-                                    nullable: !property.isNullable);
+                                property.copyWith(nullable: !property.isNullable);
                                 _propertyState.attachToTree();
                               },
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 2.0),
+                                    padding: const EdgeInsets.symmetric(horizontal: 2.0),
                                     child: Icon(
                                         // e.isNullAccepted
                                         property.isNullable
@@ -284,30 +272,24 @@ class PropertyEditWidget extends HookWidget {
                             InkWell(
                               onHover: (val) {
                                 _isFinalOnHover.value =
-                                    _isFinalOnHover.value == null
-                                        ? propertyKey
-                                        : null;
+                                    _isFinalOnHover.value == null ? propertyKey : null;
                               },
                               onTap: () {
-                                property.copyWith(
-                                    finalStatus: !property.isFinal);
+                                property.copyWith(finalStatus: !property.isFinal);
                                 _propertyState.attachToTree();
                               },
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 2.0),
+                                    padding: const EdgeInsets.symmetric(horizontal: 2.0),
                                     child: Icon(
                                       property.isFinal
                                           ? Icons.check_box_outlined
                                           : Icons.check_box_outline_blank,
                                       size: 16,
                                       color: Colors.grey.withOpacity(
-                                        _isFinalOnHover.value == propertyKey
-                                            ? 0.7
-                                            : 0.5,
+                                        _isFinalOnHover.value == propertyKey ? 0.7 : 0.5,
                                       ),
                                     ),
                                   ),
@@ -325,9 +307,7 @@ class PropertyEditWidget extends HookWidget {
                             InkWell(
                               onHover: (val) {
                                 _isDeleteOnHover.value =
-                                    _isDeleteOnHover.value == null
-                                        ? propertyKey
-                                        : null;
+                                    _isDeleteOnHover.value == null ? propertyKey : null;
                               },
                               onTap: () {
                                 _propertyState.removeProperty(propertyKey);
@@ -336,9 +316,7 @@ class PropertyEditWidget extends HookWidget {
                                 LineIcons.times,
                                 size: 16,
                                 color: Colors.grey.withOpacity(
-                                    _isDeleteOnHover.value == propertyKey
-                                        ? 0.7
-                                        : 0.5),
+                                    _isDeleteOnHover.value == propertyKey ? 0.7 : 0.5),
                               ),
                             ),
                           ],
@@ -359,7 +337,7 @@ class PropertyEditWidget extends HookWidget {
           if (property.inherit == null)
             property.toWidget(propertyKey, (key, p, children) {
               switch (p.type) {
-                // ? properties that are too big to edit in sidebar should have their own on demand area specifically designed to handle that kind of property
+                // ? properties that are too big to edit in sidebar should have their own area specifically designed to handle them
                 case PropertyType.ThemeData:
                 case PropertyType.CupertinoThemeData:
                   return SizedBox();

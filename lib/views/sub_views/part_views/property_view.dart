@@ -78,10 +78,8 @@ class PropertyViewArea extends HookWidget {
     final showAll = useState(true);
 
     useEffect(() {
-      final w = context
-          .read(storageState)
-          .sharedPreferences
-          .getDouble('property-view-size');
+      final w =
+          context.read(storageState).sharedPreferences.getDouble('property-view-size');
       if (w != null && w != _width)
         Future.delayed(Duration(milliseconds: 100))
             .then((value) => context.read(treeViewNotifier.notifier).set(w));
@@ -139,11 +137,9 @@ class PropertyViewArea extends HookWidget {
                                         children: [
                                           Flexible(
                                             child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 5.0),
+                                              padding: const EdgeInsets.only(top: 5.0),
                                               child: Text(
-                                                _propertyState.model?.name ??
-                                                    '',
+                                                _propertyState.model?.name ?? '',
                                                 softWrap: false,
                                                 overflow: TextOverflow.fade,
                                                 style: Theme.of(context)
@@ -155,8 +151,7 @@ class PropertyViewArea extends HookWidget {
                                                             .textTheme
                                                             .bodyText1!
                                                             .color!
-                                                            .reverseBy(
-                                                                panelBodyBy)),
+                                                            .reverseBy(panelBodyBy)),
                                               ),
                                             ),
                                           ),
@@ -169,16 +164,14 @@ class PropertyViewArea extends HookWidget {
                                                     top: 5.0, left: 5.0),
                                                 child: Text(
                                                   EnumToString.convertToString(
-                                                      _propertyState
-                                                          .model!.type),
+                                                      _propertyState.model!.type),
                                                   softWrap: false,
                                                   overflow: TextOverflow.fade,
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .headline5
                                                       ?.copyWith(
-                                                        color: Colors
-                                                            .grey.shade600,
+                                                        color: Colors.grey.shade600,
                                                         fontSize: 12,
                                                       ),
                                                 ),
@@ -203,8 +196,7 @@ class PropertyViewArea extends HookWidget {
                                                   fontSize: 13,
                                                 ),
                                           ),
-                                        if (_propertyState.model?.type ==
-                                            ModelType.Root)
+                                        if (_propertyState.model?.type == ModelType.Root)
                                           TreeIconButton(
                                             key: newBtnKey,
                                             icon: LineIcons.plus,
@@ -212,18 +204,13 @@ class PropertyViewArea extends HookWidget {
                                             tooltip: 'Add Property',
                                             onTap: () {
                                               final offset =
-                                                  getCenterOffsetFromKey(
-                                                      newBtnKey);
+                                                  getCenterOffsetFromKey(newBtnKey);
                                               double hSize =
-                                                  MediaQuery.of(context)
-                                                          .size
-                                                          .height -
+                                                  MediaQuery.of(context).size.height -
                                                       offset.dy;
                                               hSize = hSize >= 400
                                                   ? hSize
-                                                  : MediaQuery.of(context)
-                                                      .size
-                                                      .height;
+                                                  : MediaQuery.of(context).size.height;
                                               _contextMenu.show(
                                                 id: 'property-list',
                                                 width: 300,
@@ -238,19 +225,13 @@ class PropertyViewArea extends HookWidget {
                                                     onTap: (value) {
                                                       String key =
                                                           'key${(context.read(propertyState).model!.properties.length + 1).toString()}';
-                                                      key = key == 'key1'
-                                                          ? 'key'
-                                                          : key;
-                                                      final p = addProperty(
-                                                          EnumToString
-                                                              .fromString(
-                                                                  PropertyType
-                                                                      .values,
-                                                                  value)!);
+                                                      key = key == 'key1' ? 'key' : key;
+                                                      final p = EnumToString.fromString(
+                                                              PropertyType.values, value)!
+                                                          .property;
                                                       context
                                                           .read(propertyState)
-                                                          .addProperty(
-                                                              {key: p});
+                                                          .addProperty({key: p});
                                                     },
                                                   ),
                                                 ),
@@ -259,8 +240,7 @@ class PropertyViewArea extends HookWidget {
                                           )
                                         else
                                           TreeIconButton(
-                                            icon: _propertyState
-                                                    .model!.isReplaceable
+                                            icon: _propertyState.model!.isReplaceable
                                                 ? LineIcons.starAlt
                                                 : LineIcons.star,
                                             size: 16,
@@ -268,9 +248,8 @@ class PropertyViewArea extends HookWidget {
                                             onTap: () {
                                               _propertyState.updateModel(
                                                   _propertyState.model!.coptWith(
-                                                      isReplaceable:
-                                                          !_propertyState.model!
-                                                              .isReplaceable));
+                                                      isReplaceable: !_propertyState
+                                                          .model!.isReplaceable));
                                             },
                                           ),
                                         TreeIconButton(
@@ -286,16 +265,16 @@ class PropertyViewArea extends HookWidget {
                                           },
                                         ),
                                         TreeIconButton(
-                                          icon:
-                                              context.read(treeState).lockKey ==
-                                                      _propertyState.model!.key
-                                                  ? LineIcons.lock
-                                                  : LineIcons.lockOpen,
+                                          icon: context.read(treeState).lockKey ==
+                                                  _propertyState.model!.key
+                                              ? LineIcons.lock
+                                              : LineIcons.lockOpen,
                                           size: 18,
                                           tooltip: 'Lock View',
                                           onTap: () {
-                                            context.read(treeState).setLock(
-                                                _propertyState.model!.key);
+                                            context
+                                                .read(treeState)
+                                                .setLock(_propertyState.model!.key);
                                           },
                                         ),
                                       ],
@@ -310,17 +289,14 @@ class PropertyViewArea extends HookWidget {
                                       _sortedProperties != null)
                                     ..._sortedProperties
                                         .map(
-                                          (e) => !showAll.value &&
-                                                  !e.value.isInitialized
+                                          (e) => !showAll.value && !e.value.isInitialized
                                               ? SizedBox()
                                               : Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
+                                                  mainAxisSize: MainAxisSize.min,
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
-                                                    PropertyEditWidget(
-                                                        e.key, e.value),
+                                                    PropertyEditWidget(e.key, e.value),
                                                     Divider(
                                                         // thickness: 0.8,
                                                         // color: Colors.grey

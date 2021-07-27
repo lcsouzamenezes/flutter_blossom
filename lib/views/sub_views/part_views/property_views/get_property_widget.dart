@@ -66,19 +66,19 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.Axis:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.AxisDirection:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.BackButtonDispatcher:
       // TODO: Handle this case.
       break;
     case PropertyType.BannerLocation:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.BlendMode:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.Bool:
       main = InkWell(
@@ -105,7 +105,7 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.BorderStyle:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.BottomAppBarTheme:
       // TODO: Handle this case.
@@ -132,16 +132,16 @@ Widget getPropertyWidget(
       main = _getGenericSelectProperty();
       break;
     case PropertyType.BoxHeightStyle:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.BoxShape:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.BoxWidthStyle:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.Brightness:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.BuildContext:
       // TODO: Handle this case.
@@ -177,7 +177,7 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.CollapseMode:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.Color:
       return ColorPropertyView(valueKey: key, value: property);
@@ -191,7 +191,7 @@ Widget getPropertyWidget(
       main = _getGenericSelectProperty();
       break;
     case PropertyType.CrossFadeState:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.CupertinoDatePickerMode:
       // TODO: Handle this case.
@@ -286,10 +286,10 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.DragStartBehavior:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.DrawerAlignment:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.Duration:
       // TODO: Handle this case.
@@ -316,13 +316,13 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.FilterQuality:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.FixedExtentScrollController:
       // TODO: Handle this case.
       break;
     case PropertyType.FlexFit:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.FloatingActionButtonAnimator:
       // TODO: Handle this case.
@@ -334,7 +334,7 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.FloatingLabelBehavior:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.FlowDelegate:
       // TODO: Handle this case.
@@ -343,7 +343,7 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.FlutterLogoStyle:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.FocusNode:
       // TODO: Handle this case.
@@ -391,7 +391,7 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.HitTestBehavior:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.Icon:
       // TODO: Handle this case.
@@ -467,10 +467,10 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.ListTileControlAffinity:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.ListTileStyle:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.ListWheelChildDelegate:
       // TODO: Handle this case.
@@ -503,13 +503,13 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.MaterialType:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.Matrix4:
       // TODO: Handle this case.
       break;
     case PropertyType.MaxLengthEnforcement:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.MediaQueryData:
       // TODO: Handle this case.
@@ -527,7 +527,7 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.NavigationRailLabelType:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.NavigationRailThemeData:
       // TODO: Handle this case.
@@ -554,13 +554,13 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.Overflow:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.OverflowBarAlignment:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.OverlayVisibilityMode:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.PageController:
       // TODO: Handle this case.
@@ -578,10 +578,10 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.PlatformViewHitTestBehavior:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.PointerDeviceKind:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.PopupMenuThemeData:
       // TODO: Handle this case.
@@ -614,7 +614,7 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.RefreshIndicatorTriggerMode:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.RelativeRect:
       // TODO: Handle this case.
@@ -647,7 +647,7 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.ScrollViewKeyboardDismissBehavior:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.ScrollbarThemeData:
       // TODO: Handle this case.
@@ -677,7 +677,7 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.ShowValueIndicator:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.SingleChildLayoutDelegate:
       // TODO: Handle this case.
@@ -710,25 +710,25 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.SmartDashesType:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.SmartQuotesType:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.SnackBarAction:
       // TODO: Handle this case.
       break;
     case PropertyType.SnackBarBehavior:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.SnackBarThemeData:
       // TODO: Handle this case.
       break;
     case PropertyType.StackFit:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.StepperType:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.Stream:
       // TODO: Handle this case.
@@ -749,7 +749,7 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.TabBarIndicatorSize:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.TabBarTheme:
       // TODO: Handle this case.
@@ -761,37 +761,38 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.TableCellVerticalAlignment:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.TableColumnWidth:
       // TODO: Handle this case.
       break;
     case PropertyType.TargetPlatform:
-      // TODO: Handle this case.
+      betterPrint('TargetPlatform');
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.TextAlign:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.TextAlignVertical:
       // TODO: Handle this case.
       break;
     case PropertyType.TextBaseline:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.TextButtonThemeData:
       // TODO: Handle this case.
       break;
     case PropertyType.TextCapitalization:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.TextDecoration:
       // TODO: Handle this case.
       break;
     case PropertyType.TextDecorationStyle:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.TextDirection:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.TextEditingController:
       // TODO: Handle this case.
@@ -800,16 +801,16 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.TextInputAction:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.TextInputType:
       // TODO: Handle this case.
       break;
     case PropertyType.TextLeadingDistribution:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.TextOverflow:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.TextSelectionControls:
       // TODO: Handle this case.
@@ -827,13 +828,13 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.TextWidthBasis:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.ThemeData:
       // TODO: Handle this case.
       break;
     case PropertyType.ThemeMode:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.TickerProvider:
       // TODO: Handle this case.
@@ -869,7 +870,7 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.VerticalDirection:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.ViewportOffset:
       // TODO: Handle this case.
@@ -881,10 +882,10 @@ Widget getPropertyWidget(
       // TODO: Handle this case.
       break;
     case PropertyType.WrapAlignment:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.WrapCrossAlignment:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
   }
   return Column(
