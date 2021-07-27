@@ -59,21 +59,13 @@ void main() async {
   LicenseRegistry.addLicense(() async* {
     final nunitoLicense =
         await rootBundle.loadString('assets/google_fonts/nunito_OFL.txt');
-    final interLicense =
-        await rootBundle.loadString('assets/google_fonts/inter_OFL.txt');
+    final interLicense = await rootBundle.loadString('assets/google_fonts/inter_OFL.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], nunitoLicense);
     yield LicenseEntryWithLineBreaks(['google_fonts'], interLicense);
   });
   CatcherOptions debugOptions = CatcherOptions(
-    SilentReportMode(),
-    [
-      ConsoleHandler(
-        enableDeviceParameters: false,
-        enableApplicationParameters: false,
-      )
-    ],
-    filterFunction: _filterFunction,
-    explicitExceptionHandlersMap: {},
+    CustomReportMode(),
+    [ConsoleHandler()],
   );
 
   /// Release configuration. Same as above, but once user accepts dialog, user will be prompted to send email with crash to support.
@@ -82,14 +74,13 @@ void main() async {
     [
       EmailManualHandler(["work.sanihaq@gmail.com"])
     ],
-    filterFunction: _filterFunction,
-    explicitExceptionHandlersMap: {},
   );
   if (kIsWeb) {
     await Firebase.initializeApp();
     Catcher(
       runAppFunction: () => runApp(_app),
       debugConfig: debugOptions,
+      profileConfig: debugOptions,
       releaseConfig: releaseOptions,
       ensureInitialized: true,
     );
@@ -103,19 +94,68 @@ void main() async {
     );
 }
 
-bool _filterFunction(Report report) {
-  if ('${report.error}'.contains('ModelWidgetWrapper')) {
-    betterPrint("Skipped error !!");
-    return false;
-  }
-  return true;
+Timer? timer;
+
+startTimer(void Function() callback) {
+  timer = Timer(const Duration(microseconds: 0), callback);
 }
 
-class CustomHandler extends ReportHandler {
+final List<Report> reportList = [];
+
+class CustomReportMode extends ReportMode {
   @override
-  Future<bool> handle(Report report, BuildContext? context) async {
-    //my implementation
-    return Future.value(true);
+  void requestAction(Report report, BuildContext? context) {
+    var stackTraceText = report.stackTrace.toString();
+    if (stackTraceText.contains("generateFalseError")) {
+      super.onActionRejected(report);
+      reportList.forEach((e) => super.onActionRejected(e));
+      reportList.clear();
+      timer?.cancel();
+    } else {
+      reportList.add(report);
+      timer?.cancel();
+      startTimer(() async {
+        if (kReleaseMode)
+          _showDialog(report);
+        else
+          super.onActionConfirmed(report);
+      });
+    }
+    // no action needed, request is automatically accepted
+  }
+
+  Future _showDialog(Report report) async {
+    final context = Catcher.navigatorKey?.currentState?.overlay?.context;
+    if (context != null)
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => WillPopScope(
+          onWillPop: () async {
+            super.onActionRejected(report);
+            return true;
+          },
+          child: AlertDialog(
+            title: Text('A Error occurred due to ${report.error}'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  super.onActionConfirmed(report);
+                  Navigator.pop(context);
+                },
+                child: Text('report'),
+              ),
+              TextButton(
+                onPressed: () {
+                  super.onActionRejected(report);
+                  Navigator.pop(context);
+                },
+                child: Text('ignore'),
+              ),
+            ],
+          ),
+        ),
+      );
   }
 
   @override
@@ -180,12 +220,9 @@ class App extends HookWidget {
   Widget build(BuildContext context) {
     // handle unforeseen error may cause app to not start
     useEffect(() {
-      final connectivity = Connectivity()
-          .onConnectivityChanged
-          .listen((ConnectivityResult result) {
-        context
-            .read(appState)
-            .setConnectivityStatus(result != ConnectivityResult.none);
+      final connectivity =
+          Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+        context.read(appState).setConnectivityStatus(result != ConnectivityResult.none);
         if (result != ConnectivityResult.none) {
           if (context.read(appState).latestUrl == null)
             context.read(appState).checkForUpdate();
@@ -201,9 +238,8 @@ class App extends HookWidget {
           context.read(storageState).setPreferences(prefs);
           Future.delayed(Duration(seconds: 1, milliseconds: 500)).then((value) {
             if (!context.read(isAppStarted).state)
-              context.read(appLocale).state =
-                  supportedLanguages.firstWhereOrNull(
-                      (e) => e.languageCode == (prefs.getString('app-locale')));
+              context.read(appLocale).state = supportedLanguages.firstWhereOrNull(
+                  (e) => e.languageCode == (prefs.getString('app-locale')));
             final isDark = prefs.getBool('app-is-dark');
             if (isDark != null)
               context.read(appThemeMode).state =

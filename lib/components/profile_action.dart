@@ -65,8 +65,7 @@ class ProfileAction extends HookWidget {
             height: _subMenuHeight,
             info: Row(
               children: [
-                if (_locale.state == e ||
-                    _locale.state == null && e.languageCode == 'en')
+                if (_locale.state == e || _locale.state == null && e.languageCode == 'en')
                   Icon(
                     LineIcons.check,
                     size: 12,
@@ -99,9 +98,7 @@ class ProfileAction extends HookWidget {
         onTap: () {
           _contextMenu.show(
             id: 'user-setting',
-            height:
-                _subMenuHeight * (kIsWeb && !_appState.isAppUpToDate ? 7 : 8) +
-                    2,
+            height: _subMenuHeight * (kIsWeb && !_appState.isAppUpToDate ? 7 : 8) + 2,
             menu: ContextMenuContainer(
               child: Column(
                 children: [
@@ -112,8 +109,7 @@ class ProfileAction extends HookWidget {
                       children: [
                         CircleAvatar(
                             radius: 24,
-                            backgroundColor:
-                                Theme.of(context).canvasColor.reverseBy(3)),
+                            backgroundColor: Theme.of(context).canvasColor.reverseBy(3)),
                         ContextMenuHintText(S.of(context).userMenuGuest)
                       ],
                     ),
@@ -156,8 +152,7 @@ class ProfileAction extends HookWidget {
                           milliseconds: 0,
                         )).then(
                           (_) {
-                            if (!value &&
-                                !_langList.any((e) => e.isOnHover == true))
+                            if (!value && !_langList.any((e) => e.isOnHover == true))
                               context.read(contextMenuState).clearSubMenus();
                           },
                         );
@@ -177,8 +172,10 @@ class ProfileAction extends HookWidget {
                       _themeMode.state = _themeMode.state == ThemeMode.dark
                           ? ThemeMode.light
                           : ThemeMode.dark;
-                      context.read(storageState).sharedPreferences.setBool(
-                          'app-is-dark', _themeMode.state == ThemeMode.dark);
+                      context
+                          .read(storageState)
+                          .sharedPreferences
+                          .setBool('app-is-dark', _themeMode.state == ThemeMode.dark);
                     },
                   ),
                   ContextMenuItem(
@@ -202,8 +199,7 @@ class ProfileAction extends HookWidget {
                             context.read(consoleState).addMessage(
                                   ConsoleMessage(
                                     id: uuid.v4(),
-                                    message:
-                                        'Update ${_appState.updateName} available',
+                                    message: 'Update ${_appState.updateName} available',
                                   ),
                                 );
                           else
@@ -237,8 +233,7 @@ class ProfileAction extends HookWidget {
                             return Dialog(
                               elevation: 0,
                               shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(contextMenuRadius.x),
+                                borderRadius: BorderRadius.circular(contextMenuRadius.x),
                               ),
                               backgroundColor:
                                   Theme.of(context).canvasColor.darken(darken2),
@@ -257,20 +252,15 @@ class ProfileAction extends HookWidget {
                                     Padding(
                                       padding: const EdgeInsets.only(left: 4.0),
                                       child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          Text(context
-                                              .read(appState)
-                                              .info
-                                              .version),
+                                          Text(context.read(appState).info.version),
                                           Padding(
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 2.0),
                                             child: Text(
                                               '+${AppStateViewNotifier.buildNo}',
-                                              style: TextStyle(
-                                                  color: Colors.white24),
+                                              style: TextStyle(color: Colors.white24),
                                             ),
                                           ),
                                         ],
@@ -280,14 +270,10 @@ class ProfileAction extends HookWidget {
                                       onPressed: () {
                                         showLicensePage(
                                           context: context,
-                                          applicationName: context
-                                              .read(appState)
-                                              .info
-                                              .appName,
-                                          applicationVersion: context
-                                              .read(appState)
-                                              .info
-                                              .version,
+                                          applicationName:
+                                              context.read(appState).info.appName,
+                                          applicationVersion:
+                                              context.read(appState).info.version,
                                         );
                                       },
                                       child: Text('Show License'),
@@ -303,6 +289,7 @@ class ProfileAction extends HookWidget {
                     S.of(context).userMenuSignIn,
                     height: _subMenuHeight,
                     onTap: () {
+                      context.read(contextMenuState).clear();
                       throw AssertionError("Sign in not available");
                     },
                   ),
@@ -325,8 +312,7 @@ class ProfileAction extends HookWidget {
                     : Theme.of(context).canvasColor.reverseBy(10),
               ),
             ),
-            if (_appState.updateUrl != null &&
-                _contextMenu.menu?.id != 'user-setting')
+            if (_appState.updateUrl != null && _contextMenu.menu?.id != 'user-setting')
               Padding(
                 padding: const EdgeInsets.only(left: 25.0, top: 8.0),
                 child: Icon(

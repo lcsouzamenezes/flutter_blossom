@@ -35,6 +35,10 @@ import 'package:blossom_canvas/blossom_canvas.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
+void generateFalseError() async {
+  throw ArgumentError("False");
+}
+
 class EditorCanvas extends HookWidget {
   static const id = "canvas-view-area";
 
@@ -46,8 +50,8 @@ class EditorCanvas extends HookWidget {
     final _editorLayout = useProvider(editorLayout);
     final _propertyWidth = useProvider(propertyViewAreaSize);
     final _treeWidth = useProvider(treeViewAreaSize);
-    final _canvasPos = _editorLayout.list
-        .indexWhere((e) => e.id == "canvas-overlay-view-area");
+    final _canvasPos =
+        _editorLayout.list.indexWhere((e) => e.id == "canvas-overlay-view-area");
     bool _skip = false;
 
     useEffect(() {
@@ -86,17 +90,16 @@ class EditorCanvas extends HookWidget {
                   context.read(contextMenuState).clear();
                 if (value && item != null) {
                   _skip = item.rootKey != _canvasState.selectedKey;
-                  _canvasState
-                      .setSelectBox(_canvasState.selectBox?.shift(delta));
+                  _canvasState.setSelectBox(_canvasState.selectBox?.shift(delta));
                 }
-                if (value && item == null && !_skip)
-                  _canvasState.shiftSelectedBox(delta);
+                if (value && item == null && !_skip) _canvasState.shiftSelectedBox(delta);
               },
               onZoom: (value) {
                 _canvasState.setSelectBox(null);
                 _canvasState.setSelectedBox(value);
               },
               onError: (details) {
+                generateFalseError();
                 Future.delayed(Duration(milliseconds: 0)).then(
                   (value) => context.read(consoleState).addMessage(
                         ConsoleMessage(
@@ -109,8 +112,7 @@ class EditorCanvas extends HookWidget {
               },
               onDeviceChange: (item, pos) {
                 final _menu = context.read(contextMenuState);
-                final height =
-                    contextMenuItemHeight * deviceSizeTemplate.length;
+                final height = contextMenuItemHeight * deviceSizeTemplate.length;
                 Future.delayed(Duration(milliseconds: 150)).then(
                   (value) => _menu.show(
                     id: 'canvas-device-list',
@@ -131,8 +133,7 @@ class EditorCanvas extends HookWidget {
                                 onTap: () {
                                   item.setSize(e.key, e.value);
                                   _canvasState.notify();
-                                  Future.delayed(Duration(milliseconds: 100))
-                                      .then(
+                                  Future.delayed(Duration(milliseconds: 100)).then(
                                     (value) => _canvasState.setSelectedBox(),
                                   );
                                 },
@@ -156,23 +157,19 @@ class EditorCanvas extends HookWidget {
             ),
             if (_enableControls.state)
               Transform.translate(
-                offset: Offset(
-                    _canvasPos == 2 ? -(_treeWidth + _propertyWidth) : 0, 0),
+                offset: Offset(_canvasPos == 2 ? -(_treeWidth + _propertyWidth) : 0, 0),
                 child: CustomPaint(
                     painter: _canvasState.selectedBox != null
-                        ? SelectBoxPainter(
-                            _canvasState.selectedBox!, Colors.orange)
+                        ? SelectBoxPainter(_canvasState.selectedBox!, Colors.orange)
                         : null),
               ),
             if (_enableControls.state)
               Transform.translate(
-                offset: Offset(
-                    _canvasPos == 2 ? -(_treeWidth + _propertyWidth) : 0, 0),
+                offset: Offset(_canvasPos == 2 ? -(_treeWidth + _propertyWidth) : 0, 0),
                 child: CustomPaint(
-                  painter:
-                      _canvasState.selectBox != null && _showSelectBox.value
-                          ? SelectBoxPainter(_canvasState.selectBox!)
-                          : null,
+                  painter: _canvasState.selectBox != null && _showSelectBox.value
+                      ? SelectBoxPainter(_canvasState.selectBox!)
+                      : null,
                 ),
               ),
           ],
