@@ -89,8 +89,7 @@ class StringField extends HookWidget {
         },
         text: _value.value?.toString() ?? value,
       )..selection = TextSelection(
-          baseOffset:
-              autofocus ? 0 : _value.value?.toString().length ?? value.length,
+          baseOffset: autofocus ? 0 : _value.value?.toString().length ?? value.length,
           extentOffset: _value.value?.toString().length ?? value.length,
         ),
       onChanged: (v) => _text = v,
@@ -106,9 +105,11 @@ class StringField extends HookWidget {
                   cursor: SystemMouseCursors.resizeColumn,
                   child: GestureDetector(
                     onHorizontalDragDown: (_) {
-                      if (value != '')
-                        _value.value =
-                            isDouble ? double.parse(value) : int.parse(value);
+                      _value.value = value == ''
+                          ? 0
+                          : isDouble
+                              ? double.parse(value)
+                              : int.parse(value);
                     },
                     onHorizontalDragUpdate: (d) {
                       if (d.delta.dx.abs() < 2) return;
@@ -118,9 +119,7 @@ class StringField extends HookWidget {
                             _value.value += 0.5;
                           else
                             _value.value -=
-                                !allowNegative && _value.value - 0.5 <= 0
-                                    ? 0
-                                    : 0.5;
+                                !allowNegative && _value.value - 0.5 <= 0 ? 0 : 0.5;
                         } else {
                           if (d.delta.dx > 0)
                             _value.value++;
@@ -161,10 +160,7 @@ class StringField extends HookWidget {
             : null,
         hintText: '',
         contentPadding: EdgeInsets.only(
-            left: isDouble || isInt ? 2.0 : 4.0,
-            right: 4.0,
-            top: 4.0,
-            bottom: 4.0),
+            left: isDouble || isInt ? 2.0 : 4.0, right: 4.0, top: 4.0, bottom: 4.0),
         isDense: true,
         border: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.blue, width: 1.0),

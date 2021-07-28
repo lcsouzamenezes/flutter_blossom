@@ -82,8 +82,7 @@ Widget getPropertyWidget(BuildContext context, String parentKey, String key,
       break;
     case PropertyType.Bool:
       main = InkWell(
-        onTap: () => _propertyState.updatePropertyValue(
-            property, property.value != null ? !property.value : false),
+        onTap: () => _propertyState.updatePropertyValue(property, !property.value),
         child: Icon(
           property.value ?? false
               ? Icons.check_box_outlined
