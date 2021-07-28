@@ -115,7 +115,7 @@ class PropertyName extends HookWidget {
                 message: propertyKey,
                 waitDuration: Duration(milliseconds: 600),
                 child: Text(
-                  propertyKey,
+                  propertyKey.separate.capitalize,
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
                         color: Theme.of(context)
                             .textTheme
@@ -335,6 +335,7 @@ class PropertyEditWidget extends HookWidget {
         ),
         if (editValue.value)
           if (property.inherit == null)
+            // also responsible dor laying out children of property
             property.toWidget(propertyKey, (key, p, children) {
               switch (p.type) {
                 // ? properties that are too big to edit in sidebar should have their own area specifically designed to handle them
@@ -342,7 +343,7 @@ class PropertyEditWidget extends HookWidget {
                 case PropertyType.CupertinoThemeData:
                   return SizedBox();
                 default:
-                  return getPropertyWidget(context, key, p, children);
+                  return getPropertyWidget(context, propertyKey, key, p, children);
               }
             })
           else

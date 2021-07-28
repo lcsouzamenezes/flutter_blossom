@@ -65,7 +65,10 @@ class PropertyViewNotifier extends ChangeNotifier {
   }
 
   updatePropertyValue(Property property, dynamic value) {
-    property.resolveValue(value?.toString());
+    property.resolveValue({
+      'value': value,
+      'children': <String, dynamic>{}
+    }); // ? shouldn't be using this function
     property.copyWith(isInitialized: true);
     _attachToTree();
     notifyListeners();

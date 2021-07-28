@@ -17,8 +17,8 @@ import 'package:flutter_widget_model/types.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// get property editing widget by type
-Widget getPropertyWidget(
-    BuildContext context, String key, Property property, List<Widget> children) {
+Widget getPropertyWidget(BuildContext context, String parentKey, String key,
+    Property property, List<Widget> children) {
   final _propertyState = context.read(propertyState);
   Widget? main;
   _getGenericSelectProperty() => SelectProperty(
@@ -889,7 +889,19 @@ Widget getPropertyWidget(
       break;
   }
   return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisSize: MainAxisSize.min,
     children: [
+      if (main == null && parentKey != key)
+        Opacity(
+          opacity: property.isInitialized || _propertyState.model!.type == ModelType.Root
+              ? 1
+              : 0.4,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(key.separate.capitalize),
+          ),
+        ),
       if (main != null)
         Row(
           mainAxisSize: MainAxisSize.max,
@@ -902,7 +914,7 @@ Widget getPropertyWidget(
                     property.isInitialized || _propertyState.model!.type == ModelType.Root
                         ? 1
                         : 0.4,
-                child: Container(
+                child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     key.separate.capitalize,
@@ -914,7 +926,7 @@ Widget getPropertyWidget(
             Flexible(
               flex: 3,
               fit: FlexFit.tight,
-              child: Container(
+              child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
