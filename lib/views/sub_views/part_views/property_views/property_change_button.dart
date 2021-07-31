@@ -59,9 +59,7 @@ class PropertyChangeButtons extends HookWidget {
               _propertyState.attachToTree();
             },
             child: Icon(
-              value.isReplaceable
-                  ? Icons.lock_open_outlined
-                  : Icons.lock_outline,
+              value.isReplaceable ? Icons.lock_open_outlined : Icons.lock_outline,
               size: 16,
               color: Colors.grey.withOpacity(0.6),
             ),
@@ -72,8 +70,7 @@ class PropertyChangeButtons extends HookWidget {
               if (value.inherit == null) {
                 final model = _propertyState.model;
                 if (model != null) {
-                  final pos =
-                      getCenterOffsetFromKey(inheritKey) - Offset(0, 25);
+                  final pos = getCenterOffsetFromKey(inheritKey) - Offset(0, 25);
                   context.read(contextMenuState).show(
                       id: 'asdxcs',
                       offset: pos,
@@ -82,15 +79,17 @@ class PropertyChangeButtons extends HookWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: model.inheritData.entries
-                              .map((e) => TextButton(
-                                  onPressed: () {
-                                    value.copyWith(
-                                        inherit: InheritData(e.key),
-                                        forceInherit: true);
-                                    _propertyState.attachToTree();
-                                    context.read(contextMenuState).clear();
-                                  },
-                                  child: Text(e.key)))
+                              .map((e) => e.value.type == value.type
+                                  ? TextButton(
+                                      onPressed: () {
+                                        value.copyWith(
+                                            inherit: InheritData(e.key),
+                                            forceInherit: true);
+                                        _propertyState.attachToTree();
+                                        context.read(contextMenuState).clear();
+                                      },
+                                      child: Text(e.key))
+                                  : SizedBox())
                               .toList(),
                         ),
                       ));

@@ -55,6 +55,7 @@ extension MapExtensions on Map<String, dynamic> {
 
 extension StringExtension on String {
   String get capitalize => "${this[0].toUpperCase()}${this.substring(1)}";
+  String get unCapitalize => "${this[0].toLowerCase()}${this.substring(1)}";
   String get separate =>
       this.split(RegExp(r"(?<=[a-z])(?=[A-Z])")).join(' ').substring(0);
 }
@@ -68,8 +69,7 @@ extension ColorManipulatorExtension on Color {
       g: this.green.toDouble(),
       b: this.blue.toDouble(),
     );
-    return HslColor(
-        h: hsl.h * 360, s: hsl.s, l: hsl.l, a: this.alpha.toDouble());
+    return HslColor(h: hsl.h * 360, s: hsl.s, l: hsl.l, a: this.alpha.toDouble());
   }
 
   /// Lighten the color a given amount, from 0 to 100. Providing 100 will always return white.
@@ -88,8 +88,7 @@ extension ColorManipulatorExtension on Color {
   Color shade([int amount = 10]) => ColorManipulator(this).shade(amount);
 
   /// Desaturate the color a given amount, from 0 to 100. Providing 100 will is the same as calling greyscale.
-  Color desaturate([int amount = 10]) =>
-      ColorManipulator(this).desaturate(amount);
+  Color desaturate([int amount = 10]) => ColorManipulator(this).desaturate(amount);
 
   /// Saturate the color a given amount, from 0 to 100.
   Color saturate([int amount = 10]) => ColorManipulator(this).saturate(amount);

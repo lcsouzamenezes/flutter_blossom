@@ -223,15 +223,21 @@ class PropertyViewArea extends HookWidget {
                                                         PropertyType.values),
                                                     height: hSize,
                                                     onTap: (value) {
-                                                      String key =
-                                                          'key${(context.read(propertyState).model!.properties.length + 1).toString()}';
-                                                      key = key == 'key1' ? 'key' : key;
                                                       final p = EnumToString.fromString(
-                                                              PropertyType.values, value)!
-                                                          .property;
+                                                          PropertyType.values, value)!;
+                                                      final int i = context
+                                                          .read(propertyState)
+                                                          .model!
+                                                          .properties
+                                                          .values
+                                                          .where((e) => e.type == p)
+                                                          .length;
                                                       context
                                                           .read(propertyState)
-                                                          .addProperty({key: p});
+                                                          .addProperty({
+                                                        '${i == 0 ? value.unCapitalize : value.unCapitalize + "${i + 1}"}':
+                                                            p.property
+                                                      });
                                                     },
                                                   ),
                                                 ),
