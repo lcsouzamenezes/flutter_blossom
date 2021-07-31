@@ -23,14 +23,14 @@ Widget getPropertyWidget(BuildContext context, String parentKey, String key,
   Widget? main;
   _getGenericSelectProperty() => SelectProperty(
         options: property.availableValues,
-        selectedValue: property.value == null ? null : property.encodeValue(),
+        selectedValue: property.getValue == null ? null : property.encodeValue(),
         onSelect: (v) {
           _propertyState.updatePropertyValue(property, v);
         },
       );
   switch (property.type) {
     case PropertyType.Action:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.ActionDispatcher:
       // TODO: Handle this case.
@@ -39,7 +39,7 @@ Widget getPropertyWidget(BuildContext context, String parentKey, String key,
       main = _getGenericSelectProperty();
       break;
     case PropertyType.AlignmentGeometry:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.AndroidViewController:
       // TODO: Handle this case.
@@ -82,9 +82,10 @@ Widget getPropertyWidget(BuildContext context, String parentKey, String key,
       break;
     case PropertyType.Bool:
       main = InkWell(
-        onTap: () => _propertyState.updatePropertyValue(property, !property.value),
+        onTap: () =>
+            _propertyState.updatePropertyValue(property, !(property.getValue ?? false)),
         child: Icon(
-          property.value ?? false
+          property.getValue ?? false
               ? Icons.check_box_outlined
               : Icons.check_box_outline_blank,
           color: Colors.grey.withOpacity(0.6),
@@ -241,7 +242,7 @@ Widget getPropertyWidget(BuildContext context, String parentKey, String key,
       // TODO: Handle this case.
       break;
     case PropertyType.Decoration:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.DecorationImage:
       // TODO: Handle this case.
@@ -263,19 +264,19 @@ Widget getPropertyWidget(BuildContext context, String parentKey, String key,
           ? OpacitySliderProperty(
               color:
                   property.parent != null && property.parent!.type == PropertyType.Color
-                      ? property.parent!.value
+                      ? property.parent!.getValue
                       : property.children.values.any((x) => x.type == PropertyType.Color)
                           ? property.children.values
                               .firstWhere((y) => y.type == PropertyType.Color)
-                              .value
+                              .getValue
                           : null,
-              value: property.value ?? 1.0,
+              value: property.getValue ?? 1.0,
               onChange: (val) {
                 _propertyState.updatePropertyValue(property, val);
               },
             )
           : StringField(
-              value: property.value == null ? '' : property.value.toString(),
+              value: property.getValue == null ? '' : property.getValue.toString(),
               formatter: [doubleFormatter],
               isDouble: true,
               onSubmitted: (v) => _propertyState.updatePropertyValue(property, v),
@@ -360,7 +361,7 @@ Widget getPropertyWidget(BuildContext context, String parentKey, String key,
       main = _getGenericSelectProperty();
       break;
     case PropertyType.FontWeight:
-      // TODO: Handle this case.
+      main = _getGenericSelectProperty();
       break;
     case PropertyType.Function:
       return FunctionProperty(
@@ -398,7 +399,7 @@ Widget getPropertyWidget(BuildContext context, String parentKey, String key,
     case PropertyType.IconData:
       main = SelectProperty(
         options: property.availableValues,
-        selectedValue: property.value == null ? null : property.encodeValue(),
+        selectedValue: property.getValue == null ? null : property.encodeValue(),
         infoList: Map.fromIterable(
           property.availableValues,
           key: (value) => '$value',
@@ -444,7 +445,7 @@ Widget getPropertyWidget(BuildContext context, String parentKey, String key,
       break;
     case PropertyType.Int:
       main = StringField(
-        value: property.value == null ? '' : property.value.toString(),
+        value: property.getValue == null ? '' : property.getValue.toString(),
         formatter: [FilteringTextInputFormatter.digitsOnly],
         isInt: true,
         onSubmitted: (v) => _propertyState.updatePropertyValue(property, v),
@@ -734,7 +735,7 @@ Widget getPropertyWidget(BuildContext context, String parentKey, String key,
       break;
     case PropertyType.String:
       main = StringField(
-        value: property.value == null ? '' : property.value.toString(),
+        value: property.getValue == null ? '' : property.getValue.toString(),
         onSubmitted: (v) => _propertyState.updatePropertyValue(property, v),
       );
       break;
