@@ -16,5 +16,6 @@
 // along with Flutter Blossom.  If not, see <http://www.gnu.org/licenses/>.
 
 final List<String> templates = [
+  "blossom_hello",
   "blossom_counter",
 ];

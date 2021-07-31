@@ -67,6 +67,120 @@
                     "allowNull": false,
                     "replaceable": false,
                     "children": {}
+                  },
+                  "style": {
+                    "value": null,
+                    "type": "TextStyle",
+                    "constructor": "default",
+                    "inherit": {
+                      "key": "textStyle",
+                      "type": "local"
+                    },
+                    "final": true,
+                    "allowNull": true,
+                    "replaceable": false,
+                    "children": {
+                      "inherit": {
+                        "value": false,
+                        "type": "Bool",
+                        "constructor": "default",
+                        "inherit": null,
+                        "final": true,
+                        "allowNull": false,
+                        "replaceable": false,
+                        "children": {}
+                      },
+                      "color": {
+                        "value": "4f8fc2",
+                        "type": "Color",
+                        "constructor": "default",
+                        "inherit": null,
+                        "final": true,
+                        "allowNull": true,
+                        "replaceable": false,
+                        "children": {}
+                      },
+                      "backgroundColor": {
+                        "value": "58bbdc",
+                        "type": "Color",
+                        "constructor": "default",
+                        "inherit": null,
+                        "final": true,
+                        "allowNull": true,
+                        "replaceable": false,
+                        "children": {}
+                      },
+                      "fontSize": {
+                        "value": 40.0,
+                        "type": "Double",
+                        "constructor": "default",
+                        "inherit": null,
+                        "final": true,
+                        "allowNull": true,
+                        "replaceable": false,
+                        "children": {}
+                      },
+                      "fontWeight": {
+                        "value": "w700",
+                        "type": "FontWeight",
+                        "constructor": "default",
+                        "inherit": null,
+                        "final": true,
+                        "allowNull": true,
+                        "replaceable": false,
+                        "children": {}
+                      },
+                      "fontStyle": {
+                        "value": "italic",
+                        "type": "FontStyle",
+                        "constructor": "default",
+                        "inherit": null,
+                        "final": true,
+                        "allowNull": true,
+                        "replaceable": false,
+                        "children": {}
+                      },
+                      "textBaseline": {
+                        "value": "alphabetic",
+                        "type": "TextBaseline",
+                        "constructor": "default",
+                        "inherit": null,
+                        "final": true,
+                        "allowNull": true,
+                        "replaceable": false,
+                        "children": {}
+                      },
+                      "height": {
+                        "value": 0.0,
+                        "type": "Double",
+                        "constructor": "default",
+                        "inherit": null,
+                        "final": true,
+                        "allowNull": true,
+                        "replaceable": false,
+                        "children": {}
+                      },
+                      "decorationStyle": {
+                        "value": "wavy",
+                        "type": "TextDecorationStyle",
+                        "constructor": "default",
+                        "inherit": null,
+                        "final": true,
+                        "allowNull": true,
+                        "replaceable": false,
+                        "children": {}
+                      },
+                      "decorationThickness": {
+                        "value": 2.0,
+                        "type": "Double",
+                        "constructor": "default",
+                        "inherit": null,
+                        "final": true,
+                        "allowNull": true,
+                        "replaceable": false,
+                        "children": {}
+                      }
+                    }
                   }
                 },
                 "children": []
