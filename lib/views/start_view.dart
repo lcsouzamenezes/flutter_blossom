@@ -44,8 +44,7 @@ import 'package:tree_view/node_model.dart';
 final isEditorLoading = StateProvider((_) => false);
 
 class StartScreenArgument {
-  StartScreenArgument(
-      {this.file, this.data, this.isNew = false, this.suggestedName});
+  StartScreenArgument({this.file, this.data, this.isNew = false, this.suggestedName});
   final XFile? file;
   final Map<String, dynamic>? data;
   final bool isNew;
@@ -95,8 +94,7 @@ class StartScreen extends HookWidget {
                 children: [
                   Scaffold(
                     appBar: PreferredSize(
-                      preferredSize:
-                          Size.fromHeight(EditorScreen.appBarHeight + 8),
+                      preferredSize: Size.fromHeight(EditorScreen.appBarHeight + 8),
                       child: AppBar(
                         elevation: 1,
                         title: Text(
@@ -133,18 +131,15 @@ class StartScreen extends HookWidget {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 12.0, vertical: 4.0),
                                   child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text('Recently opened'),
                                       Row(
                                         children: [
                                           if (_treeState.recents.isNotEmpty)
                                             Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 4.0),
-                                              child:
-                                                  StartNewProjectButton(true),
+                                              padding: const EdgeInsets.only(right: 4.0),
+                                              child: StartNewProjectButton(true),
                                             ),
                                           StartNewProjectButton(false),
                                         ],
@@ -156,8 +151,7 @@ class StartScreen extends HookWidget {
                                   height: 2,
                                 ),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                   child: Wrap(
                                     spacing: 8,
                                     runSpacing: 8,
@@ -166,25 +160,19 @@ class StartScreen extends HookWidget {
                                         ..._treeState.recents
                                             .map(
                                               (e) => Padding(
-                                                padding:
-                                                    const EdgeInsets.all(2.0),
-                                                child:
-                                                    StartFromRecentsProjectButton(
+                                                padding: const EdgeInsets.all(2.0),
+                                                child: StartFromRecentsProjectButton(
                                                   file: e,
                                                   onTap: () {
-                                                    context
-                                                        .read(isEditorLoading)
-                                                        .state = true;
-                                                    Navigator.pushNamed(
-                                                            context,
-                                                            EditorScreen
-                                                                .routeName,
+                                                    context.read(isEditorLoading).state =
+                                                        true;
+                                                    Navigator.pushNamed(context,
+                                                            EditorScreen.routeName,
                                                             arguments:
                                                                 StartScreenArgument(
                                                                     file: e))
                                                         .then((value) => context
-                                                            .read(
-                                                                isEditorLoading)
+                                                            .read(isEditorLoading)
                                                             .state = false);
                                                   },
                                                   key: ValueKey(e.path),
@@ -192,8 +180,7 @@ class StartScreen extends HookWidget {
                                               ),
                                             )
                                             .toList(),
-                                      if (_treeState.recents.length < 12)
-                                        OpenBox()
+                                      if (_treeState.recents.length < 12) OpenBox()
                                     ],
                                   ),
                                 ),
@@ -201,14 +188,12 @@ class StartScreen extends HookWidget {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 12.0, vertical: 8.0),
                                   child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [Text('Templates'), SizedBox()],
                                   ),
                                 ),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                   child: Wrap(
                                     spacing: 8,
                                     runSpacing: 8,
@@ -216,10 +201,8 @@ class StartScreen extends HookWidget {
                                       ...templates
                                           .map(
                                             (e) => Padding(
-                                              padding:
-                                                  const EdgeInsets.all(2.0),
-                                              child: TemplateProjectButton(
-                                                  template: e),
+                                              padding: const EdgeInsets.all(2.0),
+                                              child: TemplateProjectButton(template: e),
                                             ),
                                           )
                                           .toList()
@@ -249,14 +232,11 @@ class StartScreen extends HookWidget {
                       child: Center(
                         child: FutureBuilder(
                           future: Future.delayed(Duration(milliseconds: 500)),
-                          builder: (c, s) =>
-                              s.connectionState == ConnectionState.done
-                                  ? CircularProgressIndicator(
-                                      color: Theme.of(context)
-                                          .canvasColor
-                                          .reverseBy(15),
-                                    )
-                                  : SizedBox(),
+                          builder: (c, s) => s.connectionState == ConnectionState.done
+                              ? CircularProgressIndicator(
+                                  color: Theme.of(context).canvasColor.reverseBy(15),
+                                )
+                              : SizedBox(),
                         ),
                       ),
                     )
@@ -372,8 +352,7 @@ class TemplateProjectButton extends HookWidget {
       child: Card(
         color: Theme.of(context).canvasColor.by(6),
         shape: RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.all(Radius.circular(isOnHover.value ? 6.0 : 12.0)),
+          borderRadius: BorderRadius.all(Radius.circular(isOnHover.value ? 6.0 : 12.0)),
         ),
         elevation: isOnHover.value ? 3 : 1,
         margin: const EdgeInsets.all(0),
@@ -479,8 +458,7 @@ class StartFromRecentsProjectButton extends HookWidget {
       child: Card(
         color: Theme.of(context).canvasColor.by(3),
         shape: RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.all(Radius.circular(isOnHover.value ? 6.0 : 12.0)),
+          borderRadius: BorderRadius.all(Radius.circular(isOnHover.value ? 6.0 : 12.0)),
         ),
         elevation: isOnHover.value ? 3 : 1,
         margin: const EdgeInsets.all(0),
@@ -589,19 +567,15 @@ class StartNewProjectButton extends HookWidget {
                   text: TextSpan(
                 text: openLast ? 'continue with ' : 'New',
                 style: openLast
-                    ? TextStyle(
-                        color:
-                            isOnHover.value ? Colors.white60 : Colors.white30)
-                    : TextStyle(
-                        color: isOnHover.value ? Colors.white : Colors.white70),
+                    ? TextStyle(color: isOnHover.value ? Colors.white60 : Colors.white30)
+                    : TextStyle(color: isOnHover.value ? Colors.white : Colors.white70),
                 children: [
                   if (openLast)
                     TextSpan(
                       text:
                           '${context.read(treeState).recents.firstOrNull?.name.replaceFirst('.json', '')}',
                       style: TextStyle(
-                          color:
-                              isOnHover.value ? Colors.white : Colors.white70),
+                          color: isOnHover.value ? Colors.white : Colors.white70),
                     )
                 ],
               ))

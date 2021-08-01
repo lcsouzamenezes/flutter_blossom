@@ -32,6 +32,7 @@
   "userMenuUpToDate": "Using Latest Version",
   "userMenuAbout": "About",
   "userMenuSignIn": "Sign in",
+  "userMenuSignOut": "Sign out",
   "userMenuGuest": "Guest",
   "treeMenuRename": "Rename Tree",
   "treeMenuMoveUp": "Move Up",

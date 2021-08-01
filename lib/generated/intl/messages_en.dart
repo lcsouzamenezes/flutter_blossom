@@ -89,6 +89,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "userMenuLanguage": MessageLookupByLibrary.simpleMessage("Language"),
         "userMenuSetting": MessageLookupByLibrary.simpleMessage("Settings"),
         "userMenuSignIn": MessageLookupByLibrary.simpleMessage("Sign in"),
+        "userMenuSignOut": MessageLookupByLibrary.simpleMessage("Sign out"),
         "userMenuUpToDate":
             MessageLookupByLibrary.simpleMessage("Using Latest Version"),
         "userMenuUpdateAvailable":

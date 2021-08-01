@@ -19,6 +19,7 @@
     "userMenuUpToDate",
     "userMenuAbout",
     "userMenuSignIn",
+    "userMenuSignOut",
     "userMenuGuest",
     "treeMenuRename",
     "treeMenuMoveUp",

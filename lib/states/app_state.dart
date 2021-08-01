@@ -20,6 +20,7 @@ import 'dart:ui';
 import 'package:better_print/better_print.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:github/github.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -47,7 +48,12 @@ class AppStateViewNotifier extends ChangeNotifier {
   late Size _windowSize;
   bool _isAppUpToDate = true;
   String _updateName = '';
+  Authentication _auth = Authentication.anonymous();
+  GitHub _github = GitHub(auth: Authentication.anonymous());
+  CurrentUser? _user;
 
+  GitHub get github => _github;
+  CurrentUser? get user => _user;
   bool get isStarted => _ref.read(isAppStarted).state;
   bool get isAppStartupCompleted => _isAppStartupCompleted;
   Locale? get locale => _ref.read(appLocale).state;
@@ -64,6 +70,19 @@ class AppStateViewNotifier extends ChangeNotifier {
   setConnectivityStatus(bool arg) {
     _isAppConnectedToNetwork = arg;
     notifyListeners();
+  }
+
+  setAuth(Authentication auth) {
+    _auth = auth;
+    _github = GitHub(auth: _auth);
+    if (_auth.isAnonymous) {
+      _user = null;
+      notifyListeners();
+    } else
+      github.users.getCurrentUser().then((user) {
+        _user = user;
+        notifyListeners();
+      });
   }
 
   start(
@@ -119,8 +138,7 @@ class AppStateViewNotifier extends ChangeNotifier {
   ///
   /// set [shouldTestAsyncErrorOnInit] to`true`to cause an async error to be thrown during initialization
   /// and to test that runZonedGuarded() catches the error
-  Future<void> initializeFlutterFire(
-      bool isTest, bool shouldTestAsyncErrorOnInit) async {
+  Future<void> initializeFlutterFire(bool isTest, bool shouldTestAsyncErrorOnInit) async {
     // Wait for Firebase to initialize
 
     if (isTest) {
@@ -129,8 +147,7 @@ class AppStateViewNotifier extends ChangeNotifier {
     } else {
       // Else only enable it in non-debug builds.
       // You could additionally extend this to allow users to opt-in.
-      await FirebaseCrashlytics.instance
-          .setCrashlyticsCollectionEnabled(!kDebugMode);
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(!kDebugMode);
     }
 
     // Pass all uncaught errors to Crashlytics.

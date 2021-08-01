@@ -260,6 +260,16 @@ class S {
     );
   }
 
+  /// `Sign out`
+  String get userMenuSignOut {
+    return Intl.message(
+      'Sign out',
+      name: 'userMenuSignOut',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Guest`
   String get userMenuGuest {
     return Intl.message(

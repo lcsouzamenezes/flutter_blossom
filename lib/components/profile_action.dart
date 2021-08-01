@@ -15,9 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Flutter Blossom.  If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:better_print/better_print.dart'; // ignore: unused_import
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_blossom/components/create_dialog.dart';
 import 'package:flutter_blossom/components/micro_components/context_menu_container.dart';
 import 'package:flutter_blossom/components/micro_components/context_menu_hint_text.dart';
 import 'package:flutter_blossom/constants/colors.dart';
@@ -35,10 +39,13 @@ import 'package:flutter_blossom/states/storage_state.dart';
 import 'package:flutter_blossom/views/editor_view.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localized_locales/native_locale_names.dart';
+import 'package:flutter_widget_model/flutter_widget_model.dart';
+import 'package:github/github.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
 
 class ProfileAction extends HookWidget {
   ProfileAction({
@@ -108,9 +115,15 @@ class ProfileAction extends HookWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         CircleAvatar(
-                            radius: 24,
-                            backgroundColor: Theme.of(context).canvasColor.reverseBy(3)),
-                        ContextMenuHintText(S.of(context).userMenuGuest)
+                          radius: 24,
+                          backgroundColor: Theme.of(context).canvasColor.reverseBy(3),
+                          backgroundImage: _appState.user != null
+                              ? NetworkImage(_appState.user!.avatarUrl ?? '')
+                              : null,
+                        ),
+                        ContextMenuHintText(_appState.user != null
+                            ? _appState.user!.login ?? 'Error!!'
+                            : S.of(context).userMenuGuest)
                       ],
                     ),
                   ),
@@ -226,73 +239,161 @@ class ProfileAction extends HookWidget {
                     S.of(context).userMenuAbout,
                     height: _subMenuHeight,
                     onTap: () {
-                      showDialog(
-                          context: context,
-                          barrierColor: Colors.black38,
-                          builder: (context) {
-                            return Dialog(
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(contextMenuRadius.x),
+                      createDialog<Widget>(context,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/icon/blossom.png',
+                                width: 200,
+                                height: 200,
                               ),
-                              backgroundColor:
-                                  Theme.of(context).canvasColor.darken(darken2),
-                              child: Container(
-                                width: 100,
-                                height: 300,
-                                child: Column(
+                              Text(context.read(appState).info.appName),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 4.0),
+                                child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Image.asset(
-                                      'assets/icon/blossom.png',
-                                      width: 200,
-                                      height: 200,
-                                    ),
-                                    Text(context.read(appState).info.appName),
+                                    Text(context.read(appState).info.version),
                                     Padding(
-                                      padding: const EdgeInsets.only(left: 4.0),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Text(context.read(appState).info.version),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 2.0),
-                                            child: Text(
-                                              '+${AppStateViewNotifier.buildNo}',
-                                              style: TextStyle(color: Colors.white24),
-                                            ),
-                                          ),
-                                        ],
+                                      padding:
+                                          const EdgeInsets.symmetric(horizontal: 2.0),
+                                      child: Text(
+                                        '+${AppStateViewNotifier.buildNo}',
+                                        style: TextStyle(color: Colors.white24),
                                       ),
                                     ),
-                                    TextButton(
-                                      onPressed: () {
-                                        showLicensePage(
-                                          context: context,
-                                          applicationName:
-                                              context.read(appState).info.appName,
-                                          applicationVersion:
-                                              context.read(appState).info.version,
-                                        );
-                                      },
-                                      child: Text('Show License'),
-                                    )
                                   ],
                                 ),
                               ),
-                            );
-                          });
+                              TextButton(
+                                onPressed: () {
+                                  showLicensePage(
+                                    context: context,
+                                    applicationName: context.read(appState).info.appName,
+                                    applicationVersion:
+                                        context.read(appState).info.version,
+                                  );
+                                },
+                                child: Text('Show License'),
+                              )
+                            ],
+                          ));
                     },
                   ),
-                  ContextMenuItem(
-                    S.of(context).userMenuSignIn,
-                    height: _subMenuHeight,
-                    onTap: () {
-                      context.read(contextMenuState).clear();
-                      throw AssertionError("Sign in not available");
-                    },
-                  ),
+                  if (_appState.github.auth != null &&
+                      !_appState.github.auth!.isAnonymous)
+                    ContextMenuItem(
+                      S.of(context).userMenuSignOut,
+                      height: _subMenuHeight,
+                      onTap: () {
+                        _appState.setAuth(Authentication.anonymous());
+                      },
+                    )
+                  else
+                    ContextMenuItem(
+                      S.of(context).userMenuSignIn,
+                      height: _subMenuHeight,
+                      onTap: () {
+                        context.read(contextMenuState).clear();
+                        final _id = TextEditingController();
+                        createDialog(
+                          context,
+                          height: 220,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Stack(
+                                children: [
+                                  Align(
+                                    alignment: Alignment.topRight,
+                                    child: InkWell(
+                                      onTap: () {
+                                        betterPrint('showHelp!!');
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Icon(
+                                          Icons.help,
+                                          color: Theme.of(context).canvasColor,
+                                          size: 20,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(22.0),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 28.0),
+                                      child: TextButton(
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text('Get Access Token from'),
+                                                Icon(LineIcons.github),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        onPressed: () {
+                                          launch(
+                                              "https://github.com/login/oauth/authorize?client_id=$githubClientId");
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                child: Column(
+                                  children: [
+                                    TextFormField(
+                                      controller: _id,
+                                      decoration: InputDecoration(hintText: 'token id'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(18.0),
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    final response = await http.post(
+                                      Uri.parse(
+                                          'https://github.com/login/oauth/access_token'),
+                                      headers: <String, String>{
+                                        'Accept': 'application/vnd.github.v3+json',
+                                        'Content-Type': 'application/json',
+                                      },
+                                      body: jsonEncode(<String, String>{
+                                        'client_id': githubClientId,
+                                        'client_secret': githubSecret,
+                                        'code': _id.text
+                                      }),
+                                    );
+                                    if (response.statusCode == 200) {
+                                      final token =
+                                          jsonDecode(response.body)['access_token'];
+                                      final _auth = Authentication.withToken(token);
+                                      _appState.setAuth(_auth);
+                                    } else {
+                                      HttpException(response.body);
+                                    }
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Sign in'),
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                        // _appState.auth.
+                        // throw AssertionError("Sign in not available");
+                      },
+                    ),
                 ],
               ),
             ),
@@ -310,6 +411,9 @@ class ProfileAction extends HookWidget {
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
                     ? Theme.of(context).canvasColor.by(3)
                     : Theme.of(context).canvasColor.reverseBy(10),
+                backgroundImage: _appState.user != null
+                    ? NetworkImage(_appState.user!.avatarUrl ?? '')
+                    : null,
               ),
             ),
             if (_appState.updateUrl != null && _contextMenu.menu?.id != 'user-setting')
